@@ -21,6 +21,7 @@ uses Lean core only (no Mathlib) and has no `sorry`.
 | One-sided Death Leap Principle (Thanatipanonda), general | `le_zero_of_dlp` |
 | Every case with `2a + b ≤ 12`, kernel-checked | `Cgt/FiniteCases.lean` |
 | `a = 2`, `b ≤ 16`, kernel-checked | `Cgt/FiniteCasesExt.lean` |
+| `(2,17)`, `(2,20)`, `(2,24)`, `(3,10)`, `(3,11)`, `(3,12)`, `(6,3)`: strategy certificates | `Cgt/Cert/` (`lake build CgtCerts`) |
 | Combined partial result | `conjecture5_partial`, `conjecture5_provedRegion` |
 | **General case** | **open** |
 
@@ -50,8 +51,10 @@ Build with `lake build` (Lean `v4.36.0-rc2`).
 
 * `Cgt/Certificate.lean` and `scripts/gen_cert.py`: turn an explicit Right strategy found by a
   solver into a Lean proof, with one small kernel-checked lemma per position. `lake build
-  CgtCerts` checks the generated certificates for `(3, 4)` and `(3, 10)`; the latter takes about
-  6 minutes. Certificates for larger cases run to tens of thousands of lemmas.
+  CgtCerts` checks the generated certificates in `Cgt/Cert/` for `(2, 17)`, `(2, 20)`, `(2, 24)`,
+  `(3, 4)`, `(3, 10)`, `(3, 11)`, `(3, 12)` and `(6, 3)`. These are cases that plain kernel
+  `decide` cannot handle within memory. The larger ones take 20 to 50 minutes each and run to tens
+  of thousands of lemmas.
 
 ## Computational evidence beyond the formal results
 

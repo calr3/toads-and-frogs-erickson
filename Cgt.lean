@@ -5,3 +5,6 @@ import Cgt.Decide
 import Cgt.SmallCases
 import Cgt.Moves
 import Cgt.FamilyA1
+import Cgt.Basic
+import Cgt.FiniteCases
+import Cgt.Conjecture5

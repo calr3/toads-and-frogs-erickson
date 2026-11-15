@@ -1,0 +1,80 @@
+# Toads and Frogs: Erickson's Conjecture 5 in Lean 4
+
+**Erickson's Conjecture 5 (1996).** For Toads and Frogs, the starting position
+`Tᵃ □ᵇ Fᵃ` (`a` toads, `b` empty squares, `a` frogs) is infinitesimal for every
+`(a, b)` except `(a, b) = (3, 2)`.
+
+This repository is a self-contained Lean 4 development aimed at this conjecture. It
+uses Lean core only (no Mathlib) and has no `sorry`.
+
+## Status
+
+| What | Where |
+| --- | --- |
+| Statement of the conjecture (`Conjecture5 : Prop`) | `Cgt/Conjecture5.lean` |
+| `(3, 2)` is **not** infinitesimal (`TTT□□FFF = ±1/8`) | `not_infinitesimal_3_2` |
+| `a = 0`, all `b` | `infinitesimal_start_a_zero` |
+| `a = 1`, all `b` (`T □ᵇ F`) | `infinitesimal_start_one` |
+| `b = 0`, all `a` | `infinitesimal_start_b_zero` |
+| Every case with `2a + b ≤ 12`, kernel-checked | `Cgt/FiniteCases.lean` |
+| Combined partial result | `conjecture5_partial` |
+| **General case** | **open** |
+
+The full conjecture is **not** proved here. It has been open since 1996: Thanatipanonda
+proved the column `b = 2` for `a ≥ 4` (2008), and Conjecture 5 is the only one of Erickson's
+conjectures still open.
+
+## Contents
+
+* `Cgt/Game.lean`: short partizan games as finite option lists, Conway's order
+  (reflexive, transitive), negation, equivalence.
+* `Cgt/Infinitesimal.lean`: the numbers `2⁻ⁿ`, and `Infinitesimal G := ∀ n, -2⁻ⁿ < G < 2⁻ⁿ`.
+  It proves that `G ≤ 2⁻ⁿ` for all `n` (Left stop `≤ 0`) is equivalent to a purely
+  combinatorial recursion (`upperZero_iff`, `lfZero_iff`).
+* `Cgt/ToadsFrogs.lean`: the rules, the game tree `tf`, `start a b = Tᵃ □ᵇ Fᵃ`, and mirror
+  symmetry `tf (mirror p) = -tf p`. Since `start a b` is mirror-symmetric, being
+  infinitesimal reduces to having Left stop `≤ 0` (`infinitesimal_start_iff`).
+* `Cgt/Decide.lean`: kernel-reducible evaluators for `≤ 0`, Left stop `≤ 0` and Right stop
+  `≤ 0`, with soundness proofs.
+* `Cgt/Moves.lean`, `Cgt/FamilyA1.lean`, `Cgt/Basic.lean`: symbolic proofs for whole families.
+
+Build with `lake build` (Lean `v4.36.0-rc2`).
+
+## Computational evidence beyond the formal results
+
+An exact C++ solver for "Left stop `≤ 0`" (the same recursion as `Cgt/Infinitesimal.lean`)
+confirms the conjecture for all of the following:
+
+* `a ≤ 14` with `b = 3`;
+* `a = 2` with `b ≤ 28`;
+* `a = 3` with `b ≤ 26`;
+* `a = 4` with `b ≤ 24`;
+* `a = 5` with `b ≤ 16`;
+* `a = 6` with `b ≤ 10`;
+* `a = 7` with `b ≤ 8`;
+* `a = 8` with `b ≤ 6`;
+* `a = 9` with `b ≤ 5`;
+* `a = 10` and `a = 11` with `b ≤ 4`;
+* `a = 12` with `b ≤ 4`, and `a = 13, 14` with `b ≤ 3`.
+
+## What we learned about a general proof
+
+* The naive mirror strategy (Right copies Left's move reflected through the centre) does
+  **not** prove the conjecture. Left can steer into symmetric positions that are hot, for
+  example `T...TT.FF...F = {{1|1/4}|{-1/4|-1}}`. Whether a symmetric position is hot
+  depends on non-local counts, such as the number of empty squares behind Left's leading
+  block of toads.
+* A strategy that worked in every case tested (`2 ≤ a ≤ 6`, `2 ≤ b ≤ 12`): Right mirrors.
+  When mirroring is impossible or leads to a hot position, Right instead does one of:
+  * passes (Left's move was a mistake: the position is `≤ 0`);
+  * jumps the toad that slid into the centre square;
+  * refills the square vacated by a toad's jump at the centre;
+  * advances his front frog.
+* After such a deviation, the asymmetry does not stay bounded. It spreads over about `2a`
+  squares as crossed pieces travel to the far ends. So a proof by finitely many local
+  "defect" types cannot work as is.
+* For `a = 2` (all `b ≥ 2`) and `a = 3` (all `b ≥ 6`), "mirror, otherwise pass" suffices.
+  The proof then reduces to a few parametric normal-play claims. For `a = 2` these are:
+  * `□ⁱT□ʲ⁺¹FT□ʲ⁻¹F□ⁱ ≤ 0`;
+  * `□ⁱT□ʲ⁺¹TF□ʲF□ⁱ ≤ 0`;
+  * `□ⁱ⁺¹TT□F□F□ⁱ ≤ 0`.

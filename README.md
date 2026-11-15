@@ -72,6 +72,10 @@ confirms the conjecture for all of the following:
 
 ## What we learned about a general proof
 
+See `docs/RESEARCH_NOTES.md` for the full record (strategies tried, data, obstructions). The
+exact solvers are in `tools/` (`stops.cpp` decides "Left stop `≤ 0`" for `Tᵃ□ᵇFᵃ`).
+
+
 * The naive mirror strategy (Right copies Left's move reflected through the centre) does
   **not** prove the conjecture. Left can steer into symmetric positions that are hot, for
   example `T...TT.FF...F = {{1|1/4}|{-1/4|-1}}`. Whether a symmetric position is hot

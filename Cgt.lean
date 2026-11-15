@@ -8,3 +8,5 @@ import Cgt.FamilyA1
 import Cgt.Basic
 import Cgt.FiniteCases
 import Cgt.Conjecture5
+import Cgt.DLP
+import Cgt.FamilyB1

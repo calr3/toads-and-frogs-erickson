@@ -1,6 +1,7 @@
 import Cgt.Basic
 import Cgt.FiniteCases
 import Cgt.SmallCases
+import Cgt.FamilyB1
 
 /-!
 # Erickson's Conjecture 5 for Toads and Frogs
@@ -11,7 +12,7 @@ import Cgt.SmallCases
 This file states the conjecture (`Conjecture5`) and collects what is proved so far:
 
 * the exceptional case `(3, 2)` is indeed *not* infinitesimal (`not_infinitesimal_3_2`);
-* `a = 0`, `a = 1` and `b = 0` hold for every value of the other parameter;
+* `a = 0`, `a = 1`, `b = 0` and `b = 1` hold for every value of the other parameter;
 * every case with `2a + b ≤ 12` (other than `(3, 2)`) is checked by the kernel.
 
 The general case is open.
@@ -29,12 +30,14 @@ theorem not_infinitesimal_3_2 : ¬ Infinitesimal (tf (start 3 2)) := not_inf_3_2
 
 /-- All cases of the conjecture established so far. -/
 theorem conjecture5_partial (a b : Nat) (hab : (a, b) ≠ (3, 2))
-    (h : a ≤ 1 ∨ b = 0 ∨ 2 * a + b ≤ 12) : Infinitesimal (tf (start a b)) := by
+    (h : a ≤ 1 ∨ b ≤ 1 ∨ 2 * a + b ≤ 12) : Infinitesimal (tf (start a b)) := by
   rcases h with h | h | h
   · rcases Nat.le_one_iff_eq_zero_or_eq_one.1 h with rfl | rfl
     · exact infinitesimal_start_a_zero b
     · exact infinitesimal_start_one b
-  · subst h; exact infinitesimal_start_b_zero a
+  · rcases Nat.le_one_iff_eq_zero_or_eq_one.1 h with rfl | rfl
+    · exact infinitesimal_start_b_zero a
+    · exact infinitesimal_start_b_one a
   · by_cases ha : a ≤ 1
     · rcases Nat.le_one_iff_eq_zero_or_eq_one.1 ha with rfl | rfl
       · exact infinitesimal_start_a_zero b

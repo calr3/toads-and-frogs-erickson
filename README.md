@@ -16,6 +16,8 @@ uses Lean core only (no Mathlib) and has no `sorry`.
 | `a = 0`, all `b` | `infinitesimal_start_a_zero` |
 | `a = 1`, all `b` (`T □ᵇ F`) | `infinitesimal_start_one` |
 | `b = 0`, all `a` | `infinitesimal_start_b_zero` |
+| `b = 1`, all `a` (`Tᵃ □ Fᵃ`) | `infinitesimal_start_b_one` |
+| One-sided Death Leap Principle (Thanatipanonda), general | `le_zero_of_dlp` |
 | Every case with `2a + b ≤ 12`, kernel-checked | `Cgt/FiniteCases.lean` |
 | Combined partial result | `conjecture5_partial` |
 | **General case** | **open** |
@@ -36,7 +38,10 @@ conjectures still open.
   infinitesimal reduces to having Left stop `≤ 0` (`infinitesimal_start_iff`).
 * `Cgt/Decide.lean`: kernel-reducible evaluators for `≤ 0`, Left stop `≤ 0` and Right stop
   `≤ 0`, with soundness proofs.
-* `Cgt/Moves.lean`, `Cgt/FamilyA1.lean`, `Cgt/Basic.lean`: symbolic proofs for whole families.
+* `Cgt/Moves.lean`, `Cgt/FamilyA1.lean`, `Cgt/FamilyB1.lean`, `Cgt/Basic.lean`: symbolic proofs
+  for whole families.
+* `Cgt/DLP.lean`: the one-sided Death Leap Principle (Left can only jump and there are no
+  two adjacent empty squares, so the position is `≤ 0`).
 
 Build with `lake build` (Lean `v4.36.0-rc2`).
 

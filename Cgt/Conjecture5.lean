@@ -3,6 +3,7 @@ import Cgt.FiniteCases
 import Cgt.SmallCases
 import Cgt.FamilyB1
 import Cgt.FamilyB2
+import Cgt.FiniteCasesExt
 
 /-!
 # Erickson's Conjecture 5 for Toads and Frogs
@@ -94,5 +95,29 @@ theorem conjecture5_partial (a b : Nat) (hab : (a, b) ≠ (3, 2))
       rcases hb' with rfl | rfl
       · exact infinitesimal_start_5_1
       · exact infinitesimal_start_5_2
+
+/-- The region of `(a, b)` covered by the results proved in this repository. -/
+def ProvedRegion (a b : Nat) : Prop :=
+  a ≤ 1 ∨ b ≤ 2 ∨ 2 * a + b ≤ 12 ∨ (a = 2 ∧ b ≤ 16)
+
+/-- Every case of the conjecture in `ProvedRegion` holds. -/
+theorem conjecture5_provedRegion (a b : Nat) (hab : (a, b) ≠ (3, 2)) (h : ProvedRegion a b) :
+    Infinitesimal (tf (start a b)) := by
+  rcases h with h | h | h | ⟨rfl, hb⟩
+  · exact conjecture5_partial a b hab (Or.inl h)
+  · exact conjecture5_partial a b hab (Or.inr (Or.inl h))
+  · exact conjecture5_partial a b hab (Or.inr (Or.inr h))
+  by_cases h8 : b ≤ 8
+  · exact conjecture5_partial 2 b hab (Or.inr (Or.inr (by omega)))
+  have key : b = 9 ∨ b = 10 ∨ b = 11 ∨ b = 12 ∨ b = 13 ∨ b = 14 ∨ b = 15 ∨ b = 16 := by omega
+  rcases key with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
+  · exact infinitesimal_start_2_9
+  · exact infinitesimal_start_2_10
+  · exact infinitesimal_start_2_11
+  · exact infinitesimal_start_2_12
+  · exact infinitesimal_start_2_13
+  · exact infinitesimal_start_2_14
+  · exact infinitesimal_start_2_15
+  · exact infinitesimal_start_2_16
 
 end Cgt

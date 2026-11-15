@@ -20,7 +20,8 @@ uses Lean core only (no Mathlib) and has no `sorry`.
 | `b = 2`, all `a ≥ 4` (Thanatipanonda's theorem, incl. his Lemma C.1) | `infinitesimal_start_b_two`, `upperZero_c1` |
 | One-sided Death Leap Principle (Thanatipanonda), general | `le_zero_of_dlp` |
 | Every case with `2a + b ≤ 12`, kernel-checked | `Cgt/FiniteCases.lean` |
-| Combined partial result | `conjecture5_partial` |
+| `a = 2`, `b ≤ 16`, kernel-checked | `Cgt/FiniteCasesExt.lean` |
+| Combined partial result | `conjecture5_partial`, `conjecture5_provedRegion` |
 | **General case** | **open** |
 
 The full conjecture is **not** proved here. It has been open since 1996: Thanatipanonda

@@ -180,3 +180,23 @@ theorem upperZero_of_infinitesimal {g : Game} (h : Infinitesimal g) : UpperZero 
 
 end Game
 end Cgt
+
+namespace Cgt
+namespace Game
+
+theorem neg_zero : neg zero = zero := by
+  rw [zero, neg_mk]; rfl
+
+/-- A game equivalent to its own negative always has Right stop `≥ 0`... more precisely it
+satisfies `LfZero` (its Right stop is `≤ 0`). -/
+theorem lfZero_of_equiv_neg {g : Game} (hs : Equiv (neg g) g) : LfZero g := by
+  intro n h
+  have h1 : le (neg g) (neg (powHalf n)) := (neg_le_neg_iff _ _).2 h
+  have h2 : le (powHalf n) (neg (powHalf n)) := le_trans _ _ _ h (le_trans _ _ _ hs.2 h1)
+  have h3 : le (neg (powHalf n)) zero := by
+    have := (neg_le_neg_iff (powHalf n) zero).2 (zero_le_powHalf n)
+    rwa [neg_zero] at this
+  exact not_powHalf_le_zero n (le_trans _ _ _ h2 h3)
+
+end Game
+end Cgt

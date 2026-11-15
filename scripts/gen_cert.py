@@ -174,7 +174,7 @@ def main():
         elif lf[0] == 'reply':
             lfp = f'(lfZero_of_reply {lit(p)} {lit(lf[1])} (by decide +kernel) n_{nid[lf[1]]})'
         else:
-            lfp = f'(lfZero_tf_iff.2 (Or.inl z_{zid[lf[1]]}))'
+            lfp = f'((lfZero_tf_iff _).2 (Or.inl z_{zid[lf[1]]}))'
         pl = '[' + ', '.join(lit(q) for q in passes) + ']'
         prl = '[' + ', '.join(f'({lit(q)}, {lit(r)})' for q, r in pairs) + ']'
         out.append(f'theorem n_{nid[p]} : UpperZero (tf {lit(p)}) :=')

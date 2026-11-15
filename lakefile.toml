@@ -9,4 +9,5 @@ name = "Cgt"
 # Build with `lake build CgtCerts`.
 [[lean_lib]]
 name = "CgtCerts"
-roots = ["Cgt.Cert.Case_3_4", "Cgt.Cert.Case_3_10"]
+roots = ["Cgt.Cert.Case_3_4", "Cgt.Cert.Case_3_10", "Cgt.Cert.Case_2_17", "Cgt.Cert.Case_2_20",
+  "Cgt.Cert.Case_2_24", "Cgt.Cert.Case_3_11"]

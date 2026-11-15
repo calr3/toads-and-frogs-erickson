@@ -4,3 +4,9 @@ defaultTargets = ["Cgt"]
 
 [[lean_lib]]
 name = "Cgt"
+
+# Machine-generated strategy certificates for individual cases (slow to check; not built by default).
+# Build with `lake build CgtCerts`.
+[[lean_lib]]
+name = "CgtCerts"
+roots = ["Cgt.Cert.Case_3_4", "Cgt.Cert.Case_3_10"]

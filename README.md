@@ -48,6 +48,11 @@ conjectures still open.
 
 Build with `lake build` (Lean `v4.36.0-rc2`).
 
+* `Cgt/Certificate.lean` and `scripts/gen_cert.py`: turn an explicit Right strategy found by a
+  solver into a Lean proof, with one small kernel-checked lemma per position. `lake build
+  CgtCerts` checks the generated certificates for `(3, 4)` and `(3, 10)`; the latter takes about
+  6 minutes. Certificates for larger cases run to tens of thousands of lemmas.
+
 ## Computational evidence beyond the formal results
 
 An exact C++ solver for "Left stop `≤ 0`" (the same recursion as `Cgt/Infinitesimal.lean`)

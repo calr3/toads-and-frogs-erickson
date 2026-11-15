@@ -1,0 +1,6 @@
+name = "cgt"
+version = "0.1.0"
+defaultTargets = ["Cgt"]
+
+[[lean_lib]]
+name = "Cgt"

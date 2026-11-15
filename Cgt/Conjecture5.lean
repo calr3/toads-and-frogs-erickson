@@ -2,6 +2,7 @@ import Cgt.Basic
 import Cgt.FiniteCases
 import Cgt.SmallCases
 import Cgt.FamilyB1
+import Cgt.FamilyB2
 
 /-!
 # Erickson's Conjecture 5 for Toads and Frogs
@@ -13,6 +14,7 @@ This file states the conjecture (`Conjecture5`) and collects what is proved so f
 
 * the exceptional case `(3, 2)` is indeed *not* infinitesimal (`not_infinitesimal_3_2`);
 * `a = 0`, `a = 1`, `b = 0` and `b = 1` hold for every value of the other parameter;
+* `b = 2` holds for every `a ≠ 3` (Thanatipanonda's theorem for `a ≥ 4`, formalised here);
 * every case with `2a + b ≤ 12` (other than `(3, 2)`) is checked by the kernel.
 
 The general case is open.
@@ -30,14 +32,30 @@ theorem not_infinitesimal_3_2 : ¬ Infinitesimal (tf (start 3 2)) := not_inf_3_2
 
 /-- All cases of the conjecture established so far. -/
 theorem conjecture5_partial (a b : Nat) (hab : (a, b) ≠ (3, 2))
-    (h : a ≤ 1 ∨ b ≤ 1 ∨ 2 * a + b ≤ 12) : Infinitesimal (tf (start a b)) := by
+    (h : a ≤ 1 ∨ b ≤ 2 ∨ 2 * a + b ≤ 12) : Infinitesimal (tf (start a b)) := by
+  have hb2 : b = 2 → 4 ≤ a → Infinitesimal (tf (start a b)) := by
+    intro hb ha
+    subst hb
+    obtain ⟨c, rfl⟩ : ∃ c, a = c + 4 := ⟨a - 4, by omega⟩
+    exact infinitesimal_start_b_two c
   rcases h with h | h | h
   · rcases Nat.le_one_iff_eq_zero_or_eq_one.1 h with rfl | rfl
     · exact infinitesimal_start_a_zero b
     · exact infinitesimal_start_one b
-  · rcases Nat.le_one_iff_eq_zero_or_eq_one.1 h with rfl | rfl
-    · exact infinitesimal_start_b_zero a
-    · exact infinitesimal_start_b_one a
+  · by_cases h1 : b ≤ 1
+    · rcases Nat.le_one_iff_eq_zero_or_eq_one.1 h1 with rfl | rfl
+      · exact infinitesimal_start_b_zero a
+      · exact infinitesimal_start_b_one a
+    have hb : b = 2 := by omega
+    by_cases ha : 4 ≤ a
+    · exact hb2 hb ha
+    subst hb
+    have ha' : a = 0 ∨ a = 1 ∨ a = 2 ∨ a = 3 := by omega
+    rcases ha' with rfl | rfl | rfl | rfl
+    · exact infinitesimal_start_a_zero 2
+    · exact infinitesimal_start_one 2
+    · exact infinitesimal_start_2_2
+    · exact absurd rfl hab
   · by_cases ha : a ≤ 1
     · rcases Nat.le_one_iff_eq_zero_or_eq_one.1 ha with rfl | rfl
       · exact infinitesimal_start_a_zero b

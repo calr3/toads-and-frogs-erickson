@@ -10,3 +10,4 @@ import Cgt.FiniteCases
 import Cgt.Conjecture5
 import Cgt.DLP
 import Cgt.FamilyB1
+import Cgt.FamilyB2

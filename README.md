@@ -17,6 +17,7 @@ uses Lean core only (no Mathlib) and has no `sorry`.
 | `a = 1`, all `b` (`T □ᵇ F`) | `infinitesimal_start_one` |
 | `b = 0`, all `a` | `infinitesimal_start_b_zero` |
 | `b = 1`, all `a` (`Tᵃ □ Fᵃ`) | `infinitesimal_start_b_one` |
+| `b = 2`, all `a ≥ 4` (Thanatipanonda's theorem, incl. his Lemma C.1) | `infinitesimal_start_b_two`, `upperZero_c1` |
 | One-sided Death Leap Principle (Thanatipanonda), general | `le_zero_of_dlp` |
 | Every case with `2a + b ≤ 12`, kernel-checked | `Cgt/FiniteCases.lean` |
 | Combined partial result | `conjecture5_partial` |
@@ -40,6 +41,7 @@ conjectures still open.
   `≤ 0`, with soundness proofs.
 * `Cgt/Moves.lean`, `Cgt/FamilyA1.lean`, `Cgt/FamilyB1.lean`, `Cgt/Basic.lean`: symbolic proofs
   for whole families.
+* `Cgt/FamilyB2.lean`: Thanatipanonda's proof for `b = 2` (Lemma C.1 plus a short case tree).
 * `Cgt/DLP.lean`: the one-sided Death Leap Principle (Left can only jump and there are no
   two adjacent empty squares, so the position is `≤ 0`).
 

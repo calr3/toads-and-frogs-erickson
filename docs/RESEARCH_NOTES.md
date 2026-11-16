@@ -137,3 +137,31 @@ A description of the hot symmetric positions (or of a richer invariant) that is
 Every finite-window or bounded-defect version of this tried here fails. The values
 `Tᵃ□ᵇFᵃ ∈ {0, *}` for `b ≥ 3` (Thanatipanonda's Conjectures 3 and 4) suggest that some
 parity-type invariant controls the exact value, but its form is unknown.
+
+## 8. Automaton invariants on the folded board (approach 1)
+
+Fold the board: pair cell `i` with cell `n−1−i`. Then mirror symmetry is a letter-by-letter
+condition and every move is a local rewrite, so the move relation is a finite transducer. A pair
+of regular languages `(N, Z)` satisfying the recursions of §1 would prove the conjecture for all
+`(a, b)` at once. Whether a given pair works is decidable by automaton constructions, and
+`tools/regular/folded.py` implements that check exactly, for every board size.
+
+The search for such a pair (`tools/regular/`, details and tables in its README) found none:
+
+* *Exact SAT learning*, full conjecture. The smallest invariant has 4 states for boards of at
+  most 4 cells and 8 states for at most 6 cells. For at most 8 cells it needs more than 10 (ends
+  inwards) or more than 11 (centre outwards), and the solver stalls. Boards of 9–10 cells alone
+  need more than 6.
+* *The `a = 2` row.* "Mirror, otherwise pass" reduces it to a normal-play set `Z` containing three
+  regular families of pass positions: `□ⁱT□ʲ⁺¹TF□ʲF□ⁱ`, `□ⁱT□ʲ⁺¹FT□ʲ⁻¹F□ⁱ` and `□ⁱ⁺¹TT□F□F□ⁱ`.
+  All members up to 40 cells are `≤ 0`. But `Z` needs more than 8 states already for boards of
+  at most 12 cells.
+  * The closure under a fixed local Right strategy needs 592 states when trained up to 16
+    cells, and 971 up to 20. Those automata do not generalise.
+  * State merging (RPNI) did not converge.
+* *Hot symmetric positions* need a growing number of states (up to 7–9 at half-length 10).
+
+None of this proves that no regular invariant exists. It does show that any such invariant is
+large, and that letting a learner choose Right's replies does not produce one. A hand-designed
+Right strategy that keeps the reachable set regular would be needed. The checker can then
+verify it for every board size.

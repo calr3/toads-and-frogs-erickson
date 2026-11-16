@@ -138,3 +138,8 @@ exact solvers are in `tools/` (`stops.cpp` decides "Left stop `≤ 0`" for `Tᵃ
   * `□ⁱT□ʲ⁺¹FT□ʲ⁻¹F□ⁱ ≤ 0`;
   * `□ⁱT□ʲ⁺¹TF□ʲF□ⁱ ≤ 0`;
   * `□ⁱ⁺¹TT□F□F□ⁱ ≤ 0`.
+* An invariant recognised by finite automata, on the board folded at its centre, would prove
+  every case at once. `tools/regular/` can check such a candidate exactly for every board
+  size, but none was found. Learned invariants need more than 10 states already for boards of
+  at most 8 cells. For the `a = 2` row, the normal-play part needs hundreds of states and does
+  not generalise. See `tools/regular/README.md`.

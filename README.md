@@ -29,6 +29,46 @@ The full conjecture is **not** proved here. It has been open since 1996: Thanati
 proved the column `b = 2` for `a ≥ 4` (2008), and Conjecture 5 is the only one of Erickson's
 conjectures still open.
 
+## Grid of proved cases
+
+Each cell is the case `Tᵃ □ᵇ Fᵃ`, with `a` down the side and `b` across the top.
+
+```
+                              1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2
+      b = 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8
+a = 0     S S S S S S S S S S S S S S S S S S S S S S S S S S S S S
+a = 1     S S S S S S S S S S S S S S S S S S S S S S S S S S S S S
+a = 2     S S K K K K K K K K K K K K K K K C . . C . . . C . . . .
+a = 3     S S X K K K K . . . C C C . . . . . . . . . . . . . .
+a = 4     S S S K K . . . . . . . . . . . . . . . . . . . .
+a = 5     S S S . . . . . . . . . . . . . .
+a = 6     S S S C . . . . . . .
+a = 7     S S S . . . . . .
+a = 8     S S S . . . .
+a = 9     S S S . . .
+a = 10    S S S . .
+a = 11    S S S . .
+a = 12    S S S . .
+a = 13    S S S .
+a = 14    S S S .
+a ≥ 15    S S S
+```
+
+| Mark | Meaning |
+| --- | --- |
+| `S` | Proved by a theorem for a whole family: `a ≤ 1`, `b ≤ 1`, or `b = 2` with `a ≥ 4`. These rows and columns continue for every `a` and `b`. |
+| `K` | Single case checked by kernel `decide` (`Cgt/FiniteCases.lean`, `Cgt/FiniteCasesExt.lean`). |
+| `C` | Single case proved by a strategy certificate: `Cgt.Cert_a_b.infinitesimal` in `Cgt/Cert/`, checked by `lake build CgtCerts`. |
+| `X` | `(3, 2)`: proved **not** infinitesimal (`not_infinitesimal_3_2`). |
+| `.` | Not proved in Lean, but confirmed by the exact solver (see below). |
+| blank | Not computed. |
+
+Apart from `(3, 2)`, the `S` and `K` cells are exactly `ProvedRegion`, which
+`conjecture5_provedRegion` covers in one theorem. The `C` cells are separate theorems, one per case.
+
+`Cgt/Cert/` also contains certificates for `(4, 5)`, `(4, 6)` and `(5, 3)`. They have not been
+checked yet, so they are not built with `CgtCerts` and are shown as `.` above.
+
 ## Contents
 
 * `Cgt/Game.lean`: short partizan games as finite option lists, Conway's order

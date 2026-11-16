@@ -66,7 +66,7 @@ the side. Generated from the Lean sources by `scripts/gen_grid.py`.
 |---:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
 | **0** | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 |
 | **1** | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 |
-| **2** | 🟩 | 🟩 | 🟩 | ◆ | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 |
+| **2** | 🟩 | 🟩 | 🟩 | 🔷 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 |
 | **3** | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | · | · | · | · | · | · | · | · |  |
 | **4** | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | · | · | · | · | · | · | · | · |  |  |  |
 | **5** | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | · | · | · | · | · |  |  |  |  |  |  |
@@ -96,7 +96,7 @@ the side. Generated from the Lean sources by `scripts/gen_grid.py`.
 | Mark | Meaning |
 | :-: | --- |
 | 🟩 | Proved infinitesimal in Lean. |
-| ◆ | `(3, 2)`: the exception in the conjecture, proved **not** infinitesimal (`TTT□□FFF = ±1/8`, `not_infinitesimal_3_2`). |
+| 🔷 | `(3, 2)`: the exception in the conjecture, proved **not** infinitesimal (`TTT□□FFF = ±1/8`, `not_infinitesimal_3_2`). |
 | · | Not proved in Lean, but confirmed by the exact solver (see below). |
 | *(blank)* | Not computed. |
 

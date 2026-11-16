@@ -14,6 +14,12 @@ uses Lean core only (no Mathlib) and has no `sorry`.
   [[T11]](#references); `b = 3` was known numerically only for small `a`. The proof is a
   computer-found strategy over 3,031 "run shapes", kernel-checked, with a general margin argument
   for positions with any number of runs. See [docs/COLUMN_B3.md](docs/COLUMN_B3.md).
+* **New as far as we know, computer-assisted and not yet in Lean: the column `b = 4`.** The
+  same method, with far gaps between long runs kept without their parity, gives Right a strategy
+  over 233,087 run shapes for every `a`. The shape set is checked by two independent programs,
+  and the strategy on the real game trees for every `a ≤ 24`; the exact solver had reached
+  `a = 12`. The kernel check would be about 270 times the size of the `b = 3` one, so this is not
+  a Lean theorem yet. See [docs/RESEARCH_NOTES.md §14](docs/RESEARCH_NOTES.md).
 * **New, as far as we know: the row `a = 2`.** `TT□ᵇFF` is infinitesimal for every
   `b` (`infinitesimal_start_two`). Before this, the row was known only numerically: Erickson
   tabulated `b ≤ 6` [[E96]](#references) and Thanatipanonda `b ≤ 103` [[T11]](#references). The
@@ -196,9 +202,10 @@ short:
 
 **[docs/COLUMN_B3.md](docs/COLUMN_B3.md)** has the full account.
 
-The same method does not reach `b = 4`. There Right needs 13 runs, and his strategy passes
-through about 20,000 new shapes per step of `a`, against about 500 for `b = 3`; the shape search
-does not close (`docs/RESEARCH_NOTES.md` §14).
+For `b = 4` the same method works once far gaps between long runs keep only their sign, not
+their parity: Right needs 13 runs, and 233,087 shapes (`tools/column/b4_shapes.txt.gz`). The set
+is checked independently but not in Lean: its kernel check would be about 270 times the size of
+the `b = 3` one (`docs/RESEARCH_NOTES.md` §14).
 
 ## Computational evidence beyond the formal results
 
@@ -219,7 +226,7 @@ confirms the conjecture for all of the following:
 
 The column `b = 3` is now proved for every `a` (`infinitesimal_start_b_three`). Independently of
 that proof, `tools/column/col_realcheck.cpp` checks Right's strategy on the real boards for every
-`a ≤ 40`.
+`a ≤ 40`. For `b = 4` the same check of the 233,087-shape strategy passes for every `a ≤ 24`.
 
 ## What we learned about a general proof
 

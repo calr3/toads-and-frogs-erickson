@@ -136,10 +136,11 @@ Independent checks of the same certificate:
 
 ## 8. Other columns
 
-The framework itself does not depend on `b`, but its abstraction does not scale to `b = 4`.
-There Right needs 13 runs (from `a = 10` on), and his strategy passes through far more shapes:
-about 20,000 new ones per step of `a`, against about 500 for `b = 3`. The shape search does not
-close. A different abstraction of the races between reservoirs would be needed
+The framework itself does not depend on `b`. For `b = 4`, Right needs 13 runs (from `a = 10` on),
+and the search closes once far gaps keep only their sign, not their parity (`M = 1`): 233,087
+shapes with 2.8 million witnesses (`tools/column/b4_shapes.txt.gz`), checked by an independent
+program and on the real game trees for every `a ≤ 24`. The margin argument carries over with small
+changes, but a kernel check of that size is out of reach for now
 ([docs/RESEARCH_NOTES.md](RESEARCH_NOTES.md) §14).
 
 ## References

@@ -371,42 +371,82 @@ The `a = 2` row works because a few pieces are separated by long gaps. In a colu
   * dead runs kept one by one, so that real positions and witnesses have the same runs;
   * runs of empty squares kept exact.
 * **Other columns.** The same framework applies to any fixed `b`; only the data changes. For
-  `b = 4` the shape search does not close at a usable size (§14).
+  `b = 4` the shape search closes once far gaps lose their parity, with 233,087 shapes (§14).
 
-## 14. The column `b = 4`: the shape method does not scale (`tools/column/`)
+## 14. The column `b = 4`: a closed set once parity is dropped (`tools/column/`)
 
-We tried the `b = 3` method on `Tᵃ□⁴Fᵃ`. It runs into a size wall, not a soundness problem.
+**Result (computer-assisted, not yet in Lean).** Right has a strategy for `Tᵃ□⁴Fᵃ`, every
+`a ≥ 2`, over **233,087 run shapes** (`tools/column/b4_shapes.txt.gz`). Together with the margin
+argument of the `b = 3` proof this shows the column `b = 4`, which was known numerically only up to
+`a ≈ 12`. The closure is checked by two independent programs, and the strategy is checked
+directly on the real game trees for every `a ≤ 24`.
+
+### 14.1 The `b = 3` settings fail
 
 * **Right's run bound.** The smallest number of runs with which Right still wins (`col_bound`,
-  all runs counted) is 12 for every `a` from 4 to 9, and 13 for `a = 10, 11, 12`. Counting a dead
-  `TTFF` junction as one run changes nothing (12 at `a = 9`, 13 at `a = 10`). So the bound steps up
-  once and then holds, as far as we can test; 13 is plausible for every `a`.
-* **The abstract search with 12 runs loses the start** after 3,814 shapes (cap `K = 2`, cluster
-  gap `M = 2`, margin 4, dead runs kept, as for `b = 3`). The losing line: after `T⁷□⁴F⁷`, Left
-  slides a toad and only one of Right's replies stays within 12 runs at `a = 7`; the same reply
-  fails at `a = 10`. This matches the step to 13.
-* **With 13 runs the search does not close.** It explores millions of shapes without closing.
-  Speeding up the search (shapes as integers, a bit-packed concrete solver, trying the most
-  constrained challenges first, dropping options whose small witnesses lose concretely) cut the
-  memory to about 0.5 GB per million shapes; it did not change the outcome. The search stack
-  runs 1,000 to 10,000 shapes deep, through shapes with four or five long runs that differ only in
-  the order and exact spacing of their lengths. A typical skeleton is
-  `Tᵇ □ [dead] □ Fᶜ T □ Fᵃ T F □ Fᵈ`: one toad reservoir against three frog reservoirs. All
-  orderings and all gap patterns of the three frog runs turn up, although what matters for the
-  race is presumably only how Left's total compares with Right's.
-  * Allowing at most 3 long runs after Right's replies loses the start; allowing 4 still explodes.
-  * `M = 0` loses the start; `M = 1`, `M = 2` and cap `K = 3` explode.
-* **Real play confirms that the set would be large.** Right's concrete strategy (13 runs, replies
-  chosen to reuse shapes) visits 126,203 shapes over `a = 4…12`, and still adds about 20,000 new
-  shapes per step of `a`. The same measurement for `b = 3` gives 4,738 shapes by `a = 12`, about
-  500 new per step, and the closed set there has 3,031. Choosing replies by fewest runs or by
-  fewest live runs instead gives the same counts (about 84,000 by `a = 10`).
-* **Splitting at dead regions helps only a little.** A dead region is a wall: the pieces on
-  either side can never interact, so a position is a sum of independent components. At `a = 12`,
-  59% of the positions Right's strategy visits split into two or three components with empty
-  squares. But the components still have 39,245 distinct shapes, growing by about 4,500 per step.
-* **What it would take.** The shape records every pairwise difference between up to five
-  reservoirs, and for `b = 4` play passes through too many of these combinations. A working
-  abstraction would have to record races more coarsely: for example the total of Left's reservoirs
-  against Right's, rather than each difference. Or it would have to evaluate components separately
-  and add their values. Either needs a new margin lemma in Lean, not just new data.
+  all runs counted) is 12 for every `a` from 4 to 9, and 13 for `a = 10, 11, 12`. So the bound
+  steps up once and then holds, as far as we can test.
+* **With 12 runs the start is lost** (after 3,814 shapes; settings of `b = 3`: cap `K = 2`,
+  cluster gap `M = 2`, parity kept, margin 4, dead runs kept). After `T⁷□⁴F⁷` and a toad slide,
+  only one of Right's replies stays within 12 runs at `a = 7`, and it fails at `a = 10`.
+* **With 13 runs and parity the search does not close.** It explores millions of shapes. The
+  search stack runs 1,000 to 10,000 shapes deep through shapes with four or five long runs that
+  differ only in the order, exact spacing and parity of their lengths, for example
+  `Tᵇ □ [dead] □ Fᶜ T □ Fᵃ T F □ Fᵈ`. Capping the long runs at 3 loses the start, capping at 4
+  still explodes; `M = 0` loses, `M = 1`, `M = 2` and `K = 3` explode.
+* **Real play is much richer than for `b = 3`.** Right's concrete strategy (13 runs, replies
+  reusing shapes) visits 126,203 shapes over `a = 4…12`, about 20,000 new ones per step of `a`;
+  for `b = 3` the same count is 4,738, about 500 per step. Most of the variety is in the
+  arrangement of runs: those shapes have 37,090 distinct skeletons, about 3.4 shapes each.
+  Collapsing dead regions saves only 15%.
+
+### 14.2 What does not help
+
+* **Component-local strategies.** A dead region is a wall, so a position is a sum of independent
+  components. If Right always answered inside the component Left moved in, only component shapes
+  would be needed. But such strategies lose: for `b = 3` from `a = 4` and for `b = 4` from
+  `a = 5` (`col_local.cpp`). Right has to coordinate across components, typically a race between
+  a component holding Left's free moves and one holding Right's.
+* **Values of components.** Over every position reachable from `T⁶□⁴F⁶`, the components with
+  both kinds of pieces take 54,082 distinct canonical values: numbers, `n∗`, `{n|n}` and hot games
+  of temperature up to 1 (`tools/cgt_values.py`). A key built from values would need parametric
+  families of values.
+
+### 14.3 Dropping parity closes it
+
+* **The change.** A gap between consecutive sorted long runs is kept exactly up to `M`; above `M`
+  only "far" is kept, without parity (`NOPARITY=1`). The margin argument never used parity: two
+  positions are related with margin `j` if every pairwise difference of long runs (and the anchor)
+  is equal in both, or at least `M + 1 + j` in both with the same sign. A move changes each
+  difference by at most 2, a new long run starts at the anchor, and a run that dies drops out, as
+  before. A far gap now has `MARGIN + 1 = 5` witnesses (`c`, `c + 1`, …, `c + 4`) instead of 3.
+* **Calibration on `b = 3`.** Without parity the `b = 3` search still closes, at `M = 1, 2, 3`
+  (minimised: 2,777, 4,042 and 3,403 shapes).
+* **`b = 4`.** With `K = 2`, `M = 1`, 13 runs and no parity, the search closes: 557,015 shapes,
+  minimised to 212,020 with 10,244,048 witnesses. Allowing at most 3 far gaps after Right's
+  replies (`FB = 3`; with 2 the start is lost) and preferring shapes with few witnesses in the
+  minimisation (`MINW=1`) gives the certificate: **233,087 shapes (32,853 in the Left-stop phase),
+  2,789,119 witnesses, 6,277,071 Left moves and passes**.
+
+      NOPARITY=1 MINW=1 FAILFIRST=1 MARGIN=4 DEADRUNS=1 MINIMIZE=1 DUMP=out col_shapes 4 13 2 1 28 3
+
+  The search takes about 5 minutes and less than 6 GB; it is deterministic and reproduces the file.
+* **Checks.**
+  * `verify_shapes.py` (independent of the search) finds every witness answered and every start
+    `Tᵃ□⁴Fᵃ`, `a = 2…60`, in the set. For `a ≥ 4` the start has the same shape, so this covers
+    every `a ≥ 2`. It takes 2 minutes. The 212,020-shape set also passes (10.2 million witnesses).
+  * `col_realcheck` plays Right's strategy from the set on the real game tree of `Tᵃ□⁴Fᵃ` and
+    finds no failure for any `a` from 2 to 24 (713,499 positions at `a = 24`). Each of these is a
+    complete proof for that `a`, independent of the margin argument; the exact solver reached only
+    `a = 12`.
+
+### 14.4 Into Lean?
+
+The margin argument carries over, but the size does not. Adapting the framework of
+`Cgt/Col/` to "far without parity" with `M = 1` is mechanical: `capG`, `close`, `wit_complete`
+and the witness lists change, not the structure of the proof. The finite check is the obstacle.
+The `b = 3` kernel check costs about 0.19 s per witness, so 2.8 million witnesses would need
+about 150 CPU hours of `decide +kernel`, and the key data would be about 23 MB of Lean source in
+the `b = 3` format. Ways forward: a much faster kernel check (keys as single numbers, a linear
+`keyOf`), a smaller certificate, or `native_decide`, which takes minutes but trusts Lean's
+compiler (the axiom `Lean.ofReduceBool`).

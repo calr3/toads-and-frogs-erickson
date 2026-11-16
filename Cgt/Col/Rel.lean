@@ -226,7 +226,7 @@ theorem gaps_map {R R' : RL} (h : Rel 0 R R') :
 theorem lenAt_of_ge {R : RL} {i : Nat} (h : R.length ≤ i) : lenAt R i = 0 := by
   simp [lenAt, runAt, List.getD, h]
 
-theorem keyOf_def (R : RL) : keyOf R = [R.length] ++ ((List.range R.length).map fun i => cellCode (cellAt R i) * 1000 + clsAt R i) ++
+theorem keyOf_def (R : RL) : keyOf R = [R.length] ++ ((List.range R.length).flatMap fun i => [cellCode (cellAt R i), clsAt R i]) ++
     [(entries R).length] ++ (entries R).map Prod.snd ++ (gapsFrom 2 (entries R)).map capG := rfl
 
 theorem clsAt_eq_of_skel {R R' : RL} (hs : Skel R R') (i : Nat) : clsAt R i = clsAt R' i := by
@@ -276,12 +276,11 @@ theorem keyOf_eq_of_rel {R R' : RL} (h : Rel 0 R R') : keyOf R = keyOf R' := by
     rw [entL_eq_map h, sortE_map _ hcmp]
   have hmem : ∀ x ∈ entries R, isEntB R x.2 = true ∧ x.1 = lenAt R x.2 := fun x hx =>
     mem_entL.1 (mem_sortE.1 hx)
-  have htok : ((List.range R.length).map fun i => cellCode (cellAt R i) * 1000 + clsAt R i) =
-      (List.range R'.length).map fun i => cellCode (cellAt R' i) * 1000 + clsAt R' i := by
-    rw [hs.1]
-    apply List.map_congr_left
-    intro i _
-    rw [(hs.2 i).1, clsAt_eq_of_skel hs]
+  have htok : ((List.range R.length).flatMap fun i => [cellCode (cellAt R i), clsAt R i]) =
+      (List.range R'.length).flatMap fun i => [cellCode (cellAt R' i), clsAt R' i] := by
+    have hf : (fun i => [cellCode (cellAt R i), clsAt R i]) = (fun i => [cellCode (cellAt R' i), clsAt R' i]) := by
+      funext i; rw [(hs.2 i).1, clsAt_eq_of_skel hs]
+    rw [hs.1, hf]
   have hgaps : (gapsFrom 2 (entries R)).map capG = (gapsFrom 2 (entries R')).map capG := by
     rw [hes]
     refine gaps_map h _ 2 2 hmem (fun x hx => ?_) (fun x hx y hy => ?_)

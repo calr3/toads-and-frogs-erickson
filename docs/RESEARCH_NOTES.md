@@ -363,7 +363,13 @@ The `a = 2` row works because a few pieces are separated by long gaps. In a colu
     certificate.
   * `tools/column/verify_shapes.py` re-implements everything independently and finds it closed.
     It also confirms that every start `Tᵃ□³Fᵃ`, `a ≥ 2`, has a shape in the set.
-* **What is missing for a theorem.** A Lean framework for positions with any number of runs.
-  It needs the pairwise-difference margin lemma, dead regions, normal forms, and soundness for
-  the Left stop. With it, a kernel check of the 2,861 shapes would prove the whole column `b = 3`.
-  The same approach should apply to `b = 4` and `b = 5`.
+* **Formalised.** `Tᵃ□³Fᵃ` is infinitesimal for every `a` (`infinitesimal_start_b_three`;
+  [docs/COLUMN_B3.md](COLUMN_B3.md)). Three changes to the search made the margin argument provable
+  with the same certificate size (3,031 shapes):
+  * margin 2 per move, not per round, because one Left move can change two toad runs (`TᵃETᵇ`
+    becomes `Tᵃ⁻¹ETᵇ⁺¹`);
+  * dead runs kept one by one, so that real positions and witnesses have the same runs;
+  * runs of empty squares kept exact.
+* **Other columns.** The same framework applies to any fixed `b`; only the data changes. For
+  `b = 4` and `b = 5` Right needs 12 and 13 runs, at every `a` tested. Their shape searches are
+  untried.

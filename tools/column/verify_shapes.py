@@ -11,8 +11,15 @@ of a position and the witnesses of a shape. Then checks exactly what a kernel ch
   shape only depends on the parity of a).
 
 Usage: verify_shapes.py SHAPES B K M [AMIN AMAX]
+Environment: DEADRUNS=1 (dead runs kept one by one, as in the Lean data) and MARGIN=4 (witness gaps
+c, c + 2, c + 4); runs of empty squares are always exact. Defaults: the older format (dead regions
+collapsed, margin 2).
 """
+import os
 import sys
+
+DEADRUNS = bool(os.environ.get('DEADRUNS'))
+MARGIN = int(os.environ.get('MARGIN', '2'))
 
 def lm(s):
     out = []
@@ -54,12 +61,15 @@ def dead(rs):
 
 def shape(p):
     rs = runs(p); d = dead(rs)
-    lv = sorted((l, i) for i, (c, l) in enumerate(rs) if l >= K and not d[i])   # stable: ties by index
+    lv = sorted((l, i) for i, (c, l) in enumerate(rs) if l >= K and not d[i] and (c != '.' or not DEADRUNS))
     rank = {i: k for k, (l, i) in enumerate(lv)}
     sk = ''
     for i, (c, l) in enumerate(rs):
         if d[i]:
-            if i == 0 or not d[i - 1]: sk += 'XD'
+            if DEADRUNS:
+                sk += c + ('1' if l == 1 else 'D')
+            elif i == 0 or not d[i - 1]:
+                sk += 'XD'
             continue
         sk += c + (chr(97 + rank[i]) if i in rank else str(l))
     gs, prev = '', K
@@ -71,16 +81,18 @@ def shape(p):
 def wit(s):
     sk, gs = s.split('|')
     far = [k for k, c in enumerate(gs) if int(c) > M]
-    for mask in range(1 << len(far)):
+    base = MARGIN // 2 + 1
+    for mask in range(base ** len(far)):
         g = [int(c) for c in gs]
-        for j, k in enumerate(far):
-            if mask >> j & 1: g[k] += 2
+        mm = mask
+        for k in far:
+            g[k] += 2 * (mm % base); mm //= base
         lens, cur = [], K
         for x in g: cur += x; lens.append(cur)
         p = ''
         for i in range(0, len(sk), 2):
             c, v = sk[i], sk[i + 1]
-            p += 'TTFF' if c == 'X' else c * (lens[ord(v) - 97] if v >= 'a' else int(v))
+            p += 'TTFF' if c == 'X' else c * (2 if v == 'D' else lens[ord(v) - 97] if v >= 'a' else int(v))
         yield p
 
 file, B, K, M = sys.argv[1], int(sys.argv[2]), int(sys.argv[3]), int(sys.argv[4])

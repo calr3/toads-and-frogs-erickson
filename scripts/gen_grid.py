@@ -2,7 +2,8 @@
 """Print the README's table of proved cases, read from the Lean sources.
 
 A case is marked proved (however it is proved) if it is covered by
-* a whole family: a <= 2 (Cgt/RowA2.lean, FamilyA1, Basic), b <= 1, or b = 2 with a >= 4;
+* a whole family: a <= 2 (Cgt/RowA2.lean, FamilyA1, Basic), b <= 1, b = 2 with a >= 4, or b = 3
+  (Cgt/Col/Column3.lean);
 * a single case checked by kernel `decide`: the `start a b` cases in Cgt/FiniteCases.lean;
 * a strategy certificate: the CgtCerts roots in lakefile.toml.
 (3, 2) is proved not infinitesimal. Otherwise a case is confirmed by the exact solver (README
@@ -28,7 +29,7 @@ INF = 10 ** 6
 def mark(a, b):
     if (a, b) == (3, 2):
         return '🔷'
-    if a <= 2 or b <= 1 or (b == 2 and a >= 4) or (a, b) in kernel or (a, b) in certs:
+    if a <= 2 or b <= 1 or (b == 2 and a >= 4) or b == 3 or (a, b) in kernel or (a, b) in certs:
         return '🟩'
     if b <= SOLVER.get(a, -1):
         return '·'

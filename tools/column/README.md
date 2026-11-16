@@ -2,8 +2,8 @@
 
 Tools for finding an argument that covers a whole column, starting with `b = 3`. The idea is
 the dual of the `a = 2` row (`Cgt/RowA2.lean`). There, a few pieces are separated by long gaps.
-Here, a few empty squares are separated by long runs of pieces. **Status: a finite description of
-Right's strategy for every `a` was found and checked (2,861 shapes), but not yet formalised.** See
+Here, a few empty squares are separated by long runs of pieces. **Status: proved in Lean**
+(`infinitesimal_start_b_three`, [docs/COLUMN_B3.md](../../docs/COLUMN_B3.md)). See
 `docs/RESEARCH_NOTES.md` §13.
 
 Build each tool with `g++ -O2 -std=c++17 -o NAME NAME.cpp`.
@@ -15,7 +15,8 @@ Build each tool with `g++ -O2 -std=c++17 -o NAME NAME.cpp`.
 | `col_shapes.cpp` | Abstract search over run shapes. Finds a set of shapes closed under Left's moves and Right's replies that contains the start shape of every `a ≥ 4`. |
 | `col_realcheck.cpp` | Checks a shape set on the real game tree of `Tᵃ□ᵇFᵃ`. Every real position Right's strategy reaches must satisfy the closure conditions itself. For each `a` this is a complete proof, independent of the margin argument. |
 | `verify_shapes.py` | An independent re-implementation (moves, runs, dead regions, shapes, witnesses) that checks a shape set exactly as a kernel check would. |
-| `b3_shapes.txt` | The certificate for `b = 3`: 2,861 shapes (`U` = Left-stop phase, `N` = normal play). |
+| `b3_shapes.txt` | The certificate for `b = 3`: 3,031 shapes (`U` = Left-stop phase, `N` = normal play), in the format of the Lean proof. |
+| `to_witness.py` | One witness position per shape, the input of `scripts/ColGen.lean`. |
 
 ## Results for `b = 3`
 
@@ -56,6 +57,22 @@ Build each tool with `g++ -O2 -std=c++17 -o NAME NAME.cpp`.
     limit of about `a = 14`.
   * The search is deterministic and reproduces the file exactly.
 
-Open: a Lean framework for positions with any number of runs. It needs the margin lemma for
-pairwise run differences, dead regions, normal forms, and soundness for the Left stop (not only
-`≤ 0`). Then a kernel check of `b3_shapes.txt` would prove the whole column `b = 3`.
+* **The format of the Lean proof.** The proof needs margin 2 per move, so witnesses realise each
+  capped gap by `c`, `c + 2` or `c + 4` (`MARGIN=4`). It also keeps dead runs one by one, with
+  free lengths, so that real positions and witnesses have the same runs (`DEADRUNS=1`), and it keeps
+  runs of empty squares exact. The search then gives 3,031 shapes (`b3_shapes.txt`):
+
+      MARGIN=4 DEADRUNS=1 MINIMIZE=1 DUMP=out col_shapes 3 10 2 2 28; sort out > b3_shapes.txt
+
+  `DEADRUNS=1 MARGIN=4 verify_shapes.py b3_shapes.txt 3 2 2 2 60` finds 10,275 witnesses and
+  19,179 Left moves and passes, with no failure. `DEADRUNS=1 col_realcheck b3_shapes.txt 3 4 40 2 2`
+  finds no failure for `a = 4…40`.
+* **Into Lean.**
+
+      python3 to_witness.py b3_shapes.txt 2 > witnesses.txt
+      lake env lean --run scripts/ColGen.lean witnesses.txt Cgt/Col/B3Data.lean colB3 work.txt
+      python3 scripts/gen_col_chunks.py work.txt B3 5000 20
+
+  `ColGen.lean` recomputes the keys with the Lean definitions and checks the closure again.
+  `gen_col_chunks.py` writes the kernel checks `Cgt/Col/B3Check*.lean` and `B3Blocks.lean`; the
+  block sizes it prints go into `hcU` and `hcN` in `Cgt/Col/B3.lean`.

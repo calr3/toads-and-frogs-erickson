@@ -5,26 +5,26 @@ import Cgt.Col.B3Data
 namespace Cgt
 namespace Col
 
-theorem chkB3U_20 : ((colB3U.toList.drop 287).take 2).all (fun k => (witOf k).all (chkU colB3U colB3N)) = true := by decide +kernel
-theorem chkB3U_21 : ((colB3U.toList.drop 289).take 5).all (fun k => (witOf k).all (chkU colB3U colB3N)) = true := by decide +kernel
-theorem chkB3U_22 : ((colB3U.toList.drop 294).take 9).all (fun k => (witOf k).all (chkU colB3U colB3N)) = true := by decide +kernel
-theorem chkB3U_23 : ((colB3U.toList.drop 303).take 11).all (fun k => (witOf k).all (chkU colB3U colB3N)) = true := by decide +kernel
-theorem chkB3U_24 : ((colB3U.toList.drop 314).take 4).all (fun k => (witOf k).all (chkU colB3U colB3N)) = true := by decide +kernel
-theorem chkB3U_25 : ((colB3U.toList.drop 318).take 2).all (fun k => (witOf k).all (chkU colB3U colB3N)) = true := by decide +kernel
-theorem chkB3U_26 : ((colB3U.toList.drop 320).take 3).all (fun k => (witOf k).all (chkU colB3U colB3N)) = true := by decide +kernel
-theorem chkB3U_27 : ((colB3U.toList.drop 323).take 4).all (fun k => (witOf k).all (chkU colB3U colB3N)) = true := by decide +kernel
-theorem chkB3U_28 : ((colB3U.toList.drop 327).take 3).all (fun k => (witOf k).all (chkU colB3U colB3N)) = true := by decide +kernel
-theorem chkB3U_29 : ((colB3U.toList.drop 330).take 4).all (fun k => (witOf k).all (chkU colB3U colB3N)) = true := by decide +kernel
-theorem chkB3U_30 : ((colB3U.toList.drop 334).take 7).all (fun k => (witOf k).all (chkU colB3U colB3N)) = true := by decide +kernel
-theorem chkB3U_31 : ((colB3U.toList.drop 341).take 3).all (fun k => (witOf k).all (chkU colB3U colB3N)) = true := by decide +kernel
-theorem chkB3U_32 : ((colB3U.toList.drop 344).take 2).all (fun k => (witOf k).all (chkU colB3U colB3N)) = true := by decide +kernel
-theorem chkB3U_33 : ((colB3U.toList.drop 346).take 2).all (fun k => (witOf k).all (chkU colB3U colB3N)) = true := by decide +kernel
-theorem chkB3U_34 : ((colB3U.toList.drop 348).take 2).all (fun k => (witOf k).all (chkU colB3U colB3N)) = true := by decide +kernel
-theorem chkB3U_35 : ((colB3U.toList.drop 350).take 10).all (fun k => (witOf k).all (chkU colB3U colB3N)) = true := by decide +kernel
-theorem chkB3U_36 : ((colB3U.toList.drop 360).take 4).all (fun k => (witOf k).all (chkU colB3U colB3N)) = true := by decide +kernel
-theorem chkB3U_37 : ((colB3U.toList.drop 364).take 1).all (fun k => (witOf k).all (chkU colB3U colB3N)) = true := by decide +kernel
-theorem chkB3U_38 : ((colB3U.toList.drop 365).take 3).all (fun k => (witOf k).all (chkU colB3U colB3N)) = true := by decide +kernel
-theorem chkB3U_39 : ((colB3U.toList.drop 368).take 1).all (fun k => (witOf k).all (chkU colB3U colB3N)) = true := by decide +kernel
+theorem chkB3U_20 : ((colB3U.toList.drop 270).take 3).all (fun k => (witOf k).all (chkU colB3U colB3N)) = true := by decide +kernel
+theorem chkB3U_21 : ((colB3U.toList.drop 273).take 1).all (fun k => (witOf k).all (chkU colB3U colB3N)) = true := by decide +kernel
+theorem chkB3U_22 : ((colB3U.toList.drop 274).take 4).all (fun k => (witOf k).all (chkU colB3U colB3N)) = true := by decide +kernel
+theorem chkB3U_23 : ((colB3U.toList.drop 278).take 1).all (fun k => (witOf k).all (chkU colB3U colB3N)) = true := by decide +kernel
+theorem chkB3U_24 : ((colB3U.toList.drop 279).take 1).all (fun k => (witOf k).all (chkU colB3U colB3N)) = true := by decide +kernel
+theorem chkB3U_25 : ((colB3U.toList.drop 280).take 1).all (fun k => (witOf k).all (chkU colB3U colB3N)) = true := by decide +kernel
+theorem chkB3U_26 : ((colB3U.toList.drop 281).take 1).all (fun k => (witOf k).all (chkU colB3U colB3N)) = true := by decide +kernel
+theorem chkB3U_27 : ((colB3U.toList.drop 282).take 2).all (fun k => (witOf k).all (chkU colB3U colB3N)) = true := by decide +kernel
+theorem chkB3U_28 : ((colB3U.toList.drop 284).take 1).all (fun k => (witOf k).all (chkU colB3U colB3N)) = true := by decide +kernel
+theorem chkB3U_29 : ((colB3U.toList.drop 285).take 1).all (fun k => (witOf k).all (chkU colB3U colB3N)) = true := by decide +kernel
+theorem chkB3U_30 : ((colB3U.toList.drop 286).take 1).all (fun k => (witOf k).all (chkU colB3U colB3N)) = true := by decide +kernel
+theorem chkB3U_31 : ((colB3U.toList.drop 287).take 1).all (fun k => (witOf k).all (chkU colB3U colB3N)) = true := by decide +kernel
+theorem chkB3U_32 : ((colB3U.toList.drop 288).take 1).all (fun k => (witOf k).all (chkU colB3U colB3N)) = true := by decide +kernel
+theorem chkB3U_33 : ((colB3U.toList.drop 289).take 1).all (fun k => (witOf k).all (chkU colB3U colB3N)) = true := by decide +kernel
+theorem chkB3U_34 : ((colB3U.toList.drop 290).take 7).all (fun k => (witOf k).all (chkU colB3U colB3N)) = true := by decide +kernel
+theorem chkB3U_35 : ((colB3U.toList.drop 297).take 6).all (fun k => (witOf k).all (chkU colB3U colB3N)) = true := by decide +kernel
+theorem chkB3U_36 : ((colB3U.toList.drop 303).take 7).all (fun k => (witOf k).all (chkU colB3U colB3N)) = true := by decide +kernel
+theorem chkB3U_37 : ((colB3U.toList.drop 310).take 4).all (fun k => (witOf k).all (chkU colB3U colB3N)) = true := by decide +kernel
+theorem chkB3U_38 : ((colB3U.toList.drop 314).take 3).all (fun k => (witOf k).all (chkU colB3U colB3N)) = true := by decide +kernel
+theorem chkB3U_39 : ((colB3U.toList.drop 317).take 1).all (fun k => (witOf k).all (chkU colB3U colB3N)) = true := by decide +kernel
 
 end Col
 end Cgt

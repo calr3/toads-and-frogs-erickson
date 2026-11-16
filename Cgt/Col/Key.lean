@@ -10,8 +10,8 @@ All definitions here are computable; the kernel evaluates them in the finite che
   these runs never move again).
 * Entries: the live toad and frog runs of length `≥ 2`. Together with an anchor of value `2` they
   are sorted by (length, index); `sortE`.
-* `keyOf R`: the runs (empty runs and runs of length 1 exactly; dead runs of length `≥ 2` only as
-  "dead"; entries only as "long"), the sorted order of the entries, and the gaps between
+* `keyOf R`: the runs, each as its cell and its class (empty runs and runs of length 1 exactly;
+  dead runs of length `≥ 2` only as "dead"; entries only as "long"), the sorted order of the entries, and the gaps between
   consecutive sorted lengths, capped at `M + 1 + parity` above `M = 2`.
 * `witOf k`: the run lists with key `k` whose capped gaps are realised by `c`, `c + 2` or `c + 4`.
 -/
@@ -88,7 +88,7 @@ def gapsFrom : Nat → List (Nat × Nat) → List Nat
 
 def keyOf (R : RL) : List Nat :=
   let es := entries R
-  [R.length] ++ ((List.range R.length).map fun i => cellCode (cellAt R i) * 1000 + clsAt R i) ++
+  [R.length] ++ ((List.range R.length).flatMap fun i => [cellCode (cellAt R i), clsAt R i]) ++
     [es.length] ++ es.map Prod.snd ++ (gapsFrom 2 es).map capG
 
 /-! ### Witnesses -/
@@ -115,18 +115,17 @@ def lenFor (cls : Nat) (idx vals : List Nat) (i : Nat) : Nat :=
 /-- Rebuild a run list from a key and a choice of realised gaps. -/
 def build (k : List Nat) (gs : List Nat) : RL :=
   let L := k.headD 0
-  let toks := (k.drop 1).take L
-  let ne := (k.drop (1 + L)).headD 0
-  let idx := (k.drop (2 + L)).take ne
+  let toks := (k.drop 1).take (2 * L)
+  let ne := (k.drop (1 + 2 * L)).headD 0
+  let idx := (k.drop (2 + 2 * L)).take ne
   let vals := prefixVals 2 gs
   (List.range L).map fun i =>
-    let t := toks.getD i 0
-    (codeCell (t / 1000), lenFor (t % 1000) idx vals i)
+    (codeCell (toks.getD (2 * i) 0), lenFor (toks.getD (2 * i + 1) 0) idx vals i)
 
 def witOf (k : List Nat) : List RL :=
   let L := k.headD 0
-  let ne := (k.drop (1 + L)).headD 0
-  let caps := (k.drop (2 + L + ne)).take ne
+  let ne := (k.drop (1 + 2 * L)).headD 0
+  let caps := (k.drop (2 + 2 * L + ne)).take ne
   (choicesAll caps).map (build k)
 
 end Col

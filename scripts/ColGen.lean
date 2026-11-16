@@ -28,7 +28,7 @@ termination_by hi - lo
 
 def emitTree (name : String) (keys : List (List Nat)) : String :=
   let a := keys.toArray.qsort (fun x y => lexLt x y)
-  s!"set_option maxRecDepth 100000 in\n/-- {a.size} keys. -/\ndef {name} : LTree :=\n  {treeTerm a 0 a.size}\n"
+  s!"set_option maxRecDepth 100000 in\n/-- {a.size} keys (only evaluated by the kernel, so not compiled). -/\nnoncomputable def {name} : LTree :=\n  {treeTerm a 0 a.size}\n"
 
 def lfOKs (U N : Std.HashSet (List Nat)) (Y : RL) : Bool :=
   N.contains (keyOf Y) || (rmovesR Y).any fun Z => U.contains (keyOf Z)

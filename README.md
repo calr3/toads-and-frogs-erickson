@@ -9,7 +9,12 @@ uses Lean core only (no Mathlib) and has no `sorry`.
 
 ## What is new
 
-* **One new result, as far as we know: the row `a = 2`.** `TT□ᵇFF` is infinitesimal for every
+* **New, as far as we know: the column `b = 3`.** `Tᵃ□³Fᵃ` is infinitesimal for every `a`
+  (`infinitesimal_start_b_three`). The only column previously proved for every `a` is `b = 2`
+  [[T11]](#references); `b = 3` was known numerically only for small `a`. The proof is a
+  computer-found strategy over 3,031 "run shapes", kernel-checked, with a general margin argument
+  for positions with any number of runs. See [docs/COLUMN_B3.md](docs/COLUMN_B3.md).
+* **New, as far as we know: the row `a = 2`.** `TT□ᵇFF` is infinitesimal for every
   `b` (`infinitesimal_start_two`). Before this, the row was known only numerically: Erickson
   tabulated `b ≤ 6` [[E96]](#references) and Thanatipanonda `b ≤ 103` [[T11]](#references). The
   method is in the spirit of Thanatipanonda and Zeilberger's symbolic finite-state approach
@@ -47,6 +52,7 @@ uses Lean core only (no Mathlib) and has no `sorry`.
 | `b = 0`, all `a` | `infinitesimal_start_b_zero` | Trivial (no moves) |
 | `b = 1`, all `a` (`Tᵃ □ Fᵃ`) | `infinitesimal_start_b_one` | Known ([[WW]](#references), as cited in [[E96]](#references) §7) |
 | `b = 2`, all `a ≥ 4` (incl. Lemma C.1) | `infinitesimal_start_b_two`, `upperZero_c1` | Known: Thanatipanonda's theorem [[T11]](#references) |
+| **`b = 3`, all `a` (`Tᵃ □³ Fᵃ`)**: machine-checked strategy over 3,031 run shapes | `infinitesimal_start_b_three` (`Cgt/Col/Column3.lean`) | **New** as far as we know; values known numerically for small `a` ([[E96]](#references), [[T11]](#references) tables) |
 | One-sided Death Leap Principle, general | `le_zero_of_dlp` | Known: [[T11]](#references); the two-sided version is in [[E96]](#references) |
 | Every case with `2a + b ≤ 12`, kernel-checked | `Cgt/FiniteCases.lean` | Known numerically ([[E96]](#references), [[T11]](#references) tables) |
 | `(3,7)` to `(3,12)`, `(4,5)`, `(5,3)`, `(6,3)`: strategy certificates | `Cgt/Cert/` (`lake build CgtCerts`) | Known numerically ([[T11]](#references) table) |
@@ -67,7 +73,7 @@ the side. Generated from the Lean sources by `scripts/gen_grid.py`.
 | **0** | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 |
 | **1** | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 |
 | **2** | 🟩 | 🟩 | 🟩 | 🔷 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 |
-| **3** | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | · | · | · | · | · | · | · | · |  |
+| **3** | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 |
 | **4** | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | · | · | · | · | · | · | · | · |  |  |  |
 | **5** | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | · | · | · | · | · |  |  |  |  |  |  |
 | **6** | 🟩 | 🟩 | 🟩 | 🟩 | · | · | · | · | · |  |  |  |  |  |  |  |
@@ -102,13 +108,15 @@ the side. Generated from the Lean sources by `scripts/gen_grid.py`.
 
 How a cell is proved:
 
-* `a ≤ 2` (every `b`), `b ≤ 1` (every `a`) and `b = 2` with `a ≥ 4`: one theorem per family.
+* `a ≤ 2` (every `b`), `b ≤ 1` (every `a`), `b = 2` with `a ≥ 4`, and `b = 3` (every `a`): one
+  theorem per family.
   These continue beyond the edges of the table.
 * The other cells are single cases:
   * most are checked by kernel `decide` (`Cgt/FiniteCases.lean`). With the families above they
     make up `ProvedRegion`, covered by `conjecture5_provedRegion`;
-  * `(3, 7)` to `(3, 12)`, `(4, 5)`, `(5, 3)` and `(6, 3)` are proved by strategy certificates
-    (`Cgt.Cert_a_b.infinitesimal` in `Cgt/Cert/`, checked by `lake build CgtCerts`).
+  * `(3, 7)` to `(3, 12)` and `(4, 5)` are proved by strategy certificates
+    (`Cgt.Cert_a_b.infinitesimal` in `Cgt/Cert/`, checked by `lake build CgtCerts`). The
+    certificates for `(5, 3)` and `(6, 3)` predate the `b = 3` theorem, which now covers them.
 
 `Cgt/Cert/` also contains a certificate for `(4, 6)`. Checking it ran out of memory, so it is
 not built with `CgtCerts` and is shown as · above.
@@ -132,6 +140,8 @@ not built with `CgtCerts` and is shown as · above.
   two adjacent empty squares, so the position is `≤ 0`).
 * `Cgt/Four.lean`, `Cgt/Shape4.lean`, `Cgt/RowA2.lean`: the row `a = 2`. See
   [The row a = 2](#the-row-a--2) below.
+* `Cgt/Col/`: the column `b = 3`. Positions as run lists, dead runs, keys, the margin relation, the
+  soundness theorem, and the kernel-checked data. See [docs/COLUMN_B3.md](docs/COLUMN_B3.md).
 * `Cgt/RowA2Zero.lean`, `Cgt/RowA2Values.lean`: exact values in the row `a = 2`.
 
 Build with `lake build` (Lean `v4.36.0-rc2`).
@@ -167,6 +177,25 @@ is open beyond `b = 30`. The cases `b ≤ 30` are checked one by one by the kern
 example line, the margin lemma and soundness proof, the data, the exact values (§8), and a map of
 the files.
 
+## The column b = 3
+
+`infinitesimal_start_b_three : ∀ a, Infinitesimal (tf (start a 3))`, in `Cgt/Col/Column3.lean`. In
+short:
+
+1. **Runs.** With only three empty squares, a position is a few empty squares between long runs
+   of pieces. Positions are handled as run lists, and moves on run lists are proved equal to moves
+   on cells.
+2. **Shapes.** Right's strategy, found by computer, uses 3,031 shapes. A shape records each run's
+   cell and short lengths. It also records the exact differences between long live runs whose
+   lengths are close, and only parity across large gaps. Runs in dead blocks (Erickson's dead
+   pieces) are recorded without their lengths.
+3. **Margin.** A move changes every recorded difference by at most 2, so checking each shape
+   through finitely many witnesses covers every position of that shape (`margin_left`,
+   `margin_right`, `wit_complete`). The kernel checks the witnesses in 16 chunks of about two
+   minutes each.
+
+**[docs/COLUMN_B3.md](docs/COLUMN_B3.md)** has the full account.
+
 ## Computational evidence beyond the formal results
 
 An exact C++ solver for "Left stop `≤ 0`" (the same recursion as `Cgt/Infinitesimal.lean`)
@@ -184,11 +213,9 @@ confirms the conjecture for all of the following:
 * `a = 10` and `a = 11` with `b ≤ 4`;
 * `a = 12` with `b ≤ 4`, and `a = 13, 14` with `b ≤ 3`.
 
-A strategy check takes the column `b = 3` much further: `Tᵃ□³Fᵃ` is infinitesimal for every
-`a ≤ 40`. `tools/column/col_realcheck.cpp` checks every position of Right's strategy on the real
-board, which is a complete proof for each `a`. The strategy comes from a finite set of 2,861 "run
-shapes" that covers every `a` at once, so it may lead to a proof of the whole column. That is not
-formalised yet; see `docs/RESEARCH_NOTES.md` §13.
+The column `b = 3` is now proved for every `a` (`infinitesimal_start_b_three`). Independently of
+that proof, `tools/column/col_realcheck.cpp` checks Right's strategy on the real boards for every
+`a ≤ 40`.
 
 ## What we learned about a general proof
 

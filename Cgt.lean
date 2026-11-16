@@ -27,3 +27,6 @@ import Cgt.Col.Sound
 import Cgt.Col.Dead
 import Cgt.Col.Margin
 import Cgt.Col.B3
+import Cgt.Col.Mirror
+import Cgt.Col.Wit
+import Cgt.Col.Column3

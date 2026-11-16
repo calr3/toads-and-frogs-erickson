@@ -19,27 +19,33 @@ open Cell TF Game
 
 theorem hcU : ∀ k ∈ colB3U.toList, ∀ W ∈ witOf k, chkU colB3U colB3N W = true := by
   have h : colB3U.toList.all (fun k => (witOf k).all (chkU colB3U colB3N)) = true :=
-    all_of_sizes _ [287, 82, 13] _ (by decide +kernel) fun i hi => by
+    all_of_sizes _ [270, 48, 44, 20] _ (by decide +kernel) fun i hi => by
       match i, hi with
       | 0, _ => exact blkB3U_0
       | 1, _ => exact blkB3U_1
       | 2, _ => exact blkB3U_2
-      | _ + 3, h => exact absurd h (by simp)
+      | 3, _ => exact blkB3U_3
+      | _ + 4, h => exact absurd h (by simp)
   simp only [List.all_eq_true] at h
   exact h
 
 theorem hcN : ∀ k ∈ colB3N.toList, ∀ W ∈ witOf k, chkN colB3N W = true := by
   have h : colB3N.toList.all (fun k => (witOf k).all (chkN colB3N)) = true :=
-    all_of_sizes _ [1103, 411, 375, 189, 243, 77, 251] _ (by decide +kernel) fun i hi => by
+    all_of_sizes _ [769, 463, 257, 155, 300, 113, 167, 103, 47, 45, 223, 7] _ (by decide +kernel) fun i hi => by
       match i, hi with
-      | 0, _ => exact blkB3N_3
-      | 1, _ => exact blkB3N_4
-      | 2, _ => exact blkB3N_5
-      | 3, _ => exact blkB3N_6
-      | 4, _ => exact blkB3N_7
-      | 5, _ => exact blkB3N_8
-      | 6, _ => exact blkB3N_9
-      | _ + 7, h => exact absurd h (by simp)
+      | 0, _ => exact blkB3N_4
+      | 1, _ => exact blkB3N_5
+      | 2, _ => exact blkB3N_6
+      | 3, _ => exact blkB3N_7
+      | 4, _ => exact blkB3N_8
+      | 5, _ => exact blkB3N_9
+      | 6, _ => exact blkB3N_10
+      | 7, _ => exact blkB3N_11
+      | 8, _ => exact blkB3N_12
+      | 9, _ => exact blkB3N_13
+      | 10, _ => exact blkB3N_14
+      | 11, _ => exact blkB3N_15
+      | _ + 12, h => exact absurd h (by simp)
   simp only [List.all_eq_true] at h
   exact h
 

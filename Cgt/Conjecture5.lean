@@ -4,6 +4,7 @@ import Cgt.SmallCases
 import Cgt.FamilyB1
 import Cgt.FamilyB2
 import Cgt.RowA2
+import Cgt.Col.Column3
 
 /-!
 # Erickson's Conjecture 5 for Toads and Frogs
@@ -17,6 +18,8 @@ This file states the conjecture (`Conjecture5`) and collects what is proved so f
 * `a = 0`, `a = 1`, `a = 2`, `b = 0` and `b = 1` hold for every value of the other parameter
   (`a = 2` via a machine-checked strategy over finitely many shapes, `Cgt/RowA2.lean`);
 * `b = 2` holds for every `a ≠ 3` (Thanatipanonda's theorem for `a ≥ 4`, formalised here);
+* `b = 3` holds for every `a` (a machine-checked strategy over finitely many run shapes,
+  `Cgt/Col/Column3.lean`);
 * every case with `2a + b ≤ 12` (other than `(3, 2)`) is checked by the kernel.
 
 The general case is open.
@@ -99,7 +102,7 @@ theorem conjecture5_partial (a b : Nat) (hab : (a, b) ≠ (3, 2))
 
 /-- The region of `(a, b)` covered by the results proved in this repository. -/
 def ProvedRegion (a b : Nat) : Prop :=
-  a ≤ 2 ∨ b ≤ 2 ∨ 2 * a + b ≤ 12
+  a ≤ 2 ∨ b ≤ 3 ∨ 2 * a + b ≤ 12
 
 /-- Every case of the conjecture in `ProvedRegion` holds. -/
 theorem conjecture5_provedRegion (a b : Nat) (hab : (a, b) ≠ (3, 2)) (h : ProvedRegion a b) :
@@ -109,7 +112,9 @@ theorem conjecture5_provedRegion (a b : Nat) (hab : (a, b) ≠ (3, 2)) (h : Prov
     · exact conjecture5_partial a b hab (Or.inl h1)
     · obtain rfl : a = 2 := by omega
       exact infinitesimal_start_two b
-  · exact conjecture5_partial a b hab (Or.inr (Or.inl h))
+  · by_cases h3 : b = 3
+    · subst h3; exact infinitesimal_start_b_three a
+    · exact conjecture5_partial a b hab (Or.inr (Or.inl (by omega)))
   · exact conjecture5_partial a b hab (Or.inr (Or.inr h))
 
 end Cgt

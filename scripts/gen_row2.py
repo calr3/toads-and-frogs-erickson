@@ -8,7 +8,9 @@ every witness of a shape in the set has a Right reply whose shape is in the set.
 replies are chosen by the exact solver, preferring shapes already in the set and then replies
 close to mirror symmetry.
 
-Usage: gen_row2.py > Cgt/RowA2Data.lean
+Usage: gen_row2.py [a2|exact|zero_even] [PERIOD] [CAP] > Cgt/RowA2Data.lean   (default: a2, period 2, cap 4)
+
+The greedy choice here does not close for the exact-value families; `search_row2.py` backtracks.
 """
 import sys
 from collections import deque
@@ -16,6 +18,7 @@ from functools import lru_cache
 
 sys.setrecursionlimit(10 ** 6)
 K = 4
+PER = 2      # capped values keep their residue modulo PER
 
 
 # ---------------------------------------------------------------- the game (for choosing replies)
@@ -104,7 +107,7 @@ def rms(p):
 
 
 def cap(x):
-    return x if x < K else K + x % 2
+    return x if x < K else K + (x - K) % PER
 
 
 def code(p):
@@ -117,16 +120,43 @@ def shape(p):
     return (code(p), g4 - g0, g3 - g1, cap(min(g0, g4)), cap(min(g1, g3)), cap(g2))
 
 
-def in_range(s):
+def in_range(s):   # as `Shape.inRange` in Cgt/Shape4.lean
     return s[0] < 81 and -32 <= s[1] < 32 and -32 <= s[2] < 32 and s[3] < 8 and s[4] < 8 and s[5] < 8
 
 
-def key(s):
+def key(s):        # as `Shape.key` in Cgt/Shape4.lean
     return s[0] * 2097152 + (s[1] + 32) * 32768 + (s[2] + 32) * 512 + s[3] * 64 + s[4] * 8 + s[5]
 
 
+def check_all(shapes):
+    """`checkAll` of Cgt/Shape4.lean, computed exactly as Lean does."""
+    kset = {key(s) for s in shapes}
+    return all(in_range(s) for s in shapes) and all(
+        any(in_range(shape(r)) and key(shape(r)) in kset for r in rms(q))
+        for s in shapes for w in wit(s) for q in lms(w))
+
+
+def emit_tree(shapes, name, doc):
+    keys = sorted(key(s) for s in shapes)
+
+    def tree(lo, hi):
+        if lo >= hi:
+            return 'KTree.leaf'
+        mid = (lo + hi) // 2
+        return f'(KTree.node {tree(lo, mid)} {keys[mid]} {tree(mid + 1, hi)})'
+
+    return (f'import Cgt.Shape4\n\n/-! {doc} -/\n\nnamespace Cgt\n\n'
+            f'/-- {len(keys)} shapes, as a balanced search tree of keys. -/\n'
+            f'def {name} : KTree :=\n  {tree(0, len(keys))}\n\nend Cgt')
+
+
 def cap_vals(c):
-    return [c] if c < K else [c, c + 2]
+    """Values of a normal form with capped value c: the exact value if it is below K + 2, and the
+    representative in [K + 2, K + 2 + PER) of its residue class."""
+    if c < K:
+        return [c]
+    r = c - K
+    return ([K + r] if r < 2 else []) + [K + 2 + (r - 2) % PER]
 
 
 def gaps_of(m, d):
@@ -168,8 +198,27 @@ def win_bounded(z):
     return all(any(le0(r) and bounded(r) and win_bounded(r) for r in rm_s(q)) for q in lm_s(z))
 
 
+def starts(family):
+    """Representatives of every start shape of a family (one per shape)."""
+    span = range(0, K + 2 + 2 * PER)
+    if family == 'a2':        # T□T□ᵐFF, m >= 1
+        return [(True, True, False, False, 0, 1, m, 0, 0) for m in span if m >= 1]
+    if family == 'exact':     # T□T□ᵏF□F (k >= 3, k ≢ 5 mod 6) and TT□ᵏF□F (k ≡ 0 mod 6, k >= 6)
+        return ([(True, True, False, False, 0, 1, k, 1, 0) for k in span if k >= 3 and k % 6 != 5] +
+                [(True, True, False, False, 0, 0, k, 1, 0) for k in span if k >= 6 and k % 6 == 0])
+    if family == 'zero_even':  # T□T□ᵏF□F, k even >= 4: then TT□ᵏ⁺²FF = 0
+        return [(True, True, False, False, 0, 1, k, 1, 0) for k in span if k >= 4 and k % 2 == 0]
+    raise ValueError(family)
+
+
 def main():
-    start = [(True, True, False, False, 0, 1, m, 0, 0) for m in range(1, K + 2)]
+    global PER, K
+    family = sys.argv[1] if len(sys.argv) > 1 else 'a2'
+    if len(sys.argv) > 2:
+        PER = int(sys.argv[2])
+    if len(sys.argv) > 3:
+        K = int(sys.argv[3])
+    start = starts(family)
     for p in start:
         assert le0(to_str(p))
     seen = {shape(p) for p in start}
@@ -179,14 +228,16 @@ def main():
         for w in wit(s):
             for q in lms(w):
                 good = [r for r in rms(q) if le0(to_str(r))]
+                if family != 'a2':   # replies whose whole shape is good (every witness of it is <= 0)
+                    good = [r for r in good if all(le0(to_str(x)) for x in wit(shape(r)))]
                 assert good, (s, w, q)
                 known = [r for r in good if shape(r) in seen]
                 if known:
                     r = known[0]
                 else:
                     safe = [r for r in good if bounded(to_str(r)) and win_bounded(to_str(r))]
-                    assert safe, (s, to_str(w), to_str(q))
-                    r = min(safe, key=lambda r: (asym(r), to_str(r)))
+                    # small boards may need more room than the bound: fall back to any good reply
+                    r = min(safe or good, key=lambda r: (asym(r), to_str(r)))
                 sr = shape(r)
                 assert in_range(sr)
                 if sr not in seen:

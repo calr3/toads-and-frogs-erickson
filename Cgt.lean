@@ -16,3 +16,6 @@ import Cgt.Four
 import Cgt.Shape4
 import Cgt.RowA2Data
 import Cgt.RowA2
+import Cgt.RowA2ZeroData
+import Cgt.RowA2Zero
+import Cgt.RowA2Values

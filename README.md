@@ -15,7 +15,12 @@ uses Lean core only (no Mathlib) and has no `sorry`.
   method is in the spirit of Thanatipanonda and Zeilberger's symbolic finite-state approach
   [[TZ07]](#references). Our literature check covered those three papers, the Wikipedia article
   and web searches; it was not exhaustive. See
-  [docs/ROW_A2.md §9](docs/ROW_A2.md#9-related-work).
+  [docs/ROW_A2.md §10](docs/ROW_A2.md#10-related-work).
+* **Also new, as far as we know: the exact values of that row for every even `b`.**
+  `TT□ᵇFF = 0` for every even `b ≥ 6` (`start_two_equiv_zero`), by the same method with 1,038
+  shapes. Together with kernel checks of each `b ≤ 30`, this gives the value predicted by the data
+  (below) for every even `b` and every `b ≤ 30` (`start_two_value`). The values for `b ≤ 30` were
+  already known numerically [[T11]](#references); only their formal proof is new.
 * **Everything else is a formal proof of a known (or trivial) result.** The *Origin* column below
   gives the source of each.
 * **Observations, not theorems.** `docs/RESEARCH_NOTES.md` and `tools/` record computational
@@ -23,9 +28,11 @@ uses Lean core only (no Mathlib) and has no `sorry`.
   `a = 3`.
 * **Still open:**
   * the full conjecture;
-  * the exact values of the `a = 2` row. The values computed so far are `∗` when `b ≤ 4` or
-    `b ≡ 1 (mod 6)` and `0` otherwise: up to `b = 103` in [[T11]](#references), and up to
-    `b = 80` by our solver here. This is not proved.
+  * the exact values of the `a = 2` row for odd `b ≥ 31` (`ExactValuesA2`). The values computed
+    so far are `∗` when `1 ≤ b ≤ 4` or `b ≡ 1 (mod 6)` and `0` otherwise: up to `b = 103` in
+    [[T11]](#references), and up to `b = 80` by our solver here. For odd `b`, Right has to let
+    the position drift from symmetry by an amount that grows with `b`, so the shape method does
+    not apply as it stands ([docs/ROW_A2.md §8](docs/ROW_A2.md#8-exact-values)).
 
 ## Status
 
@@ -36,6 +43,7 @@ uses Lean core only (no Mathlib) and has no `sorry`.
 | `a = 0`, all `b` | `infinitesimal_start_a_zero` | Trivial (no pieces) |
 | `a = 1`, all `b` (`T □ᵇ F`) | `infinitesimal_start_one` | Known: `T□ᵇF = b·∗` ([[WW]](#references); [[E96]](#references) Lemma 5.1) |
 | **`a = 2`, all `b` (`TT □ᵇ FF`)**: machine-checked strategy over 1,543 shapes | `infinitesimal_start_two` (`Cgt/RowA2.lean`) | **New** as far as we know; values computed for `b ≤ 103` in [[T11]](#references) |
+| **Exact values of `TT □ᵇ FF`**: `0` for every even `b ≥ 6` (1,038 shapes); `0` or `∗` as the data predict for every even `b` and every `b ≤ 30` | `start_two_equiv_zero`, `start_two_value` (`Cgt/RowA2Values.lean`) | **New** for all even `b`, as far as we know; `b ≤ 30` known numerically ([[T11]](#references)), `b ≤ 6` in [[E96]](#references) |
 | `b = 0`, all `a` | `infinitesimal_start_b_zero` | Trivial (no moves) |
 | `b = 1`, all `a` (`Tᵃ □ Fᵃ`) | `infinitesimal_start_b_one` | Known ([[WW]](#references), as cited in [[E96]](#references) §7) |
 | `b = 2`, all `a ≥ 4` (incl. Lemma C.1) | `infinitesimal_start_b_two`, `upperZero_c1` | Known: Thanatipanonda's theorem [[T11]](#references) |
@@ -120,6 +128,7 @@ not built with `CgtCerts` and is shown as · above.
   two adjacent empty squares, so the position is `≤ 0`).
 * `Cgt/Four.lean`, `Cgt/Shape4.lean`, `Cgt/RowA2.lean`: the row `a = 2`. See
   [The row a = 2](#the-row-a--2) below.
+* `Cgt/RowA2Zero.lean`, `Cgt/RowA2Values.lean`: exact values in the row `a = 2`.
 
 Build with `lake build` (Lean `v4.36.0-rc2`).
 
@@ -144,8 +153,15 @@ Build with `lake build` (Lean `v4.36.0-rc2`).
    `j`", so checking finitely many witnesses per shape covers every position of that shape
    (`le_zero_of_good`). The kernel checks all 1,543 shapes in about 30 seconds.
 
+**Exact values.** `TT□ᵇFF` is symmetric, and each player has one move. So `TT□ᵇFF = 0` follows
+from `T□T□ᵇ⁻²F□F ≤ 0`, and `TT□ᵇFF = ∗` from `TT□ᵇ⁻¹F□F ≤ 0`. For even `b`, the first claim
+yields to the same method: Right keeps the mirrored differences within 4, over 1,038 shapes
+(`scripts/search_row2.py`). For odd `b`, Right needs differences that grow with `b`, so that case
+is open beyond `b = 30`. The cases `b ≤ 30` are checked one by one by the kernel.
+
 **[docs/ROW_A2.md](docs/ROW_A2.md)** has the full account: background, the strategy with an
-example line, the margin lemma and soundness proof, the data, and a map of the files.
+example line, the margin lemma and soundness proof, the data, the exact values (§8), and a map of
+the files.
 
 ## Computational evidence beyond the formal results
 

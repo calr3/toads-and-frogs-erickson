@@ -282,6 +282,31 @@ paper [TZ07]. Several observations above have precedents there:
   stalled at `TTF`. The `a = 2` proof here succeeds for `TTFF` by proving only `≤ 0` via a
   strategy, with mirrored gap differences in the shapes.
 * **Exact values for `a = 2`.** [T11] computes `T²□ᵇF²` for `b ≤ 103`. The values fit "`∗` when
-  `b ≤ 4` or `b ≡ 1 (mod 6)`, otherwise `0`". Proving this would mean showing `G + ∗ = 0` or
-  `G = 0`. Both are normal-play statements about a sum with an extra `T□F` component
-  (`T□F = ∗`, [E96] Lemma 5.1), so the shape machinery might extend to them. Untried.
+  `1 ≤ b ≤ 4` or `b ≡ 1 (mod 6)`, otherwise `0`". See §12: this turned out to need no sum with
+  `T□F`, only one more `≤ 0` claim per value.
+
+## 12. Exact values of the row `a = 2` (`Cgt/RowA2Zero.lean`, `Cgt/RowA2Values.lean`)
+
+* **Reduction.** `G = TT□ᵇFF` is symmetric, and for `b ≥ 2` each side has one move. Left's
+  leads to `T□T□ᵇ⁻¹FF ≤ 0` (§9). So `G = 0` ⟸ `T□T□ᵇ⁻²F□F ≤ 0` (Right's only answer), and
+  `G = ∗` ⟸ `TT□ᵇ⁻¹F□F ≤ 0` (then `G ≤ ∗`, and `∗ ≤ G` by symmetry).
+* **Even `b`: proved for all `b`.** In `T□T□ᵏF□F` with `k` even, Right can keep the mirrored
+  differences within 4. The greedy generator of §9 does not close (it reaches shapes where every
+  reply leads outside the bound), so `scripts/search_row2.py` solves the game on shapes with
+  backtracking. With cap 4, parity and bound 4 it closes with 1,038 shapes. Longer periods
+  (residues mod 6) and larger caps were not needed.
+* **Odd `b`: the asymmetry is unbounded.** The smallest bound with which Right still wins
+  (`tools/regular/a2_exact_bounds.py`) is:
+  * 4, 6, 8, 10, 12, 14 for `T□T□ᵏF□F`, `k` = 3, 7, 9, 13, 15, 19 (value `0` at `b = k + 2`);
+  * 5, 9, 13, 17, 21 for `TT□ᵏF□F`, `k` = 6, 12, 18, 24, 30 (value `∗` at `b = k + 1`).
+
+  So on odd boards Right must let the mirrored gaps drift apart by about `2k/3`. These are exact
+  computations on concrete boards. Shapes store both differences exactly, so a finite set of
+  shapes bounds them, and no such set can serve every odd `b`.
+* **Small cases.** Kernel `decide` on `leZeroB` grows roughly like `k³` here (24 s for 23 cells),
+  so every `b ≤ 30` is checked individually. `TT□FF` (`b = 1`) needs one more level, because
+  Left's option `T□TFF` is not `≤ 0`.
+* **Ideas for odd `b`, untried:**
+  * shapes that cap the mirrored differences too; this needs a new margin argument;
+  * a strategy for Right that is symmetric about a moving centre instead of the board's
+    centre.

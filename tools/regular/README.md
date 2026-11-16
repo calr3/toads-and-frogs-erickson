@@ -50,6 +50,9 @@ language, for example by `starts_rows({2})` for a single row.
 * `a2_strategy.py`, `a2_abstract.py`: the strategy for the `a = 2` row that *did* work, by
   arithmetic shapes rather than automata. It became the Lean proof in `Cgt/RowA2.lean`; see
   `docs/RESEARCH_NOTES.md` §9.
+* `a2_exact_bounds.py`: for the exact values of the `a = 2` row, the smallest bound on the
+  mirrored gap differences with which Right still wins `T□T□ᵏF□F` or `TT□ᵏF□F`. It is 4 for
+  even `k` and grows with `k` for odd `k`; see `docs/RESEARCH_NOTES.md` §12.
 * `forced.py`: lower bounds on the number of states of *any* invariant. They come from
   positions every invariant must contain (starts, and Right's only good reply to a Left move
   from such a position) and positions none may contain (losing ones).

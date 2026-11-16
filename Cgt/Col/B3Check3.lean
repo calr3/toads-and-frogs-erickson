@@ -5,13 +5,13 @@ import Cgt.Col.B3Data
 namespace Cgt
 namespace Col
 
-theorem chkB3U_60 : ((colB3U.toList.drop 362).take 2).all (fun k => (witOf k).all (chkU colB3U colB3N)) = true := by decide +kernel
-theorem chkB3U_61 : ((colB3U.toList.drop 364).take 1).all (fun k => (witOf k).all (chkU colB3U colB3N)) = true := by decide +kernel
-theorem chkB3U_62 : ((colB3U.toList.drop 365).take 1).all (fun k => (witOf k).all (chkU colB3U colB3N)) = true := by decide +kernel
-theorem chkB3U_63 : ((colB3U.toList.drop 366).take 2).all (fun k => (witOf k).all (chkU colB3U colB3N)) = true := by decide +kernel
-theorem chkB3U_64 : ((colB3U.toList.drop 368).take 1).all (fun k => (witOf k).all (chkU colB3U colB3N)) = true := by decide +kernel
-theorem chkB3U_65 : ((colB3U.toList.drop 369).take 3).all (fun k => (witOf k).all (chkU colB3U colB3N)) = true := by decide +kernel
-theorem chkB3U_66 : ((colB3U.toList.drop 372).take 10).all (fun k => (witOf k).all (chkU colB3U colB3N)) = true := by decide +kernel
+theorem chkB3U_60 : ((colB3U.toList.drop 362).take 2).all (fun k => (witOf ruleP k).all (chkU ruleP colB3U colB3N)) = true := by decide +kernel
+theorem chkB3U_61 : ((colB3U.toList.drop 364).take 1).all (fun k => (witOf ruleP k).all (chkU ruleP colB3U colB3N)) = true := by decide +kernel
+theorem chkB3U_62 : ((colB3U.toList.drop 365).take 1).all (fun k => (witOf ruleP k).all (chkU ruleP colB3U colB3N)) = true := by decide +kernel
+theorem chkB3U_63 : ((colB3U.toList.drop 366).take 2).all (fun k => (witOf ruleP k).all (chkU ruleP colB3U colB3N)) = true := by decide +kernel
+theorem chkB3U_64 : ((colB3U.toList.drop 368).take 1).all (fun k => (witOf ruleP k).all (chkU ruleP colB3U colB3N)) = true := by decide +kernel
+theorem chkB3U_65 : ((colB3U.toList.drop 369).take 3).all (fun k => (witOf ruleP k).all (chkU ruleP colB3U colB3N)) = true := by decide +kernel
+theorem chkB3U_66 : ((colB3U.toList.drop 372).take 10).all (fun k => (witOf ruleP k).all (chkU ruleP colB3U colB3N)) = true := by decide +kernel
 
 end Col
 end Cgt

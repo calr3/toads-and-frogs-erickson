@@ -6,8 +6,8 @@ a few empty squares are separated by long runs of pieces.
 
 * **`b = 3`: proved in Lean** (`infinitesimal_start_b_three`,
   [docs/COLUMN_B3.md](../../docs/COLUMN_B3.md); `docs/RESEARCH_NOTES.md` §13).
-* **`b = 4`: a computer-checked certificate, not yet in Lean** (below;
-  `docs/RESEARCH_NOTES.md` §14).
+* **`b = 4`: proved in Lean, finite check by `native_decide`** (`infinitesimal_start_b_four`,
+  `lake build CgtNative`; below and `docs/RESEARCH_NOTES.md` §14).
 
 Build each tool with `g++ -O2 -std=c++17 -o NAME NAME.cpp`.
 
@@ -19,7 +19,7 @@ Build each tool with `g++ -O2 -std=c++17 -o NAME NAME.cpp`.
 | `col_realcheck.cpp` | Checks a shape set on the real game tree of `Tᵃ□ᵇFᵃ`. Every real position Right's strategy reaches must satisfy the closure conditions itself. For each `a` this is a complete proof, independent of the margin argument. |
 | `verify_shapes.py` | An independent re-implementation (moves, runs, dead regions, shapes, witnesses) that checks a shape set exactly as a kernel check would. |
 | `b3_shapes.txt` | The certificate for `b = 3`: 3,031 shapes (`U` = Left-stop phase, `N` = normal play), in the format of the Lean proof. |
-| `b4_shapes.txt.gz` | The certificate for `b = 4`: 233,087 shapes, far gaps without parity (`M = 1`). Not yet in Lean. |
+| `b4_shapes.txt.gz` | The certificate for `b = 4`: 233,087 shapes, far gaps without parity (`M = 1`). Into Lean with `scripts/gen_b4.py`. |
 | `to_witness.py` | One witness position per shape, the input of `scripts/ColGen.lean`. |
 | `col_local.cpp` | Decides whether Right wins with a *component-local* strategy: dead regions split a position into independent components, and Right answers inside the component Left moved in. |
 
@@ -82,7 +82,7 @@ Build each tool with `g++ -O2 -std=c++17 -o NAME NAME.cpp`.
   `gen_col_chunks.py` writes the kernel checks `Cgt/Col/B3Check*.lean` and `B3Blocks.lean`; the
   block sizes it prints go into `hcU` and `hcN` in `Cgt/Col/B3.lean`.
 
-## `b = 4`: closes without parity (not yet in Lean)
+## `b = 4`: closes without parity (in Lean with `native_decide`)
 
 See `docs/RESEARCH_NOTES.md` §14. With the `b = 3` settings the search does not close (12 runs
 lose the start; with 13 it explores millions of shapes). Keeping only the sign of a far gap, not
@@ -98,7 +98,10 @@ and passes. Checks:
     NOPARITY=1 DEADRUNS=1 col_realcheck <(gunzip -c b4_shapes.txt.gz) 4 2 24 2 1
 
 The first finds no failing witness and every start shape present (2 minutes); the second finds no
-failure on the real game trees for `a = 2…24`.
+failure on the real game trees for `a = 2…24`. Into Lean:
+
+    python3 scripts/gen_b4.py     # Cgt/Col/B4Data.lean, B4Check0..7.lean, B4Checks.lean
+    lake build CgtNative          # the finite check by native_decide, then infinitesimal_start_b_four
 
 `col_shapes` options added for this:
 

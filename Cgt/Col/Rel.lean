@@ -3,12 +3,12 @@ import Cgt.Col.Check
 /-!
 # The margin relation between run lists
 
-`Rel j R R'`: the two run lists have the same skeleton (`Skel`: same cells, lengths equal or both
-at least 2, empty runs exact), and every difference between the lengths of two entries, or between
-an entry and the anchor 2, agrees in both or is at least `3 + j` in both with the same sign and
-parity (`close j`).
+`Rel r j R R'`: the two run lists have the same skeleton (`Skel`: same cells, lengths equal or
+both at least 2, empty runs exact), and every difference between the lengths of two entries, or
+between an entry and the anchor 2, agrees in both or is at least `r.m + 1 + j` in both with the
+same sign, and the same parity unless `r.par = 0` (`close r j`).
 
-`Rel 0` determines the key (`keyOf_eq_of_rel`).
+`Rel r 0` determines the key `keyOf r` (`keyOf_eq_of_rel`).
 -/
 
 namespace Cgt
@@ -17,29 +17,29 @@ open Cell
 
 /-! ### Closeness of differences -/
 
-def close (j : Nat) (x y : Int) : Prop :=
-  x = y ∨ ((3 + j : Int) ≤ x ∧ (3 + j : Int) ≤ y ∧ (x - y) % 2 = 0) ∨
-    (x ≤ -(3 + j : Int) ∧ y ≤ -(3 + j : Int) ∧ (x - y) % 2 = 0)
+def close (r : GapRule) (j : Nat) (x y : Int) : Prop :=
+  x = y ∨ ((r.m + 1 + j : Int) ≤ x ∧ (r.m + 1 + j : Int) ≤ y ∧ (r.par = 0 ∨ (x - y) % 2 = 0)) ∨
+    (x ≤ -(r.m + 1 + j : Int) ∧ y ≤ -(r.m + 1 + j : Int) ∧ (r.par = 0 ∨ (x - y) % 2 = 0))
 
-theorem close.mono {j : Nat} {x y : Int} (h : close (j + 1) x y) : close j x y := by
+theorem close.mono {r : GapRule} {j : Nat} {x y : Int} (h : close r (j + 1) x y) : close r j x y := by
   unfold close at *; omega
 
-theorem close.mono' {j k : Nat} {x y : Int} (hjk : k ≤ j) (h : close j x y) : close k x y := by
+theorem close.mono' {r : GapRule} {j k : Nat} {x y : Int} (hjk : k ≤ j) (h : close r j x y) : close r k x y := by
   unfold close at *; omega
 
-theorem close.symm {j : Nat} {x y : Int} (h : close j x y) : close j y x := by
+theorem close.symm {r : GapRule} {j : Nat} {x y : Int} (h : close r j x y) : close r j y x := by
   unfold close at *; omega
 
-theorem close.trans {j : Nat} {x y z : Int} (h1 : close j x y) (h2 : close j y z) : close j x z := by
+theorem close.trans {r : GapRule} {j : Nat} {x y z : Int} (h1 : close r j x y) (h2 : close r j y z) : close r j x z := by
   unfold close at *; omega
 
-theorem close.refl (j : Nat) (x : Int) : close j x x := Or.inl rfl
+theorem close.refl (r : GapRule) (j : Nat) (x : Int) : close r j x x := Or.inl rfl
 
-theorem close.shift {j : Nat} {x y d : Int} (hd : -2 ≤ d ∧ d ≤ 2) (h : close (j + 2) x y) :
-    close j (x + d) (y + d) := by
+theorem close.shift {r : GapRule} {j : Nat} {x y d : Int} (hd : -2 ≤ d ∧ d ≤ 2) (h : close r (j + 2) x y) :
+    close r j (x + d) (y + d) := by
   unfold close at *; omega
 
-theorem close.neg {j : Nat} {x y : Int} (h : close j x y) : close j (-x) (-y) := by
+theorem close.neg {r : GapRule} {j : Nat} {x y : Int} (h : close r j x y) : close r j (-x) (-y) := by
   unfold close at *; omega
 
 /-! ### Skeletons -/
@@ -96,24 +96,24 @@ theorem Skel.isEntB {R R' : RL} (h : Skel R R') (i : Nat) : Col.isEntB R i = Col
 
 /-! ### The relation -/
 
-def Rel (j : Nat) (R R' : RL) : Prop :=
+def Rel (r : GapRule) (j : Nat) (R R' : RL) : Prop :=
   Skel R R' ∧
-  (∀ i, isEntB R i = true → close j ((lenAt R i : Int) - 2) ((lenAt R' i : Int) - 2)) ∧
+  (∀ i, isEntB R i = true → close r j ((lenAt R i : Int) - 2) ((lenAt R' i : Int) - 2)) ∧
   (∀ i k, isEntB R i = true → isEntB R k = true →
-    close j ((lenAt R i : Int) - lenAt R k) ((lenAt R' i : Int) - lenAt R' k))
+    close r j ((lenAt R i : Int) - lenAt R k) ((lenAt R' i : Int) - lenAt R' k))
 
-theorem Rel.mono {j : Nat} {R R' : RL} (h : Rel (j + 1) R R') : Rel j R R' :=
+theorem Rel.mono {r : GapRule} {j : Nat} {R R' : RL} (h : Rel r (j + 1) R R') : Rel r j R R' :=
   ⟨h.1, fun i hi => (h.2.1 i hi).mono, fun i k hi hk => (h.2.2 i k hi hk).mono⟩
 
-theorem Rel.mono' {j k : Nat} {R R' : RL} (hjk : k ≤ j) (h : Rel j R R') : Rel k R R' :=
+theorem Rel.mono' {r : GapRule} {j k : Nat} {R R' : RL} (hjk : k ≤ j) (h : Rel r j R R') : Rel r k R R' :=
   ⟨h.1, fun i hi => (h.2.1 i hi).mono' hjk, fun i l hi hl => (h.2.2 i l hi hl).mono' hjk⟩
 
-theorem Rel.symm {j : Nat} {R R' : RL} (h : Rel j R R') : Rel j R' R := by
+theorem Rel.symm {r : GapRule} {j : Nat} {R R' : RL} (h : Rel r j R R') : Rel r j R' R := by
   refine ⟨h.1.symm, fun i hi => ?_, fun i k hi hk => ?_⟩
   · rw [← h.1.isEntB] at hi; exact (h.2.1 i hi).symm
   · rw [← h.1.isEntB] at hi hk; exact (h.2.2 i k hi hk).symm
 
-theorem Rel.trans {j : Nat} {R R' R'' : RL} (h : Rel j R R') (h' : Rel j R' R'') : Rel j R R'' := by
+theorem Rel.trans {r : GapRule} {j : Nat} {R R' R'' : RL} (h : Rel r j R R') (h' : Rel r j R' R'') : Rel r j R R'' := by
   refine ⟨h.1.trans h'.1, fun i hi => ?_, fun i k hi hk => ?_⟩
   · have hi' : isEntB R' i = true := by rwa [← h.1.isEntB]
     exact (h.2.1 i hi).trans (h'.2.1 i hi')
@@ -121,8 +121,8 @@ theorem Rel.trans {j : Nat} {R R' R'' : RL} (h : Rel j R R') (h' : Rel j R' R'')
     have hk' : isEntB R' k = true := by rwa [← h.1.isEntB]
     exact (h.2.2 i k hi hk).trans (h'.2.2 i k hi' hk')
 
-theorem Rel.refl (j : Nat) (R : RL) : Rel j R R :=
-  ⟨⟨rfl, fun _ => ⟨rfl, Or.inl rfl, fun _ => rfl⟩⟩, fun _ _ => close.refl _ _, fun _ _ _ _ => close.refl _ _⟩
+theorem Rel.refl (r : GapRule) (j : Nat) (R : RL) : Rel r j R R :=
+  ⟨⟨rfl, fun _ => ⟨rfl, Or.inl rfl, fun _ => rfl⟩⟩, fun _ _ => close.refl _ _ _, fun _ _ _ _ => close.refl _ _ _⟩
 
 /-! ### `Rel 0` determines the key -/
 
@@ -160,7 +160,7 @@ theorem sortE_map (f : Nat × Nat → Nat × Nat) :
     exact insertE_map f fun y hy => h x (by simp) y (List.mem_cons_of_mem _ (mem_sortE.1 hy))
 
 /-- Comparisons agree when differences are close. -/
-theorem ltE_eq_of_close {a b a' b' i k : Nat} (h : close 0 ((a : Int) - b) ((a' : Int) - b')) :
+theorem ltE_eq_of_close {r : GapRule} {a b a' b' i k : Nat} (h : close r 0 ((a : Int) - b) ((a' : Int) - b')) :
     ltE (a', i) (b', k) = ltE (a, i) (b, k) := by
   have e1 : decide (a' < b') = decide (a < b) := by
     unfold close at h
@@ -179,10 +179,11 @@ theorem ltE_eq_of_close {a b a' b' i k : Nat} (h : close 0 ((a : Int) - b) ((a' 
   simp only [ltE]
   rw [e1, e2]
 
-theorem capG_eq_of_close {x y x' y' : Nat} (h : close 0 ((x : Int) - y) ((x' : Int) - y')) :
-    capG (x - y) = capG (x' - y') := by
-  unfold capG M close at *
-  by_cases h1 : x - y ≤ 2 <;> by_cases h2 : x' - y' ≤ 2 <;> simp only [h1, h2, ite_true, ite_false] <;> omega
+theorem capG_eq_of_close {r : GapRule} {x y x' y' : Nat} (h : close r 0 ((x : Int) - y) ((x' : Int) - y')) :
+    capG r (x - y) = capG r (x' - y') := by
+  unfold capG close at *
+  by_cases h1 : x - y ≤ r.m <;> by_cases h2 : x' - y' ≤ r.m <;> by_cases hp : r.par = 0 <;>
+    simp only [h1, h2, hp, ite_true, ite_false] <;> omega
 
 /-- The entries of `R`, before sorting. -/
 def entL (R : RL) : List (Nat × Nat) :=
@@ -203,7 +204,7 @@ theorem mem_entL {R : RL} {x : Nat × Nat} : x ∈ entL R ↔ isEntB R x.2 = tru
     simp only [he, ite_true, Option.some.injEq]
     exact Prod.ext hx.symm rfl
 
-theorem entL_eq_map {j : Nat} {R R' : RL} (h : Rel j R R') :
+theorem entL_eq_map {r : GapRule} {j : Nat} {R R' : RL} (h : Rel r j R R') :
     entL R' = (entL R).map fun x => (lenAt R' x.2, x.2) := by
   unfold entL
   rw [h.1.1, List.map_filterMap]
@@ -211,11 +212,11 @@ theorem entL_eq_map {j : Nat} {R R' : RL} (h : Rel j R R') :
   rw [h.1.isEntB]
   split <;> rfl
 
-theorem gaps_map {R R' : RL} (h : Rel 0 R R') :
+theorem gaps_map {r : GapRule} {R R' : RL} (h : Rel r 0 R R') :
     ∀ (l : List (Nat × Nat)) (p p' : Nat), (∀ x ∈ l, isEntB R x.2 = true ∧ x.1 = lenAt R x.2) →
-      (∀ x ∈ l, capG (x.1 - p) = capG (lenAt R' x.2 - p')) →
-      (∀ x ∈ l, ∀ y ∈ l, capG (y.1 - x.1) = capG (lenAt R' y.2 - lenAt R' x.2)) →
-      (gapsFrom p l).map capG = (gapsFrom p' (l.map fun x => (lenAt R' x.2, x.2))).map capG
+      (∀ x ∈ l, capG r (x.1 - p) = capG r (lenAt R' x.2 - p')) →
+      (∀ x ∈ l, ∀ y ∈ l, capG r (y.1 - x.1) = capG r (lenAt R' y.2 - lenAt R' x.2)) →
+      (gapsFrom p l).map (capG r) = (gapsFrom p' (l.map fun x => (lenAt R' x.2, x.2))).map (capG r)
   | [], _, _, _, _, _ => rfl
   | x :: l, p, p', he, h0, hp => by
     simp only [gapsFrom, List.map_cons, List.cons.injEq]
@@ -226,8 +227,8 @@ theorem gaps_map {R R' : RL} (h : Rel 0 R R') :
 theorem lenAt_of_ge {R : RL} {i : Nat} (h : R.length ≤ i) : lenAt R i = 0 := by
   simp [lenAt, runAt, List.getD, h]
 
-theorem keyOf_def (R : RL) : keyOf R = [R.length] ++ ((List.range R.length).flatMap fun i => [cellCode (cellAt R i), clsAt R i]) ++
-    [(entries R).length] ++ (entries R).map Prod.snd ++ (gapsFrom 2 (entries R)).map capG := rfl
+theorem keyOf_def (r : GapRule) (R : RL) : keyOf r R = [R.length] ++ ((List.range R.length).flatMap fun i => [cellCode (cellAt R i), clsAt R i]) ++
+    [(entries R).length] ++ (entries R).map Prod.snd ++ (gapsFrom 2 (entries R)).map (capG r) := rfl
 
 theorem clsAt_eq_of_skel {R R' : RL} (hs : Skel R R') (i : Nat) : clsAt R i = clsAt R' i := by
   obtain ⟨hc, hl, hE⟩ := hs.2 i
@@ -260,7 +261,7 @@ theorem clsAt_eq_of_skel {R R' : RL} (hs : Skel R R') (i : Nat) : clsAt R i = cl
     omega
   · omega
 
-theorem keyOf_eq_of_rel {R R' : RL} (h : Rel 0 R R') : keyOf R = keyOf R' := by
+theorem keyOf_eq_of_rel {r : GapRule} {R R' : RL} (h : Rel r 0 R R') : keyOf r R = keyOf r R' := by
   have hs := h.1
   have hcmp : ∀ x ∈ entL R, ∀ y ∈ entL R,
       ltE (lenAt R' x.2, x.2) (lenAt R' y.2, y.2) = ltE x y := by
@@ -281,7 +282,7 @@ theorem keyOf_eq_of_rel {R R' : RL} (h : Rel 0 R R') : keyOf R = keyOf R' := by
     have hf : (fun i => [cellCode (cellAt R i), clsAt R i]) = (fun i => [cellCode (cellAt R' i), clsAt R' i]) := by
       funext i; rw [(hs.2 i).1, clsAt_eq_of_skel hs]
     rw [hs.1, hf]
-  have hgaps : (gapsFrom 2 (entries R)).map capG = (gapsFrom 2 (entries R')).map capG := by
+  have hgaps : (gapsFrom 2 (entries R)).map (capG r) = (gapsFrom 2 (entries R')).map (capG r) := by
     rw [hes]
     refine gaps_map h _ 2 2 hmem (fun x hx => ?_) (fun x hx y hy => ?_)
     · obtain ⟨hxe, hx1⟩ := hmem x hx

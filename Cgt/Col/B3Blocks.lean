@@ -21,7 +21,7 @@ namespace Cgt
 namespace Col
 
 /-- Keys 0 to 269. -/
-theorem blkB3U_0 : ((colB3U.toList.drop 0).take 270).all (fun k => (witOf k).all (chkU colB3U colB3N)) = true :=
+theorem blkB3U_0 : ((colB3U.toList.drop 0).take 270).all (fun k => (witOf ruleP k).all (chkU ruleP colB3U colB3N)) = true :=
   all_range_of_sizes _ [40, 38, 25, 21, 12, 36, 19, 15, 6, 14, 5, 12, 3, 6, 3, 3, 5, 3, 3, 1] _ 0 fun i hi => by
     match i, hi with
     | 0, _ => exact chkB3U_0
@@ -47,7 +47,7 @@ theorem blkB3U_0 : ((colB3U.toList.drop 0).take 270).all (fun k => (witOf k).all
     | _ + 20, h => exact absurd h (by simp)
 
 /-- Keys 270 to 317. -/
-theorem blkB3U_1 : ((colB3U.toList.drop 270).take 48).all (fun k => (witOf k).all (chkU colB3U colB3N)) = true :=
+theorem blkB3U_1 : ((colB3U.toList.drop 270).take 48).all (fun k => (witOf ruleP k).all (chkU ruleP colB3U colB3N)) = true :=
   all_range_of_sizes _ [3, 1, 4, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 7, 6, 7, 4, 3, 1] _ 270 fun i hi => by
     match i, hi with
     | 0, _ => exact chkB3U_20
@@ -73,7 +73,7 @@ theorem blkB3U_1 : ((colB3U.toList.drop 270).take 48).all (fun k => (witOf k).al
     | _ + 20, h => exact absurd h (by simp)
 
 /-- Keys 318 to 361. -/
-theorem blkB3U_2 : ((colB3U.toList.drop 318).take 44).all (fun k => (witOf k).all (chkU colB3U colB3N)) = true :=
+theorem blkB3U_2 : ((colB3U.toList.drop 318).take 44).all (fun k => (witOf ruleP k).all (chkU ruleP colB3U colB3N)) = true :=
   all_range_of_sizes _ [1, 1, 1, 3, 3, 1, 2, 1, 5, 4, 3, 1, 1, 1, 1, 1, 1, 1, 2, 10] _ 318 fun i hi => by
     match i, hi with
     | 0, _ => exact chkB3U_40
@@ -99,7 +99,7 @@ theorem blkB3U_2 : ((colB3U.toList.drop 318).take 44).all (fun k => (witOf k).al
     | _ + 20, h => exact absurd h (by simp)
 
 /-- Keys 362 to 381. -/
-theorem blkB3U_3 : ((colB3U.toList.drop 362).take 20).all (fun k => (witOf k).all (chkU colB3U colB3N)) = true :=
+theorem blkB3U_3 : ((colB3U.toList.drop 362).take 20).all (fun k => (witOf ruleP k).all (chkU ruleP colB3U colB3N)) = true :=
   all_range_of_sizes _ [2, 1, 1, 2, 1, 3, 10] _ 362 fun i hi => by
     match i, hi with
     | 0, _ => exact chkB3U_60
@@ -112,7 +112,7 @@ theorem blkB3U_3 : ((colB3U.toList.drop 362).take 20).all (fun k => (witOf k).al
     | _ + 7, h => exact absurd h (by simp)
 
 /-- Keys 0 to 768. -/
-theorem blkB3N_4 : ((colB3N.toList.drop 0).take 769).all (fun k => (witOf k).all (chkN colB3N)) = true :=
+theorem blkB3N_4 : ((colB3N.toList.drop 0).take 769).all (fun k => (witOf ruleP k).all (chkN ruleP colB3N)) = true :=
   all_range_of_sizes _ [95, 91, 59, 29, 22, 50, 69, 51, 55, 32, 41, 15, 20, 26, 15, 23, 13, 25, 20, 18] _ 0 fun i hi => by
     match i, hi with
     | 0, _ => exact chkB3N_0
@@ -138,7 +138,7 @@ theorem blkB3N_4 : ((colB3N.toList.drop 0).take 769).all (fun k => (witOf k).all
     | _ + 20, h => exact absurd h (by simp)
 
 /-- Keys 769 to 1231. -/
-theorem blkB3N_5 : ((colB3N.toList.drop 769).take 463).all (fun k => (witOf k).all (chkN colB3N)) = true :=
+theorem blkB3N_5 : ((colB3N.toList.drop 769).take 463).all (fun k => (witOf ruleP k).all (chkN ruleP colB3N)) = true :=
   all_range_of_sizes _ [26, 24, 41, 64, 43, 11, 26, 11, 15, 38, 27, 14, 24, 9, 27, 19, 8, 11, 17, 8] _ 769 fun i hi => by
     match i, hi with
     | 0, _ => exact chkB3N_20
@@ -164,7 +164,7 @@ theorem blkB3N_5 : ((colB3N.toList.drop 769).take 463).all (fun k => (witOf k).a
     | _ + 20, h => exact absurd h (by simp)
 
 /-- Keys 1232 to 1488. -/
-theorem blkB3N_6 : ((colB3N.toList.drop 1232).take 257).all (fun k => (witOf k).all (chkN colB3N)) = true :=
+theorem blkB3N_6 : ((colB3N.toList.drop 1232).take 257).all (fun k => (witOf ruleP k).all (chkN ruleP colB3N)) = true :=
   all_range_of_sizes _ [13, 5, 12, 8, 5, 12, 15, 23, 13, 7, 7, 21, 10, 7, 12, 12, 19, 24, 23, 9] _ 1232 fun i hi => by
     match i, hi with
     | 0, _ => exact chkB3N_40
@@ -190,7 +190,7 @@ theorem blkB3N_6 : ((colB3N.toList.drop 1232).take 257).all (fun k => (witOf k).
     | _ + 20, h => exact absurd h (by simp)
 
 /-- Keys 1489 to 1643. -/
-theorem blkB3N_7 : ((colB3N.toList.drop 1489).take 155).all (fun k => (witOf k).all (chkN colB3N)) = true :=
+theorem blkB3N_7 : ((colB3N.toList.drop 1489).take 155).all (fun k => (witOf ruleP k).all (chkN ruleP colB3N)) = true :=
   all_range_of_sizes _ [20, 4, 1, 1, 2, 6, 2, 1, 2, 2, 6, 3, 1, 2, 2, 12, 31, 20, 28, 9] _ 1489 fun i hi => by
     match i, hi with
     | 0, _ => exact chkB3N_60
@@ -216,7 +216,7 @@ theorem blkB3N_7 : ((colB3N.toList.drop 1489).take 155).all (fun k => (witOf k).
     | _ + 20, h => exact absurd h (by simp)
 
 /-- Keys 1644 to 1943. -/
-theorem blkB3N_8 : ((colB3N.toList.drop 1644).take 300).all (fun k => (witOf k).all (chkN colB3N)) = true :=
+theorem blkB3N_8 : ((colB3N.toList.drop 1644).take 300).all (fun k => (witOf ruleP k).all (chkN ruleP colB3N)) = true :=
   all_range_of_sizes _ [15, 47, 17, 16, 12, 31, 14, 11, 13, 6, 6, 12, 21, 8, 4, 10, 10, 16, 17, 14] _ 1644 fun i hi => by
     match i, hi with
     | 0, _ => exact chkB3N_80
@@ -242,7 +242,7 @@ theorem blkB3N_8 : ((colB3N.toList.drop 1644).take 300).all (fun k => (witOf k).
     | _ + 20, h => exact absurd h (by simp)
 
 /-- Keys 1944 to 2056. -/
-theorem blkB3N_9 : ((colB3N.toList.drop 1944).take 113).all (fun k => (witOf k).all (chkN colB3N)) = true :=
+theorem blkB3N_9 : ((colB3N.toList.drop 1944).take 113).all (fun k => (witOf ruleP k).all (chkN ruleP colB3N)) = true :=
   all_range_of_sizes _ [12, 9, 9, 11, 8, 9, 7, 2, 2, 4, 2, 2, 7, 6, 7, 6, 2, 4, 2, 2] _ 1944 fun i hi => by
     match i, hi with
     | 0, _ => exact chkB3N_100
@@ -268,7 +268,7 @@ theorem blkB3N_9 : ((colB3N.toList.drop 1944).take 113).all (fun k => (witOf k).
     | _ + 20, h => exact absurd h (by simp)
 
 /-- Keys 2057 to 2223. -/
-theorem blkB3N_10 : ((colB3N.toList.drop 2057).take 167).all (fun k => (witOf k).all (chkN colB3N)) = true :=
+theorem blkB3N_10 : ((colB3N.toList.drop 2057).take 167).all (fun k => (witOf ruleP k).all (chkN ruleP colB3N)) = true :=
   all_range_of_sizes _ [5, 6, 2, 1, 4, 3, 1, 6, 9, 18, 10, 12, 20, 13, 17, 6, 9, 8, 8, 9] _ 2057 fun i hi => by
     match i, hi with
     | 0, _ => exact chkB3N_120
@@ -294,7 +294,7 @@ theorem blkB3N_10 : ((colB3N.toList.drop 2057).take 167).all (fun k => (witOf k)
     | _ + 20, h => exact absurd h (by simp)
 
 /-- Keys 2224 to 2326. -/
-theorem blkB3N_11 : ((colB3N.toList.drop 2224).take 103).all (fun k => (witOf k).all (chkN colB3N)) = true :=
+theorem blkB3N_11 : ((colB3N.toList.drop 2224).take 103).all (fun k => (witOf ruleP k).all (chkN ruleP colB3N)) = true :=
   all_range_of_sizes _ [6, 11, 10, 10, 5, 5, 7, 9, 7, 5, 3, 6, 4, 3, 2, 1, 3, 1, 4, 1] _ 2224 fun i hi => by
     match i, hi with
     | 0, _ => exact chkB3N_140
@@ -320,7 +320,7 @@ theorem blkB3N_11 : ((colB3N.toList.drop 2224).take 103).all (fun k => (witOf k)
     | _ + 20, h => exact absurd h (by simp)
 
 /-- Keys 2327 to 2373. -/
-theorem blkB3N_12 : ((colB3N.toList.drop 2327).take 47).all (fun k => (witOf k).all (chkN colB3N)) = true :=
+theorem blkB3N_12 : ((colB3N.toList.drop 2327).take 47).all (fun k => (witOf ruleP k).all (chkN ruleP colB3N)) = true :=
   all_range_of_sizes _ [1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 8, 7, 7, 4, 3, 1, 1, 1, 1, 3] _ 2327 fun i hi => by
     match i, hi with
     | 0, _ => exact chkB3N_160
@@ -346,7 +346,7 @@ theorem blkB3N_12 : ((colB3N.toList.drop 2327).take 47).all (fun k => (witOf k).
     | _ + 20, h => exact absurd h (by simp)
 
 /-- Keys 2374 to 2418. -/
-theorem blkB3N_13 : ((colB3N.toList.drop 2374).take 45).all (fun k => (witOf k).all (chkN colB3N)) = true :=
+theorem blkB3N_13 : ((colB3N.toList.drop 2374).take 45).all (fun k => (witOf ruleP k).all (chkN ruleP colB3N)) = true :=
   all_range_of_sizes _ [3, 1, 2, 1, 5, 4, 3, 1, 1, 1, 1, 1, 1, 1, 3, 10, 2, 1, 1, 2] _ 2374 fun i hi => by
     match i, hi with
     | 0, _ => exact chkB3N_180
@@ -372,7 +372,7 @@ theorem blkB3N_13 : ((colB3N.toList.drop 2374).take 45).all (fun k => (witOf k).
     | _ + 20, h => exact absurd h (by simp)
 
 /-- Keys 2419 to 2641. -/
-theorem blkB3N_14 : ((colB3N.toList.drop 2419).take 223).all (fun k => (witOf k).all (chkN colB3N)) = true :=
+theorem blkB3N_14 : ((colB3N.toList.drop 2419).take 223).all (fun k => (witOf ruleP k).all (chkN ruleP colB3N)) = true :=
   all_range_of_sizes _ [1, 2, 19, 19, 25, 15, 14, 11, 10, 4, 4, 7, 17, 10, 6, 4, 12, 23, 14, 6] _ 2419 fun i hi => by
     match i, hi with
     | 0, _ => exact chkB3N_200
@@ -398,7 +398,7 @@ theorem blkB3N_14 : ((colB3N.toList.drop 2419).take 223).all (fun k => (witOf k)
     | _ + 20, h => exact absurd h (by simp)
 
 /-- Keys 2642 to 2648. -/
-theorem blkB3N_15 : ((colB3N.toList.drop 2642).take 7).all (fun k => (witOf k).all (chkN colB3N)) = true :=
+theorem blkB3N_15 : ((colB3N.toList.drop 2642).take 7).all (fun k => (witOf ruleP k).all (chkN ruleP colB3N)) = true :=
   all_range_of_sizes _ [7] _ 2642 fun i hi => by
     match i, hi with
     | 0, _ => exact chkB3N_220

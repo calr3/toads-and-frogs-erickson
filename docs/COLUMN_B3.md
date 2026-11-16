@@ -133,14 +133,16 @@ Independent checks of the same certificate:
 | `Cgt/Col/Sound.lean` | The soundness theorem |
 | `Cgt/Col/B3Data.lean`, `B3Check*.lean`, `B3Blocks.lean`, `B3.lean` | The data, the kernel check, the start keys |
 | `Cgt/Col/Column3.lean` | `infinitesimal_start_b_three` |
+| `Cgt/Col/Text.lean`, `B4Data.lean`, `B4Check*.lean`, `B4Checks.lean`, `B4.lean`, `Column4.lean` | The column `b = 4`: key trees from run-length text, the `native_decide` check, `infinitesimal_start_b_four` |
 
 ## 8. Other columns
 
-The framework itself does not depend on `b`. For `b = 4`, Right needs 13 runs (from `a = 10` on),
-and the search closes once far gaps keep only their sign, not their parity (`M = 1`): 233,087
-shapes with 2.8 million witnesses (`tools/column/b4_shapes.txt.gz`), checked by an independent
-program and on the real game trees for every `a ≤ 24`. The margin argument carries over with small
-changes, but a kernel check of that size is out of reach for now
+The framework does not depend on `b`, and it is proved for any gap rule (`GapRule`: exact up to
+`m`, above that "far", with or without parity). For `b = 4`, Right needs 13 runs (from `a = 10`
+on), and the search closes once far gaps keep only their sign, not their parity (`ruleF`, `m = 1`):
+233,087 shapes with 2.8 million witnesses. `infinitesimal_start_b_four` (`Cgt/Col/Column4.lean`)
+proves the column, but its finite check is evaluated by `native_decide`, which trusts Lean's
+compiler as well as the kernel; it is built with `lake build CgtNative`
 ([docs/RESEARCH_NOTES.md](RESEARCH_NOTES.md) §14).
 
 ## References

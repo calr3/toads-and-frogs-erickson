@@ -389,18 +389,18 @@ def Orig (R R' X X' : RL) (i : Nat) : Prop :=
       (lenAt X' i : Int) = lenAt R' i₀ + δ) ∨
     (lenAt X i = lenAt X' i ∧ lenAt X i ≤ 3)
 
-theorem pc_anchor_of_orig {j : Nat} {R R' X X' : RL} (h : Rel (j + 2) R R') {i : Nat} (hi : Orig R R' X X' i) :
-    close j ((lenAt X i : Int) - 2) ((lenAt X' i : Int) - 2) := by
+theorem pc_anchor_of_orig {r : GapRule} {j : Nat} {R R' X X' : RL} (h : Rel r (j + 2) R R') {i : Nat} (hi : Orig R R' X X' i) :
+    close r j ((lenAt X i : Int) - 2) ((lenAt X' i : Int) - 2) := by
   rcases hi with ⟨i₀, δ, he, hd1, hd2, h1, h2⟩ | ⟨h1, -⟩
   · have := (h.2.1 i₀ he).shift (d := δ) ⟨by omega, by omega⟩
     have e1 : (lenAt X i : Int) - 2 = (lenAt R i₀ : Int) - 2 + δ := by omega
     have e2 : (lenAt X' i : Int) - 2 = (lenAt R' i₀ : Int) - 2 + δ := by omega
     rw [e1, e2]; exact this
-  · rw [h1]; exact close.refl _ _
+  · rw [h1]; exact close.refl _ _ _
 
-theorem pc_pair_of_orig {j : Nat} {R R' X X' : RL} (h : Rel (j + 2) R R') {i k : Nat}
+theorem pc_pair_of_orig {r : GapRule} {j : Nat} {R R' X X' : RL} (h : Rel r (j + 2) R R') {i k : Nat}
     (hi : Orig R R' X X' i) (hk : Orig R R' X X' k) (hi2 : 2 ≤ lenAt X i) (hk2 : 2 ≤ lenAt X k) :
-    close j ((lenAt X i : Int) - lenAt X k) ((lenAt X' i : Int) - lenAt X' k) := by
+    close r j ((lenAt X i : Int) - lenAt X k) ((lenAt X' i : Int) - lenAt X' k) := by
   rcases hi with ⟨i₀, δ, he, hd1, hd2, h1, h2⟩ | ⟨h1, h3⟩ <;>
     rcases hk with ⟨k₀, ε, he', he1, he2, h1', h2'⟩ | ⟨h1', h3'⟩
   · have := (h.2.2 i₀ k₀ he he').shift (d := δ - ε) ⟨by omega, by omega⟩
@@ -416,7 +416,7 @@ theorem pc_pair_of_orig {j : Nat} {R R' X X' : RL} (h : Rel (j + 2) R R') {i k :
     have e1 : (lenAt X i : Int) - lenAt X k = -(((lenAt R k₀ : Int) - 2) + (ε + 2 - lenAt X i)) := by omega
     have e2 : (lenAt X' i : Int) - lenAt X' k = -(((lenAt R' k₀ : Int) - 2) + (ε + 2 - lenAt X i)) := by omega
     rw [e1, e2]; exact this
-  · rw [h1, h1']; exact close.refl _ _
+  · rw [h1, h1']; exact close.refl _ _ _
 
 /-! ### Decomposing the related run list -/
 
@@ -541,13 +541,13 @@ theorem isEnt_T (hJ : J = [] ∨ J = [(F, 1)]) (h2 : 2 ≤ n) : isEntB (A ++ (T,
   refine ⟨by rw [length_R]; omega, by rw [cellAt_def, runAt_R_T]; simp, by rw [lenAt_def, runAt_R_T]; exact h2,
     not_dead_T hJ⟩
 
-theorem n_close {j : Nat} (h : Rel (j + 2) (A ++ (T, n) :: (J ++ (E, m) :: C)) (A' ++ (T, n') :: (J ++ (E, m) :: C')))
-    (hA : A'.length = A.length) (hJ : J = [] ∨ J = [(F, 1)]) (h2 : 2 ≤ n) : n = n' ∨ (6 ≤ n ∧ 6 ≤ n') := by
+theorem n_close {r : GapRule} {j : Nat} (h : Rel r (j + 2) (A ++ (T, n) :: (J ++ (E, m) :: C)) (A' ++ (T, n') :: (J ++ (E, m) :: C')))
+    (hA : A'.length = A.length) (hJ : J = [] ∨ J = [(F, 1)]) (h2 : 2 ≤ n) : n = n' ∨ (5 ≤ n ∧ 5 ≤ n') := by
   have := h.2.1 _ (isEnt_T hJ h2)
   rw [lenAt_def, lenAt_def, runAt_R_T, ← hA, runAt_R_T] at this
   unfold close at this; simp only at this; omega
 
-theorem origin {j : Nat} (h : Rel (j + 2) (A ++ (T, n) :: (J ++ (E, m) :: C)) (A' ++ (T, n') :: (J ++ (E, m) :: C')))
+theorem origin {r : GapRule} {j : Nat} (h : Rel r (j + 2) (A ++ (T, n) :: (J ++ (E, m) :: C)) (A' ++ (T, n') :: (J ++ (E, m) :: C')))
     (hA : A'.length = A.length) (hC : C'.length = C.length) (hJ : J = [] ∨ J = [(F, 1)])
     (hn : 1 ≤ n) (hn' : 1 ≤ n') (hpos : PosR (A ++ (T, n) :: (J ++ (E, m) :: C))) {i : Nat}
     (hi : isEntB (moveX A n J m C) i = true) :
@@ -637,7 +637,7 @@ theorem origin {j : Nat} (h : Rel (j + 2) (A ++ (T, n) :: (J ++ (E, m) :: C)) (A
       · rw [hl, lenAt_def (A ++ _), hRc]; simp [lenAt]
       · rw [hl', lenAt_def (A' ++ _), hRc']; simp [lenAt]
 
-theorem skel_moveX {j : Nat} (h : Rel (j + 2) (A ++ (T, n) :: (J ++ (E, m) :: C)) (A' ++ (T, n') :: (J ++ (E, m) :: C')))
+theorem skel_moveX {r : GapRule} {j : Nat} (h : Rel r (j + 2) (A ++ (T, n) :: (J ++ (E, m) :: C)) (A' ++ (T, n') :: (J ++ (E, m) :: C')))
     (hA : A'.length = A.length) (hC : C'.length = C.length) (hJ : J = [] ∨ J = [(F, 1)]) (hn : 1 ≤ n) :
     Skel (moveX A n J m C) (moveX A' n' J m C') := by
   have hs := h.1
@@ -689,8 +689,8 @@ theorem skel_moveX {j : Nat} (h : Rel (j + 2) (A ++ (T, n) :: (J ++ (E, m) :: C)
 end Pair
 
 /-- **The margin lemma for Left moves.** -/
-theorem margin_left (j : Nat) (R R' X : RL) (h : Rel (j + 2) R R') (hR : maxB R = true) (hR' : maxB R' = true)
-    (hX : X ∈ lmovesR R) : ∃ X' ∈ lmovesR R', Rel j X X' := by
+theorem margin_left (r : GapRule) (j : Nat) (R R' X : RL) (h : Rel r (j + 2) R R') (hR : maxB R = true) (hR' : maxB R' = true)
+    (hX : X ∈ lmovesR R) : ∃ X' ∈ lmovesR R', Rel r j X X' := by
   obtain ⟨A, n, J, m, C, rfl, hJ, hn, hm, rfl⟩ := lmovesR_struct hR hX
   obtain ⟨A', n', C', rfl, hA, hC⟩ := decomp_rel h.1 hJ
   have hn' : 1 ≤ n' := posR_of_maxB hR' (T, n') (by simp)

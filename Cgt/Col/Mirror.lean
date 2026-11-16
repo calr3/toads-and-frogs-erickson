@@ -4,7 +4,7 @@ import Cgt.Col.Margin
 # Mirror symmetry of the margin relation, and Right moves
 
 Mirroring a run list reverses the order of its runs (index `i ↦ L - 1 - i`) and swaps toads and
-frogs. Dead runs, entries and lengths correspond, so `Rel j` is preserved (`Rel.mirror`). Right
+frogs. Dead runs, entries and lengths correspond, so `Rel r j` is preserved (`Rel.mirror`). Right
 moves are mirrored Left moves, so the margin lemma for Right moves (`margin_right`) follows from
 the one for Left moves.
 -/
@@ -75,7 +75,7 @@ theorem isEntB_mirror {R : RL} {i : Nat} :
     · rfl
     · have := (isEntB_iff.1 hb).1; rw [length_mirrorRL] at this; omega
 
-theorem Rel.mirror {j : Nat} {R R' : RL} (h : Rel j R R') : Rel j (mirrorRL R) (mirrorRL R') := by
+theorem Rel.mirror {r : GapRule} {j : Nat} {R R' : RL} (h : Rel r j R R') : Rel r j (mirrorRL R) (mirrorRL R') := by
   have hl := h.1.1
   refine ⟨⟨by rw [length_mirrorRL, length_mirrorRL, hl], fun i => ?_⟩, fun i hi => ?_, fun i k hi hk => ?_⟩
   · rcases Nat.lt_or_ge i R.length with hi | hi
@@ -94,10 +94,10 @@ theorem Rel.mirror {j : Nat} {R R' : RL} (h : Rel j R R') : Rel j (mirrorRL R) (
     exact h.2.2 _ _ hi.2 hk.2
 
 /-- **The margin lemma for Right moves.** -/
-theorem margin_right (j : Nat) (R R' Y : RL) (h : Rel (j + 2) R R') (hR : maxB R = true) (hR' : maxB R' = true)
-    (hY : Y ∈ rmovesR R) : ∃ Y' ∈ rmovesR R', Rel j Y Y' := by
+theorem margin_right (r : GapRule) (j : Nat) (R R' Y : RL) (h : Rel r (j + 2) R R') (hR : maxB R = true) (hR' : maxB R' = true)
+    (hY : Y ∈ rmovesR R) : ∃ Y' ∈ rmovesR R', Rel r j Y Y' := by
   obtain ⟨X, hX, rfl⟩ := List.mem_map.1 hY
-  obtain ⟨X', hX', hXX⟩ := margin_left j _ _ X h.mirror (maxB_mirrorRL hR) (maxB_mirrorRL hR') hX
+  obtain ⟨X', hX', hXX⟩ := margin_left r j _ _ X h.mirror (maxB_mirrorRL hR) (maxB_mirrorRL hR') hX
   exact ⟨mirrorRL X', List.mem_map_of_mem hX', hXX.mirror⟩
 
 end Col

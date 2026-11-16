@@ -6,6 +6,8 @@ A case is marked proved (however it is proved) if it is covered by
   (Cgt/Col/Column3.lean);
 * a single case checked by kernel `decide`: the `start a b` cases in Cgt/FiniteCases.lean;
 * a strategy certificate: the CgtCerts roots in lakefile.toml.
+The column b = 4 (Cgt/Col/Column4.lean) is proved with a finite check by `native_decide`, which
+trusts the Lean compiler; its cells get their own mark unless they are proved otherwise too.
 (3, 2) is proved not infinitesimal. Otherwise a case is confirmed by the exact solver (README
 "Computational evidence") or not computed.
 
@@ -31,6 +33,8 @@ def mark(a, b):
         return '🔷'
     if a <= 2 or b <= 1 or (b == 2 and a >= 4) or b == 3 or (a, b) in kernel or (a, b) in certs:
         return '🟩'
+    if b == 4:
+        return '🟦'
     if b <= SOLVER.get(a, -1):
         return '·'
     return ''

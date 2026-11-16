@@ -17,8 +17,8 @@ namespace Cgt
 namespace Col
 open Cell TF Game
 
-theorem hcU : ∀ k ∈ colB3U.toList, ∀ W ∈ witOf k, chkU colB3U colB3N W = true := by
-  have h : colB3U.toList.all (fun k => (witOf k).all (chkU colB3U colB3N)) = true :=
+theorem hcU : ∀ k ∈ colB3U.toList, ∀ W ∈ witOf ruleP k, chkU ruleP colB3U colB3N W = true := by
+  have h : colB3U.toList.all (fun k => (witOf ruleP k).all (chkU ruleP colB3U colB3N)) = true :=
     all_of_sizes _ [270, 48, 44, 20] _ (by decide +kernel) fun i hi => by
       match i, hi with
       | 0, _ => exact blkB3U_0
@@ -29,8 +29,8 @@ theorem hcU : ∀ k ∈ colB3U.toList, ∀ W ∈ witOf k, chkU colB3U colB3N W =
   simp only [List.all_eq_true] at h
   exact h
 
-theorem hcN : ∀ k ∈ colB3N.toList, ∀ W ∈ witOf k, chkN colB3N W = true := by
-  have h : colB3N.toList.all (fun k => (witOf k).all (chkN colB3N)) = true :=
+theorem hcN : ∀ k ∈ colB3N.toList, ∀ W ∈ witOf ruleP k, chkN ruleP colB3N W = true := by
+  have h : colB3N.toList.all (fun k => (witOf ruleP k).all (chkN ruleP colB3N)) = true :=
     all_of_sizes _ [769, 463, 257, 155, 300, 113, 167, 103, 47, 45, 223, 7] _ (by decide +kernel) fun i hi => by
       match i, hi with
       | 0, _ => exact blkB3N_4
@@ -73,7 +73,7 @@ theorem cellAt_s3 (a i : Nat) : cellAt (s3 a) i = cellAt (s3 (a + 2)) i := by
   | i + 3 => simp [cellAt, runAt, s3, List.getD]
 
 /-- Beyond `a = 6`, the start keys repeat with period 2. -/
-theorem rel_s3 {a : Nat} (ha : 6 ≤ a) : Rel 0 (s3 a) (s3 (a + 2)) := by
+theorem rel_s3 {a : Nat} (ha : 6 ≤ a) : Rel ruleP 0 (s3 a) (s3 (a + 2)) := by
   refine ⟨⟨rfl, fun i => ⟨cellAt_s3 a i, ?_, ?_⟩⟩, fun i _ => ?_, fun i k _ _ => ?_⟩
   · rw [lenAt_s3, lenAt_s3]; split <;> (try split) <;> omega
   · intro h; rw [lenAt_s3, lenAt_s3]
@@ -82,12 +82,12 @@ theorem rel_s3 {a : Nat} (ha : 6 ≤ a) : Rel 0 (s3 a) (s3 (a + 2)) := by
     | 1 => rfl
     | 2 => simp [cellAt, runAt, s3] at h
     | i + 3 => simp
-  · rw [lenAt_s3, lenAt_s3]; unfold close
+  · rw [lenAt_s3, lenAt_s3]; unfold close; simp only [ruleP]
     split <;> (try split) <;> omega
-  · rw [lenAt_s3, lenAt_s3, lenAt_s3, lenAt_s3]; unfold close
+  · rw [lenAt_s3, lenAt_s3, lenAt_s3, lenAt_s3]; unfold close; simp only [ruleP]
     split <;> split <;> (try split) <;> (try split) <;> omega
 
-theorem key_s3 : ∀ a, 2 ≤ a → colB3U.mem (keyOf (s3 a)) = true
+theorem key_s3 : ∀ a, 2 ≤ a → colB3U.mem (keyOf ruleP (s3 a)) = true
   | 2, _ => by decide +kernel
   | 3, _ => by decide +kernel
   | 4, _ => by decide +kernel
@@ -99,7 +99,7 @@ theorem key_s3 : ∀ a, 2 ≤ a → colB3U.mem (keyOf (s3 a)) = true
     exact key_s3 (a + 6) (by omega)
 
 /-- **The column `b = 3`, given the margin lemmas.** -/
-theorem infinitesimal_start_three_of (hm : Margin) (a : Nat) : Infinitesimal (tf (start a 3)) := by
+theorem infinitesimal_start_three_of (hm : Margin ruleP) (a : Nat) : Infinitesimal (tf (start a 3)) := by
   match a with
   | 0 => exact infinitesimal_start_a_zero 3
   | 1 => exact infinitesimal_start_one 3

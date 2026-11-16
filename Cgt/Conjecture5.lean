@@ -22,6 +22,10 @@ This file states the conjecture (`Conjecture5`) and collects what is proved so f
   `Cgt/Col/Column3.lean`);
 * every case with `2a + b ≤ 12` (other than `(3, 2)`) is checked by the kernel.
 
+`b = 4` also holds for every `a` (`infinitesimal_start_b_four`, `Cgt/Col/Column4.lean`), but its
+finite check is evaluated by `native_decide`, which trusts Lean's compiler as well as the kernel.
+It is therefore not imported here; build it with `lake build CgtNative`.
+
 The general case is open.
 -/
 

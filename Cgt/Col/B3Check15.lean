@@ -5,7 +5,7 @@ import Cgt.Col.B3Data
 namespace Cgt
 namespace Col
 
-theorem chkB3N_220 : ((colB3N.toList.drop 2642).take 7).all (fun k => (witOf k).all (chkN colB3N)) = true := by decide +kernel
+theorem chkB3N_220 : ((colB3N.toList.drop 2642).take 7).all (fun k => (witOf ruleP k).all (chkN ruleP colB3N)) = true := by decide +kernel
 
 end Col
 end Cgt

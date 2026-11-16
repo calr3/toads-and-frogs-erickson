@@ -10,10 +10,15 @@ All definitions here are computable; the kernel evaluates them in the finite che
   these runs never move again).
 * Entries: the live toad and frog runs of length `≥ 2`. Together with an anchor of value `2` they
   are sorted by (length, index); `sortE`.
-* `keyOf R`: the runs, each as its cell and its class (empty runs and runs of length 1 exactly;
-  dead runs of length `≥ 2` only as "dead"; entries only as "long"), the sorted order of the entries, and the gaps between
-  consecutive sorted lengths, capped at `M + 1 + parity` above `M = 2`.
-* `witOf k`: the run lists with key `k` whose capped gaps are realised by `c`, `c + 2` or `c + 4`.
+* `keyOf r R`: the runs, each as its cell and its class (empty runs and runs of length 1 exactly;
+  dead runs of length `≥ 2` only as "dead"; entries only as "long"), the sorted order of the
+  entries, and the gaps between consecutive sorted lengths, recorded by the gap rule `r`: exactly
+  up to `r.m`, above that only as "far", with the parity of the gap unless `r.par = 0`.
+* `witOf r k`: the run lists with key `k` whose far gaps `c` are realised by `c`, `c + 2`, `c + 4`
+  (with parity) or by `c`, `c + 1`, …, `c + 4` (without).
+
+The column `b = 3` uses the rule `ruleP` (exact up to 2, parity above), the column `b = 4` the
+rule `ruleF` (exact up to 1, only "far" above).
 -/
 
 namespace Cgt
@@ -62,10 +67,21 @@ def entries (R : RL) : List (Nat × Nat) :=
 
 /-! ### Keys -/
 
-def M : Nat := 2
+/-- How a gap between consecutive sorted lengths is recorded: exactly up to `m`; above that only
+as "far", together with its parity unless `par = 0`. -/
+structure GapRule where
+  m : Nat
+  par : Nat
 
-/-- Capped gap: exact up to `M`, above that only its parity. -/
-def capG (g : Nat) : Nat := if g ≤ M then g else M + 1 + (g - M - 1) % 2
+/-- The rule of the column `b = 3`: exact up to 2, parity above. -/
+def ruleP : GapRule := ⟨2, 1⟩
+
+/-- The rule of the column `b = 4`: exact up to 1, only "far" above. -/
+def ruleF : GapRule := ⟨1, 0⟩
+
+/-- Capped gap: exact up to `r.m`; above that `r.m + 1`, plus the parity if kept. -/
+def capG (r : GapRule) (g : Nat) : Nat :=
+  if g ≤ r.m then g else if r.par = 0 then r.m + 1 else r.m + 1 + (g - r.m - 1) % 2
 
 def cellCode : Cell → Nat
   | E => 0
@@ -86,20 +102,22 @@ def gapsFrom : Nat → List (Nat × Nat) → List Nat
   | _, [] => []
   | p, x :: l => (x.1 - p) :: gapsFrom x.1 l
 
-def keyOf (R : RL) : List Nat :=
+def keyOf (r : GapRule) (R : RL) : List Nat :=
   let es := entries R
   [R.length] ++ ((List.range R.length).flatMap fun i => [cellCode (cellAt R i), clsAt R i]) ++
-    [es.length] ++ es.map Prod.snd ++ (gapsFrom 2 es).map capG
+    [es.length] ++ es.map Prod.snd ++ (gapsFrom 2 es).map (capG r)
 
 /-! ### Witnesses -/
 
-/-- The realisations of a capped gap: itself if exact, else `c`, `c + 2`, `c + 4`. -/
-def gapChoices (c : Nat) : List Nat := if c ≤ M then [c] else [c, c + 2, c + 4]
+/-- The realisations of a capped gap: itself if exact; else `c`, `c + 2`, `c + 4` with parity
+and `c`, `c + 1`, …, `c + 4` without. -/
+def gapChoices (r : GapRule) (c : Nat) : List Nat :=
+  if c ≤ r.m then [c] else if r.par = 0 then [c, c + 1, c + 2, c + 3, c + 4] else [c, c + 2, c + 4]
 
 /-- All choice vectors for a list of capped gaps. -/
-def choicesAll : List Nat → List (List Nat)
+def choicesAll (r : GapRule) : List Nat → List (List Nat)
   | [] => [[]]
-  | c :: cs => (gapChoices c).flatMap fun g => (choicesAll cs).map (g :: ·)
+  | c :: cs => (gapChoices r c).flatMap fun g => (choicesAll r cs).map (g :: ·)
 
 /-- Prefix sums from the anchor: the lengths of the sorted entries. -/
 def prefixVals : Nat → List Nat → List Nat
@@ -122,11 +140,11 @@ def build (k : List Nat) (gs : List Nat) : RL :=
   (List.range L).map fun i =>
     (codeCell (toks.getD (2 * i) 0), lenFor (toks.getD (2 * i + 1) 0) idx vals i)
 
-def witOf (k : List Nat) : List RL :=
+def witOf (r : GapRule) (k : List Nat) : List RL :=
   let L := k.headD 0
   let ne := (k.drop (1 + 2 * L)).headD 0
   let caps := (k.drop (2 + 2 * L + ne)).take ne
-  (choicesAll caps).map (build k)
+  (choicesAll r caps).map (build k)
 
 end Col
 end Cgt

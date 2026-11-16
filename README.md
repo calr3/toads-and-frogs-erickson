@@ -5,7 +5,10 @@
 `(a, b)` except `(a, b) = (3, 2)`. (Conjecture 7.5 in [[E96]](#references).)
 
 This repository is a self-contained Lean 4 development aimed at this conjecture. It
-uses Lean core only (no Mathlib) and has no `sorry`.
+uses Lean core only (no Mathlib) and has no `sorry`. Everything in the default build is checked
+by Lean's kernel. The one exception is the column `b = 4` (🟦 below): its finite check is too
+large for the kernel and is evaluated by `native_decide`, which also trusts Lean's compiler. It
+is built separately, with `lake build CgtNative`.
 
 ## What is new
 
@@ -14,12 +17,15 @@ uses Lean core only (no Mathlib) and has no `sorry`.
   [[T11]](#references); `b = 3` was known numerically only for small `a`. The proof is a
   computer-found strategy over 3,031 "run shapes", kernel-checked, with a general margin argument
   for positions with any number of runs. See [docs/COLUMN_B3.md](docs/COLUMN_B3.md).
-* **New as far as we know, computer-assisted and not yet in Lean: the column `b = 4`.** The
-  same method, with far gaps between long runs kept without their parity, gives Right a strategy
-  over 233,087 run shapes for every `a`. The shape set is checked by two independent programs,
-  and the strategy on the real game trees for every `a ≤ 24`; the exact solver had reached
-  `a = 12`. The kernel check would be about 270 times the size of the `b = 3` one, so this is not
-  a Lean theorem yet. See [docs/RESEARCH_NOTES.md §14](docs/RESEARCH_NOTES.md).
+* **New, as far as we know: the column `b = 4`, proved with `native_decide`.** `Tᵃ□⁴Fᵃ` is
+  infinitesimal for every `a` (`infinitesimal_start_b_four`). The method is that of `b = 3`, with
+  far gaps between long runs recorded without their parity; Right's strategy uses 233,087 run
+  shapes. Its finite check (2.8 million witnesses, about 270 times the `b = 3` one) is evaluated by
+  `native_decide`, so this theorem trusts Lean's compiler as well as the kernel: `#print axioms`
+  lists, besides the usual three, one axiom per `native_decide` use, asserting the result of that
+  compiled evaluation. It is kept out of the default build and of `conjecture5_provedRegion`.
+  The shape set is also checked by two independent programs, and on the real game trees for
+  every `a ≤ 24`. See [docs/RESEARCH_NOTES.md §14](docs/RESEARCH_NOTES.md).
 * **New, as far as we know: the row `a = 2`.** `TT□ᵇFF` is infinitesimal for every
   `b` (`infinitesimal_start_two`). Before this, the row was known only numerically: Erickson
   tabulated `b ≤ 6` [[E96]](#references) and Thanatipanonda `b ≤ 103` [[T11]](#references). The
@@ -59,6 +65,7 @@ uses Lean core only (no Mathlib) and has no `sorry`.
 | `b = 1`, all `a` (`Tᵃ □ Fᵃ`) | `infinitesimal_start_b_one` | Known ([[WW]](#references), as cited in [[E96]](#references) §7) |
 | `b = 2`, all `a ≥ 4` (incl. Lemma C.1) | `infinitesimal_start_b_two`, `upperZero_c1` | Known: Thanatipanonda's theorem [[T11]](#references) |
 | **`b = 3`, all `a` (`Tᵃ □³ Fᵃ`)**: machine-checked strategy over 3,031 run shapes | `infinitesimal_start_b_three` (`Cgt/Col/Column3.lean`) | **New** as far as we know; values known numerically for small `a` ([[E96]](#references), [[T11]](#references) tables) |
+| **`b = 4`, all `a` (`Tᵃ □⁴ Fᵃ`)**: strategy over 233,087 run shapes; 🟦 finite check by `native_decide` (trusts the compiler) | `infinitesimal_start_b_four` (`Cgt/Col/Column4.lean`; `lake build CgtNative`) | **New** as far as we know; values known numerically for small `a` ([[E96]](#references), [[T11]](#references) tables) |
 | One-sided Death Leap Principle, general | `le_zero_of_dlp` | Known: [[T11]](#references); the two-sided version is in [[E96]](#references) |
 | Every case with `2a + b ≤ 12`, kernel-checked | `Cgt/FiniteCases.lean` | Known numerically ([[E96]](#references), [[T11]](#references) tables) |
 | `(3,7)` to `(3,12)`, `(4,5)`, `(5,3)`, `(6,3)`: strategy certificates | `Cgt/Cert/` (`lake build CgtCerts`) | Known numerically ([[T11]](#references) table) |
@@ -80,7 +87,7 @@ the side. Generated from the Lean sources by `scripts/gen_grid.py`.
 | **1** | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 |
 | **2** | 🟩 | 🟩 | 🟩 | 🔷 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 |
 | **3** | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 |
-| **4** | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | · | · | · | · | · | · | · | · |  |  |  |
+| **4** | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟦 | 🟦 | 🟦 | 🟦 | 🟦 | 🟦 | 🟦 | 🟦 | 🟦 | 🟦 | 🟦 |
 | **5** | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | · | · | · | · | · |  |  |  |  |  |  |
 | **6** | 🟩 | 🟩 | 🟩 | 🟩 | · | · | · | · | · |  |  |  |  |  |  |  |
 | **7** | 🟩 | 🟩 | 🟩 | 🟩 | · | · | · | · |  |  |  |  |  |  |  |  |
@@ -107,7 +114,8 @@ the side. Generated from the Lean sources by `scripts/gen_grid.py`.
 
 | Mark | Meaning |
 | :-: | --- |
-| 🟩 | Proved infinitesimal in Lean. |
+| 🟩 | Proved infinitesimal in Lean, checked by the kernel. |
+| 🟦 | Proved infinitesimal in Lean with a finite check by `native_decide`, which trusts Lean's compiler as well as the kernel (the column `b = 4`; `lake build CgtNative`). |
 | 🔷 | `(3, 2)`: the exception in the conjecture, proved **not** infinitesimal (`TTT□□FFF = ±1/8`, `not_infinitesimal_3_2`). |
 | · | Not proved in Lean, but confirmed by the exact solver (see below). |
 | *(blank)* | Not computed. |
@@ -117,6 +125,8 @@ How a cell is proved:
 * `a ≤ 2` (every `b`), `b ≤ 1` (every `a`), `b = 2` with `a ≥ 4`, and `b = 3` (every `a`): one
   theorem per family.
   These continue beyond the edges of the table.
+* `b = 4` (every `a`, 🟦 where not proved otherwise too): one theorem,
+  `infinitesimal_start_b_four`, whose finite check is evaluated by `native_decide`.
 * The other cells are single cases:
   * most are checked by kernel `decide` (`Cgt/FiniteCases.lean`). With the families above they
     make up `ProvedRegion`, covered by `conjecture5_provedRegion`;
@@ -146,11 +156,14 @@ not built with `CgtCerts` and is shown as · above.
   two adjacent empty squares, so the position is `≤ 0`).
 * `Cgt/Four.lean`, `Cgt/Shape4.lean`, `Cgt/RowA2.lean`: the row `a = 2`. See
   [The row a = 2](#the-row-a--2) below.
-* `Cgt/Col/`: the column `b = 3`. Positions as run lists, dead runs, keys, the margin relation, the
-  soundness theorem, and the kernel-checked data. See [docs/COLUMN_B3.md](docs/COLUMN_B3.md).
+* `Cgt/Col/`: the columns `b = 3` and `b = 4`. Positions as run lists, dead runs, keys, the
+  margin relation (for any gap rule), the soundness theorem, the kernel-checked data of `b = 3`
+  and the `native_decide`-checked data of `b = 4` (`Cgt/Col/B4*.lean`, `Column4.lean`, generated by
+  `scripts/gen_b4.py`). See [docs/COLUMN_B3.md](docs/COLUMN_B3.md).
 * `Cgt/RowA2Zero.lean`, `Cgt/RowA2Values.lean`: exact values in the row `a = 2`.
 
-Build with `lake build` (Lean `v4.36.0-rc2`).
+Build with `lake build` (Lean `v4.36.0-rc2`). `lake build CgtNative` builds the column `b = 4`
+(about 15 minutes; it uses `native_decide`).
 
 * `Cgt/Certificate.lean` and `scripts/gen_cert.py`: turn an explicit Right strategy found by a
   solver into a Lean proof, with one small kernel-checked lemma per position. `lake build
@@ -202,10 +215,12 @@ short:
 
 **[docs/COLUMN_B3.md](docs/COLUMN_B3.md)** has the full account.
 
-For `b = 4` the same method works once far gaps between long runs keep only their sign, not
-their parity: Right needs 13 runs, and 233,087 shapes (`tools/column/b4_shapes.txt.gz`). The set
-is checked independently but not in Lean: its kernel check would be about 270 times the size of
-the `b = 3` one (`docs/RESEARCH_NOTES.md` §14).
+**The column `b = 4`** (`infinitesimal_start_b_four`, `Cgt/Col/Column4.lean`) uses the same
+framework with another gap rule: far gaps between long runs keep only their sign, not their parity
+(`ruleF`; `b = 3` uses `ruleP`). Right needs 13 runs and 233,087 shapes
+(`tools/column/b4_shapes.txt.gz`). The finite check is about 270 times the size of the `b = 3`
+one. It is evaluated by `native_decide` in 8 files, so this theorem trusts Lean's compiler as well
+as the kernel (`docs/RESEARCH_NOTES.md` §14).
 
 ## Computational evidence beyond the formal results
 

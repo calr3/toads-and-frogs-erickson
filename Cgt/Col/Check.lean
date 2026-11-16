@@ -49,16 +49,16 @@ theorem mem_toList : ∀ {t : LTree} {k : List Nat}, mem t k = true → k ∈ to
 end LTree
 
 /-- Right, to move at `Y` and still holding his pass, can pass (key in `tN`) or reply into `tU`. -/
-def lfOK (tU tN : LTree) (Y : RL) : Bool :=
-  tN.mem (keyOf Y) || (rmovesR Y).any fun Z => tU.mem (keyOf Z)
+def lfOK (r : GapRule) (tU tN : LTree) (Y : RL) : Bool :=
+  tN.mem (keyOf r Y) || (rmovesR Y).any fun Z => tU.mem (keyOf r Z)
 
-def chkU (tU tN : LTree) (W : RL) : Bool := lfOK tU tN W && (lmovesR W).all (lfOK tU tN)
+def chkU (r : GapRule) (tU tN : LTree) (W : RL) : Bool := lfOK r tU tN W && (lmovesR W).all (lfOK r tU tN)
 
-def chkN (tN : LTree) (W : RL) : Bool :=
-  (lmovesR W).all fun X => (rmovesR X).any fun Z => tN.mem (keyOf Z)
+def chkN (r : GapRule) (tN : LTree) (W : RL) : Bool :=
+  (lmovesR W).all fun X => (rmovesR X).any fun Z => tN.mem (keyOf r Z)
 
-def checkCol (tU tN : LTree) : Bool :=
-  tU.toList.all (fun k => (witOf k).all (chkU tU tN)) && tN.toList.all (fun k => (witOf k).all (chkN tN))
+def checkCol (r : GapRule) (tU tN : LTree) : Bool :=
+  tU.toList.all (fun k => (witOf r k).all (chkU r tU tN)) && tN.toList.all (fun k => (witOf r k).all (chkN r tN))
 
 /-- A check of the range `s .. s + cs.sum` of a list, split into consecutive chunks of sizes `cs`. -/
 theorem all_range_of_sizes {α : Type} (p : α → Bool) :

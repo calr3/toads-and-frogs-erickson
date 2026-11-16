@@ -16,12 +16,12 @@ namespace Col
 open Cell TF Game
 
 /-- What the soundness proof needs from `Rel`. -/
-structure Margin : Prop where
-  wit : ∀ R : RL, maxB R = true → ∃ W ∈ witOf (keyOf R), Rel 4 R W ∧ maxB W = true
-  left : ∀ (j : Nat) (R R' X : RL), Rel (j + 2) R R' → maxB R = true → maxB R' = true →
-    X ∈ lmovesR R → ∃ X' ∈ lmovesR R', Rel j X X'
-  right : ∀ (j : Nat) (R R' Y : RL), Rel (j + 2) R R' → maxB R = true → maxB R' = true →
-    Y ∈ rmovesR R → ∃ Y' ∈ rmovesR R', Rel j Y Y'
+structure Margin (r : GapRule) : Prop where
+  wit : ∀ R : RL, maxB R = true → ∃ W ∈ witOf r (keyOf r R), Rel r 4 R W ∧ maxB W = true
+  left : ∀ (j : Nat) (R R' X : RL), Rel r (j + 2) R R' → maxB R = true → maxB R' = true →
+    X ∈ lmovesR R → ∃ X' ∈ lmovesR R', Rel r j X X'
+  right : ∀ (j : Nat) (R R' Y : RL), Rel r (j + 2) R R' → maxB R = true → maxB R' = true →
+    Y ∈ rmovesR R → ∃ Y' ∈ rmovesR R', Rel r j Y Y'
 
 theorem pot_lmovesR {R X : RL} (hR : maxB R = true) (hX : X ∈ lmovesR R) : pot (expand X) < pot (expand R) :=
   pot_lt_of_mem_leftMoves ((mem_leftMoves_expand (posR_of_maxB hR)).2 ⟨X, hX, rfl⟩)
@@ -57,12 +57,12 @@ theorem all_of_sizes {α : Type} (p : α → Bool) :
     have := h (i + 1) (by simp; omega)
     simpa [List.drop_drop, List.take_succ_cons, List.sum_cons] using this
 
-theorem sound (hm : Margin) (tU tN : LTree)
-    (hcU : ∀ k ∈ tU.toList, ∀ W ∈ witOf k, chkU tU tN W = true)
-    (hcN : ∀ k ∈ tN.toList, ∀ W ∈ witOf k, chkN tN W = true) :
+theorem sound {r : GapRule} (hm : Margin r) (tU tN : LTree)
+    (hcU : ∀ k ∈ tU.toList, ∀ W ∈ witOf r k, chkU r tU tN W = true)
+    (hcN : ∀ k ∈ tN.toList, ∀ W ∈ witOf r k, chkN r tN W = true) :
     ∀ (n : Nat) (R : RL), maxB R = true → pot (expand R) < n →
-      (tN.mem (keyOf R) = true → le (tf (expand R)) zero) ∧
-      (tU.mem (keyOf R) = true → UpperZero (tf (expand R))) := by
+      (tN.mem (keyOf r R) = true → le (tf (expand R)) zero) ∧
+      (tU.mem (keyOf r R) = true → UpperZero (tf (expand R))) := by
   intro n
   induction n with
   | zero => intro R _ h; omega
@@ -70,7 +70,7 @@ theorem sound (hm : Margin) (tU tN : LTree)
     intro R hR hpot
     have hpos := posR_of_maxB hR
     -- the normal-play claim
-    have hN : tN.mem (keyOf R) = true → le (tf (expand R)) zero := by
+    have hN : tN.mem (keyOf r R) = true → le (tf (expand R)) zero := by
       intro hk
       obtain ⟨W, hW, hRW, hWm⟩ := hm.wit R hR
       have hchk := hcN _ (LTree.mem_toList hk) W hW
@@ -84,7 +84,7 @@ theorem sound (hm : Margin) (tU tN : LTree)
       have hXm' := maxB_of_mem_lmovesR hWm hX'
       obtain ⟨Z', hZ', hk'⟩ := List.any_eq_true.1 (hchk X' hX')
       obtain ⟨Z, hZ, hZZ⟩ := hm.right 0 X' X Z' hXX.symm hXm' hXm hZ'
-      have hkey : keyOf Z = keyOf Z' := (keyOf_eq_of_rel hZZ).symm
+      have hkey : keyOf r Z = keyOf r Z' := (keyOf_eq_of_rel hZZ).symm
       have hZm := maxB_of_mem_rmovesR hXm hZ
       refine ⟨expand Z, (mem_rightMoves_expand (posR_of_maxB hXm)).2 ⟨Z, hZ, rfl⟩, ?_⟩
       have h1 := pot_rmovesR hXm hZ
@@ -109,7 +109,7 @@ theorem sound (hm : Margin) (tU tN : LTree)
       · right
         obtain ⟨Z', hZ', hk'⟩ := List.any_eq_true.1 h
         obtain ⟨Z, hZ, hZZ⟩ := hm.right 2 W R Z' hRW.symm hWm hR hZ'
-        have hkey : keyOf Z = keyOf Z' := (keyOf_eq_of_rel (hZZ.mono' (by omega))).symm
+        have hkey : keyOf r Z = keyOf r Z' := (keyOf_eq_of_rel (hZZ.mono' (by omega))).symm
         have hZm := maxB_of_mem_rmovesR hR hZ
         refine ⟨expand Z, (mem_rightMoves_expand hpos).2 ⟨Z, hZ, rfl⟩, ?_⟩
         have h1 := pot_rmovesR hR hZ
@@ -131,7 +131,7 @@ theorem sound (hm : Margin) (tU tN : LTree)
       · right
         obtain ⟨Z', hZ', hk'⟩ := List.any_eq_true.1 h
         obtain ⟨Z, hZ, hZZ⟩ := hm.right 0 X' X Z' hXX.symm hXm' hXm hZ'
-        have hkey : keyOf Z = keyOf Z' := (keyOf_eq_of_rel hZZ).symm
+        have hkey : keyOf r Z = keyOf r Z' := (keyOf_eq_of_rel hZZ).symm
         have hZm := maxB_of_mem_rmovesR hXm hZ
         refine ⟨expand Z, (mem_rightMoves_expand (posR_of_maxB hXm)).2 ⟨Z, hZ, rfl⟩, ?_⟩
         have h1 := pot_rmovesR hXm hZ

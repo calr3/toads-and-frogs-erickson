@@ -20,8 +20,8 @@ namespace Cgt
 
 namespace Col
 
-/-- The margin relation has the three properties the soundness proof needs. -/
-theorem margin : Margin := ⟨wit_complete, margin_left, margin_right⟩
+/-- The margin relation of the rule `ruleP` has the three properties the soundness proof needs. -/
+theorem margin : Margin ruleP := ⟨wit_complete ruleP, margin_left ruleP, margin_right ruleP⟩
 
 end Col
 

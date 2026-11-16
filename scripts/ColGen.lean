@@ -5,8 +5,9 @@ Generator for the column data: reads `MODE CELLS` lines (one witness position pe
 `tools/column/to_witness.py`), computes the Lean keys, and checks the closure with exactly the
 definitions of `Cgt/Col/Key.lean`.
 
-Usage: lake env lean --run scripts/ColGen.lean WITNESSES [OUT.lean NAME]
-(with OUT.lean: write the keys as two search trees `NAMEU`, `NAMEN`)
+Usage: lake env lean --run scripts/ColGen.lean WITNESSES [OUT.lean NAME [WORK]]
+(with OUT.lean: write the keys as two search trees `NAMEU`, `NAMEN`). The gap rule is `ruleP`
+(the column `b = 3`); with the environment variable `RULE=F` it is `ruleF` (the column `b = 4`).
 -/
 open Cgt Cgt.Col Cell
 
@@ -30,11 +31,13 @@ def emitTree (name : String) (keys : List (List Nat)) : String :=
   let a := keys.toArray.qsort (fun x y => lexLt x y)
   s!"set_option maxRecDepth 100000 in\n/-- {a.size} keys (only evaluated by the kernel, so not compiled). -/\nnoncomputable def {name} : LTree :=\n  {treeTerm a 0 a.size}\n"
 
-def lfOKs (U N : Std.HashSet (List Nat)) (Y : RL) : Bool :=
-  N.contains (keyOf Y) || (rmovesR Y).any fun Z => U.contains (keyOf Z)
+def lfOKs (r : GapRule) (U N : Std.HashSet (List Nat)) (Y : RL) : Bool :=
+  N.contains (keyOf r Y) || (rmovesR Y).any fun Z => U.contains (keyOf r Z)
 
 def main (args : List String) : IO Unit := do
   let file := args.headD ""
+  let r := if (← IO.getEnv "RULE") == some "F" then ruleF else ruleP
+  let b := if (← IO.getEnv "RULE") == some "F" then 4 else 3
   let lines ← IO.FS.lines file
   let mut U : Std.HashSet (List Nat) := {}
   let mut N : Std.HashSet (List Nat) := {}
@@ -42,39 +45,39 @@ def main (args : List String) : IO Unit := do
     let parts := l.splitOn " "
     if parts.length < 2 then continue
     let R := rle (parseCells parts[1]!)
-    if parts[0]! == "U" then U := U.insert (keyOf R) else N := N.insert (keyOf R)
+    if parts[0]! == "U" then U := U.insert (keyOf r R) else N := N.insert (keyOf r R)
   IO.println s!"{U.size} U keys, {N.size} N keys"
   let mut bad := 0
   let mut nw := 0
   let mut nm := 0
   for k in U.toList do
-    for W in witOf k do
+    for W in witOf r k do
       nw := nw + 1
       let ms := lmovesR W
       nm := nm + ms.length + 1
-      unless lfOKs U N W && ms.all (lfOKs U N) do
+      unless lfOKs r U N W && ms.all (lfOKs r U N) do
         bad := bad + 1
         if bad ≤ 5 then IO.println s!"U fail {k} at {repr W}"
   for k in N.toList do
-    for W in witOf k do
+    for W in witOf r k do
       nw := nw + 1
       let ms := lmovesR W
       nm := nm + ms.length
-      unless ms.all (fun X => (rmovesR X).any fun Z => N.contains (keyOf Z)) do
+      unless ms.all (fun X => (rmovesR X).any fun Z => N.contains (keyOf r Z)) do
         bad := bad + 1
         if bad ≤ 5 then IO.println s!"N fail {k} at {repr W}"
   IO.println s!"{nw} witnesses, {nm} Left moves and passes, {bad} failures"
   let mut miss := 0
   for a in List.range 40 do
     if a ≥ 2 then
-      unless U.contains (keyOf [(T, a), (E, 3), (F, a)]) do miss := miss + 1
+      unless U.contains (keyOf r [(T, a), (E, b), (F, a)]) do miss := miss + 1
   IO.println s!"start shapes missing for a = 2..39: {miss}"
   -- work per key, in the order of the trees (sorted)
   if args.length ≥ 4 then
     let work (mode : String) (k : List Nat) : Nat :=
-      (witOf k).foldl (fun acc W =>
+      (witOf r k).foldl (fun acc W =>
         let ms := lmovesR W
-        acc + 1 + (keyOf W).length + ms.foldl (fun a X => a + 1 + (rmovesR X).length * (keyOf X).length) 0) 0
+        acc + 1 + (keyOf r W).length + ms.foldl (fun a X => a + 1 + (rmovesR X).length * (keyOf r X).length) 0) 0
     let su := (U.toList.toArray.qsort (fun x y => lexLt x y)).toList
     let sn := (N.toList.toArray.qsort (fun x y => lexLt x y)).toList
     let lines := su.map (fun k => s!"U {work "U" k}") ++ sn.map (fun k => s!"N {work "N" k}")

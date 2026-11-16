@@ -27,19 +27,19 @@ fileno, files, blocks = 0, [], {'U': [], 'N': []}
 for mode in 'UN':
     sizes = out[mode]
     tree = f'col{name}{mode}'
-    fn = f'(chkU col{name}U col{name}N)' if mode == 'U' else f'(chkN col{name}N)'
+    fn = f'(chkU ruleP col{name}U col{name}N)' if mode == 'U' else f'(chkN ruleP col{name}N)'
     starts, st = [], 0
     for c in sizes:
         starts.append(st); st += c
     for j in range(0, len(sizes), per):
         grp = list(range(j, min(len(sizes), j + per)))
         thms = [f'theorem chk{name}{mode}_{i} : (({tree}.toList.drop {starts[i]}).take {sizes[i]}).all '
-                f'(fun k => (witOf k).all {fn}) = true := by decide +kernel' for i in grp]
+                f'(fun k => (witOf ruleP k).all {fn}) = true := by decide +kernel' for i in grp]
         cs = [sizes[i] for i in grp]
         cases = '\n'.join(f'    | {k}, _ => exact chk{name}{mode}_{i}' for k, i in enumerate(grp))
         blk = (f'/-- Keys {starts[grp[0]]} to {starts[grp[0]] + sum(cs) - 1}. -/\n'
                f'theorem blk{name}{mode}_{fileno} : (({tree}.toList.drop {starts[grp[0]]}).take {sum(cs)}).all '
-               f'(fun k => (witOf k).all {fn}) = true :=\n'
+               f'(fun k => (witOf ruleP k).all {fn}) = true :=\n'
                f'  all_range_of_sizes _ {cs} _ {starts[grp[0]]} fun i hi => by\n'
                f'    match i, hi with\n{cases}\n'
                f'    | _ + {len(cs)}, h => exact absurd h (by simp)')

@@ -27,7 +27,7 @@ INF = 10 ** 6
 
 def mark(a, b):
     if (a, b) == (3, 2):
-        return '❌'
+        return '◆'
     if a <= 2 or b <= 1 or (b == 2 and a >= 4) or (a, b) in kernel or (a, b) in certs:
         return '🟩'
     if b <= SOLVER.get(a, -1):

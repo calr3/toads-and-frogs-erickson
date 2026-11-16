@@ -20,3 +20,6 @@ import Cgt.RowA2ZeroData
 import Cgt.RowA2Zero
 import Cgt.RowA2Values
 import Cgt.Col.Runs
+import Cgt.Col.Key
+import Cgt.Col.Check
+import Cgt.Col.Rel

@@ -23,12 +23,17 @@ vector<Pos> rm(const Pos &s) {
   }
   return o;
 }
-int DEAD = 1;
+int DEAD = 1, DEADRUNS = getenv("DEADRUNS") != nullptr;
 // Dead regions (Erickson): in a block of pieces with no empty square, everything from the first
 // TT to the last FF after it can never move again. Its contents never matter.
 vector<bool> deadRuns(const vector<pair<char,int>> &rs) {
   int m = rs.size(); vector<bool> d(m, false);
   if (DEAD == 0) return d;
+  if (getenv("DEADJ")) {   // junction rule only: a toad run >= 2 directly followed by a frog run >= 2
+    for (int k = 0; k + 1 < m; k++)
+      if (rs[k].first == 'T' && rs[k + 1].first == 'F' && rs[k].second >= 2 && rs[k + 1].second >= 2) d[k] = d[k + 1] = true;
+    return d;
+  }
   int i = 0;
   while (i < m) {
     if (rs[i].first == '.') { i++; continue; }
@@ -47,12 +52,14 @@ Pos norm(const Pos &p) {
   for (char c : p) { if (!rs.empty() && rs.back().first == c) rs.back().second++; else rs.push_back({c, 1}); }
   int m = rs.size(); vector<pair<int,int>> lv;
   vector<bool> dd = deadRuns(rs);
-  for (int i = 0; i < m; i++) if (rs[i].second >= K && !dd[i]) lv.push_back({rs[i].second, i});
+  for (int i = 0; i < m; i++) if (rs[i].second >= K && !dd[i] && rs[i].first != '.') lv.push_back({rs[i].second, i});
   stable_sort(lv.begin(), lv.end());
   vector<int> rank(m, -1); for (int k = 0; k < (int)lv.size(); k++) rank[lv[k].second] = k;
   string t;
   for (int i = 0; i < m; i++) {
-    if (dd[i]) { if (i == 0 || !dd[i - 1]) t += "XD"; continue; }
+    if (dd[i]) {
+      if (DEADRUNS) { t += rs[i].first; t += rs[i].second == 1 ? '1' : 'D'; continue; }   // each dead run, length free if >= 2
+      if (i == 0 || !dd[i - 1]) t += "XD"; continue; }
     t += rs[i].first; t += rank[i] < 0 ? char('0' + rs[i].second) : char('a' + rank[i]); }
   t += '|'; int prev = K;
   for (auto [l, i] : lv) { int g = l - prev; prev = l; t += char('0' + (g <= M ? g : M + 1 + (g - M - 1) % 2)); }

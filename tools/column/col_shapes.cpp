@@ -38,7 +38,7 @@
 //   CONC: largest board solved concretely for pruning; FB: most far gaps allowed after Right's replies)
 #include <bits/stdc++.h>
 using namespace std;
-int K = 4, RB = 10, B = 3, CONC = 28, FB = 99;
+int K = 4, RB = 10, B = 3, CONC = 28, FB = 99, MARGIN = getenv("MARGIN") ? atoi(getenv("MARGIN")) : 2;
 typedef string Pos;
 vector<Pos> lm(const Pos &s) {
   vector<Pos> o; int n = s.size();
@@ -70,12 +70,17 @@ int unbalanced = 0;
 // iff they are related with margin 0. A witness replaces each capped gap c by c (the position's
 // gap was c) or c + 2 (it was >= c + 2); the normal form of a position is one of its witnesses.
 typedef string Shape;
-int DEAD = 1;   // collapse dead TTFF blocks (their pieces never move; their lengths never matter)
+int DEAD = 1, DEADRUNS = getenv("DEADRUNS") != nullptr;   // collapse dead TTFF blocks (their pieces never move; their lengths never matter)
 // Dead regions (Erickson): in a block of pieces with no empty square, everything from the first
 // TT to the last FF after it can never move again. Its contents never matter.
 vector<bool> deadRuns(const vector<pair<char,int>> &rs) {
   int m = rs.size(); vector<bool> d(m, false);
   if (DEAD == 0) return d;
+  if (getenv("DEADJ")) {   // junction rule only: a toad run >= 2 directly followed by a frog run >= 2
+    for (int k = 0; k + 1 < m; k++)
+      if (rs[k].first == 'T' && rs[k + 1].first == 'F' && rs[k].second >= 2 && rs[k + 1].second >= 2) d[k] = d[k + 1] = true;
+    return d;
+  }
   int i = 0;
   while (i < m) {
     if (rs[i].first == '.') { i++; continue; }
@@ -91,12 +96,14 @@ vector<bool> deadRuns(const vector<pair<char,int>> &rs) {
 Shape shapeOf(const Pos &p) {
   auto rs = runs(p); int m = rs.size(); auto dd = deadRuns(rs);
   vector<pair<int,int>> lv;
-  for (int i = 0; i < m; i++) if (rs[i].second >= K && !dd[i]) lv.push_back({rs[i].second, i});
+  for (int i = 0; i < m; i++) if (rs[i].second >= K && !dd[i] && rs[i].first != '.') lv.push_back({rs[i].second, i});
   stable_sort(lv.begin(), lv.end());
   vector<int> rank(m, -1); for (int k = 0; k < (int)lv.size(); k++) rank[lv[k].second] = k;
   Shape t;
   for (int i = 0; i < m; i++) {
-    if (dd[i]) { if (i == 0 || !dd[i - 1]) t += "XD"; continue; }
+    if (dd[i]) {
+      if (DEADRUNS) { t += rs[i].first; t += rs[i].second == 1 ? '1' : 'D'; continue; }   // each dead run, length free if >= 2
+      if (i == 0 || !dd[i - 1]) t += "XD"; continue; }
     t += rs[i].first; t += rank[i] < 0 ? char('0' + rs[i].second) : char('a' + rank[i]); }
   t += '|';
   int prev = K;
@@ -107,11 +114,12 @@ vector<Pos> wit(const Shape &s) {
   size_t bar = s.find('|'); string sk = s.substr(0, bar), gs = s.substr(bar + 1);
   int L = gs.size(); vector<int> far; for (int k = 0; k < L; k++) if (gs[k] - '0' > M) far.push_back(k);
   vector<Pos> out;
-  for (int mask = 0; mask < (1 << far.size()); mask++) {
+  int base = MARGIN / 2 + 1, total = 1; for (size_t j = 0; j < far.size(); j++) total *= base;
+  for (int mask = 0; mask < total; mask++) {
     vector<int> g(L); for (int k = 0; k < L; k++) g[k] = gs[k] - '0';
-    for (size_t j = 0; j < far.size(); j++) if (mask >> j & 1) g[far[j]] += 2;
+    for (size_t j = 0, mm = mask; j < far.size(); j++, mm /= base) g[far[j]] += 2 * (mm % base);
     vector<int> len(L); int cur = K; for (int k = 0; k < L; k++) { cur += g[k]; len[k] = cur; }
-    Pos p; for (size_t i = 0; i < sk.size(); i += 2) { char c = sk[i], v = sk[i + 1]; if (c == 'X') p += "TTFF"; else p += string(v >= 'a' ? len[v - 'a'] : v - '0', c); }
+    Pos p; for (size_t i = 0; i < sk.size(); i += 2) { char c = sk[i], v = sk[i + 1]; if (c == 'X') p += "TTFF"; else p += string(v == 'D' ? 2 : v >= 'a' ? len[v - 'a'] : v - '0', c); }
     // balance check (all game positions have as many toads as frogs)
     if (count(p.begin(), p.end(), 'T') != count(p.begin(), p.end(), 'F')) unbalanced++;   // kept: needed for soundness
     out.push_back(p);

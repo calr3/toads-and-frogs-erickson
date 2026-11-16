@@ -23,3 +23,7 @@ import Cgt.Col.Runs
 import Cgt.Col.Key
 import Cgt.Col.Check
 import Cgt.Col.Rel
+import Cgt.Col.Sound
+import Cgt.Col.Dead
+import Cgt.Col.Margin
+import Cgt.Col.B3

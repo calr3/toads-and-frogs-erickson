@@ -60,5 +60,19 @@ def chkN (tN : LTree) (W : RL) : Bool :=
 def checkCol (tU tN : LTree) : Bool :=
   tU.toList.all (fun k => (witOf k).all (chkU tU tN)) && tN.toList.all (fun k => (witOf k).all (chkN tN))
 
+/-- A check of the range `s .. s + cs.sum` of a list, split into consecutive chunks of sizes `cs`. -/
+theorem all_range_of_sizes {α : Type} (p : α → Bool) :
+    ∀ (cs : List Nat) (l : List α) (s : Nat),
+      (∀ i, i < cs.length → ((l.drop (s + (cs.take i).sum)).take (cs.getD i 0)).all p = true) →
+      ((l.drop s).take cs.sum).all p = true
+  | [], _, _, _ => by simp
+  | c :: cs, l, s, h => by
+    rw [List.sum_cons, List.take_add, List.all_append, Bool.and_eq_true]
+    refine ⟨by simpa using h 0 (by simp), ?_⟩
+    rw [List.drop_drop]
+    refine all_range_of_sizes p cs l (s + c) (fun i hi => ?_)
+    have := h (i + 1) (by simp; omega)
+    simpa [List.take_succ_cons, List.sum_cons, Nat.add_assoc] using this
+
 end Col
 end Cgt

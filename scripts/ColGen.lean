@@ -69,6 +69,17 @@ def main (args : List String) : IO Unit := do
     if a ≥ 2 then
       unless U.contains (keyOf [(T, a), (E, 3), (F, a)]) do miss := miss + 1
   IO.println s!"start shapes missing for a = 2..39: {miss}"
+  -- work per key, in the order of the trees (sorted)
+  if args.length ≥ 4 then
+    let work (mode : String) (k : List Nat) : Nat :=
+      (witOf k).foldl (fun acc W =>
+        let ms := lmovesR W
+        acc + 1 + (keyOf W).length + ms.foldl (fun a X => a + 1 + (rmovesR X).length * (keyOf X).length) 0) 0
+    let su := (U.toList.toArray.qsort (fun x y => lexLt x y)).toList
+    let sn := (N.toList.toArray.qsort (fun x y => lexLt x y)).toList
+    let lines := su.map (fun k => s!"U {work "U" k}") ++ sn.map (fun k => s!"N {work "N" k}")
+    IO.FS.writeFile args[3]! (String.intercalate "\n" lines ++ "\n")
+    IO.println s!"wrote work to {args[3]!}"
   if args.length ≥ 3 then
     let out := args[1]!
     let name := args[2]!

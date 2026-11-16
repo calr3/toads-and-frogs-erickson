@@ -62,7 +62,7 @@ Pos norm(const Pos &p) {
       if (i == 0 || !dd[i - 1]) t += "XD"; continue; }
     t += rs[i].first; t += rank[i] < 0 ? char('0' + rs[i].second) : char('a' + rank[i]); }
   t += '|'; int prev = K;
-  for (auto [l, i] : lv) { int g = l - prev; prev = l; t += char('0' + (g <= M ? g : M + 1 + (g - M - 1) % 2)); }
+  for (auto [l, i] : lv) { int g = l - prev; prev = l; t += char('0' + (g <= M ? g : getenv("NOPARITY") ? M + 1 : M + 1 + (g - M - 1) % 2)); }
   return t;
 }
 unordered_set<Pos> U, N;

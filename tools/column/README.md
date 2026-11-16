@@ -17,6 +17,7 @@ Build each tool with `g++ -O2 -std=c++17 -o NAME NAME.cpp`.
 | `verify_shapes.py` | An independent re-implementation (moves, runs, dead regions, shapes, witnesses) that checks a shape set exactly as a kernel check would. |
 | `b3_shapes.txt` | The certificate for `b = 3`: 3,031 shapes (`U` = Left-stop phase, `N` = normal play), in the format of the Lean proof. |
 | `to_witness.py` | One witness position per shape, the input of `scripts/ColGen.lean`. |
+| `col_local.cpp` | Decides whether Right wins with a *component-local* strategy: dead regions split a position into independent components, and Right answers inside the component Left moved in. |
 
 ## Results for `b = 3`
 
@@ -90,6 +91,7 @@ step of `a` (126,203 for `a = 4…12`), against about 500 for `b = 3`.
 | `FAILFIRST=1` | Fast mode: a shape with an unanswerable challenge loses at once, the most constrained challenges go first, options whose small witnesses lose concretely are dropped, duplicate and subsumed challenges are removed, and lost shapes free their challenges. |
 | `PROGRESS=1`, `MAXEXPLORE=n` | Progress lines; give up after `n` explored shapes, printing the search stack and statistics of the explored shapes. |
 | `EB=n` | At most `n` long runs after Right's replies. |
+| `NOPARITY=1` | Far gaps keep only their sign, not their parity; each far gap then has `MARGIN + 1` witnesses. |
 | `REAL=amin-amax` | Play Right's concrete strategy on the real boards (at most 28 cells) and count the shapes it visits. `REALPREF` picks the reply heuristic, `REALOUT=file` writes the shapes, `COMPONENTS=1` also counts the components between dead regions. |
 
 Without these options the search behaves as before and reproduces `b3_shapes.txt` exactly.

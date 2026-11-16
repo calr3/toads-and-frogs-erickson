@@ -38,7 +38,8 @@
 // their challenges. This changes which closed set is found, not soundness.
 // PROGRESS=1 prints the number of explored shapes now and then; MAXEXPLORE=n gives up after n
 // explored shapes and prints the DFS stack and statistics of the explored shapes. EB=n allows at
-// most n long runs after Right's replies.
+// most n long runs after Right's replies. NOPARITY=1 drops the parity of far gaps (a far gap c is
+// then witnessed by c, c + 1, ..., c + MARGIN). MINW=1 makes MINIMIZE prefer shapes with few witnesses.
 //
 // REAL=amin-amax plays Right's concrete strategy on the real boards instead (boards of at most 28
 // cells) and counts the shapes it visits; REALPREF picks the reply heuristic, REALOUT=file writes
@@ -86,6 +87,7 @@ int unbalanced = 0;
 // iff they are related with margin 0. A witness replaces each capped gap c by c (the position's
 // gap was c) or c + 2 (it was >= c + 2); the normal form of a position is one of its witnesses.
 typedef string Shape;
+int NOPARITY = getenv("NOPARITY") != nullptr, MINW = getenv("MINW") != nullptr;   // far gaps keep only their sign, not their parity
 int DEAD = 1, DEADRUNS = getenv("DEADRUNS") != nullptr;   // collapse dead TTFF blocks (their pieces never move; their lengths never matter)
 // Dead regions (Erickson): in a block of pieces with no empty square, everything from the first
 // TT to the last FF after it can never move again. Its contents never matter.
@@ -123,17 +125,18 @@ Shape shapeOf(const Pos &p) {
     t += rs[i].first; t += rank[i] < 0 ? char('0' + rs[i].second) : char('a' + rank[i]); }
   t += '|';
   int prev = K;
-  for (auto [l, i] : lv) { int g = l - prev; prev = l; t += char('0' + (g <= M ? g : M + 1 + (g - M - 1) % 2)); }
+  for (auto [l, i] : lv) { int g = l - prev; prev = l; t += char('0' + (g <= M ? g : NOPARITY ? M + 1 : M + 1 + (g - M - 1) % 2)); }
   return t;
 }
 vector<Pos> wit(const Shape &s) {
   size_t bar = s.find('|'); string sk = s.substr(0, bar), gs = s.substr(bar + 1);
   int L = gs.size(); vector<int> far; for (int k = 0; k < L; k++) if (gs[k] - '0' > M) far.push_back(k);
   vector<Pos> out;
-  int base = MARGIN / 2 + 1, total = 1; for (size_t j = 0; j < far.size(); j++) total *= base;
+  // far gap c: with parity, c, c + 2, ..., c + MARGIN; without (NOPARITY), c, c + 1, ..., c + MARGIN
+  int base = NOPARITY ? MARGIN + 1 : MARGIN / 2 + 1, step = NOPARITY ? 1 : 2, total = 1; for (size_t j = 0; j < far.size(); j++) total *= base;
   for (int mask = 0; mask < total; mask++) {
     vector<int> g(L); for (int k = 0; k < L; k++) g[k] = gs[k] - '0';
-    for (size_t j = 0, mm = mask; j < far.size(); j++, mm /= base) g[far[j]] += 2 * (mm % base);
+    for (size_t j = 0, mm = mask; j < far.size(); j++, mm /= base) g[far[j]] += step * (mm % base);
     vector<int> len(L); int cur = K; for (int k = 0; k < L; k++) { cur += g[k]; len[k] = cur; }
     Pos p; for (size_t i = 0; i < sk.size(); i += 2) { char c = sk[i], v = sk[i + 1]; if (c == 'X') p += "TTFF"; else p += string(v == 'D' ? 2 : v >= 'a' ? len[v - 'a'] : v - '0', c); }
     // balance check (all game positions have as many toads as frogs)
@@ -451,7 +454,10 @@ int main(int argc, char **argv) {
           set<int> nw; deque<int> td(starts.begin(), starts.end());
           while (!td.empty()) { int x = td.front(); td.pop_front(); if (!nw.insert(x).second) continue;
             for (auto &opts : ch[x]) { int best = -1; long bs = -1;
-              for (int o : opts) if (valid[o]) { long sc = (cur.count(o) ? 1000000000L : 0) + (nw.count(o) ? 2000000000L : 0) + pop[o]; if (sc > bs) { bs = sc; best = o; } }
+              for (int o : opts) if (valid[o]) {
+                long sc = (cur.count(o) ? 1000000000L : 0) + (nw.count(o) ? 2000000000L : 0) + pop[o];
+                if (MINW) sc -= 1000000L * (long)wit(nm[o]->substr(1)).size();   // MINW=1: fewest witnesses first
+                if (sc > bs) { bs = sc; best = o; } }
               td.push_back(best); } }
           printf("  minimise round %d: %zu shapes\n", round, nw.size()); fflush(stdout);
           if (nw.size() >= cur.size() && round > 0) break;

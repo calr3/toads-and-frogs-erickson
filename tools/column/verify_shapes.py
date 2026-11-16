@@ -11,6 +11,7 @@ of a position and the witnesses of a shape. Then checks exactly what a kernel ch
   shape only depends on the parity of a).
 
 Usage: verify_shapes.py SHAPES B K M [AMIN AMAX]
+Environment: JOBS=n checks in n processes; NOPARITY=1 for shapes whose far gaps keep only their sign.
 Environment: DEADRUNS=1 (dead runs kept one by one, as in the Lean data) and MARGIN=4 (witness gaps
 c, c + 2, c + 4); runs of empty squares are always exact. Defaults: the older format (dead regions
 collapsed, margin 2).
@@ -20,6 +21,7 @@ import sys
 
 DEADRUNS = bool(os.environ.get('DEADRUNS'))
 MARGIN = int(os.environ.get('MARGIN', '2'))
+NOPARITY = bool(os.environ.get('NOPARITY'))   # far gaps keep only their sign
 
 def lm(s):
     out = []
@@ -75,18 +77,18 @@ def shape(p):
     gs, prev = '', K
     for l, i in lv:
         g = l - prev; prev = l
-        gs += str(g if g <= M else M + 1 + (g - M - 1) % 2)
+        gs += str(g if g <= M else M + 1 if NOPARITY else M + 1 + (g - M - 1) % 2)
     return sk + '|' + gs
 
 def wit(s):
     sk, gs = s.split('|')
     far = [k for k, c in enumerate(gs) if int(c) > M]
-    base = MARGIN // 2 + 1
+    base, step = (MARGIN + 1, 1) if NOPARITY else (MARGIN // 2 + 1, 2)
     for mask in range(base ** len(far)):
         g = [int(c) for c in gs]
         mm = mask
         for k in far:
-            g[k] += 2 * (mm % base); mm //= base
+            g[k] += step * (mm % base); mm //= base
         lens, cur = [], K
         for x in g: cur += x; lens.append(cur)
         p = ''
@@ -101,24 +103,34 @@ L = [l.strip() for l in open(file) if l.strip()]
 U = {x[1:] for x in L if x[0] == 'U'}
 N = {x[1:] for x in L if x[0] == 'N'}
 
-nq = 0
 def lf(q):
-    global nq; nq += 1
     return shape(q) in N or any(shape(r) in U for r in rm(q))
 
-bad = []
-nwit = 0
-for s in U:
-    for w in wit(s):
-        nwit += 1
-        assert shape(w) == s, (s, w, shape(w))
-        if not (lf(w) and all(lf(q) for q in lm(w))): bad.append(('U', s, w))
-for s in N:
-    for w in wit(s):
-        nwit += 1
-        assert shape(w) == s, (s, w, shape(w))
-        nq += len(lm(w))
-        if not all(any(shape(r) in N for r in rm(q)) for q in lm(w)): bad.append(('N', s, w))
+def check(items):
+    """Check the witnesses of the given (mode, shape) pairs; returns (failures, witnesses, moves)."""
+    bad, nwit, nq = [], 0, 0
+    for mode, s in items:
+        for w in wit(s):
+            nwit += 1
+            assert shape(w) == s, (s, w, shape(w))
+            qs = lm(w)
+            if mode == 'U':
+                nq += len(qs) + 1
+                if not (lf(w) and all(lf(q) for q in qs)): bad.append(('U', s, w))
+            else:
+                nq += len(qs)
+                if not all(any(shape(r) in N for r in rm(q)) for q in qs): bad.append(('N', s, w))
+    return bad, nwit, nq
+
+items = [('U', s) for s in sorted(U)] + [('N', s) for s in sorted(N)]
+jobs = int(os.environ.get('JOBS', '1'))   # JOBS=n: check in n processes
+if jobs > 1:
+    import multiprocessing
+    chunks = [items[i::jobs * 16] for i in range(jobs * 16)]
+    with multiprocessing.get_context('fork').Pool(jobs) as pool: res = pool.map(check, chunks)
+else:
+    res = [check(items)]
+bad = [b for r in res for b in r[0]]; nwit = sum(r[1] for r in res); nq = sum(r[2] for r in res)
 missing = [a for a in range(amin, amax + 1) if shape('T' * a + '.' * B + 'F' * a) not in U]
 print(f'{len(U)} U + {len(N)} N shapes, {nwit} witnesses, {nq} Left moves and passes: {len(bad)} failing witnesses; starts a = {amin}..{amax} missing: {missing}')
 for b in bad[:5]: print('  ', b)

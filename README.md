@@ -7,34 +7,47 @@
 This repository is a self-contained Lean 4 development aimed at this conjecture. It
 uses Lean core only (no Mathlib) and has no `sorry`.
 
+## What is new
+
+* **One new result, as far as we know: the row `a = 2`.** `TT□ᵇFF` is infinitesimal for every
+  `b` (`infinitesimal_start_two`). Before this, the row was known only numerically: Erickson
+  tabulated `b ≤ 6` [[E96]](#references) and Thanatipanonda `b ≤ 103` [[T11]](#references). The
+  method is in the spirit of Thanatipanonda and Zeilberger's symbolic finite-state approach
+  [[TZ07]](#references). Our literature check covered those three papers, the Wikipedia article
+  and web searches; it was not exhaustive. See
+  [docs/ROW_A2.md §9](docs/ROW_A2.md#9-related-work).
+* **Everything else is a formal proof of a known (or trivial) result.** The *Origin* column below
+  gives the source of each.
+* **Observations, not theorems.** `docs/RESEARCH_NOTES.md` and `tools/` record computational
+  experiments and negative findings, for example why the `a = 2` method does not extend to
+  `a = 3`.
+* **Still open:**
+  * the full conjecture;
+  * the exact values of the `a = 2` row. The values computed so far are `∗` when `b ≤ 4` or
+    `b ≡ 1 (mod 6)` and `0` otherwise: up to `b = 103` in [[T11]](#references), and up to
+    `b = 80` by our solver here. This is not proved.
+
 ## Status
 
-| What | Where |
-| --- | --- |
-| Statement of the conjecture (`Conjecture5 : Prop`) | `Cgt/Conjecture5.lean` |
-| `(3, 2)` is **not** infinitesimal (`TTT□□FFF = ±1/8`) | `not_infinitesimal_3_2` |
-| `a = 0`, all `b` | `infinitesimal_start_a_zero` |
-| `a = 1`, all `b` (`T □ᵇ F`) | `infinitesimal_start_one` |
-| **`a = 2`, all `b` (`TT □ᵇ FF`)**: machine-checked strategy over 1,543 shapes | `infinitesimal_start_two` (`Cgt/RowA2.lean`) |
-| `b = 0`, all `a` | `infinitesimal_start_b_zero` |
-| `b = 1`, all `a` (`Tᵃ □ Fᵃ`) | `infinitesimal_start_b_one` |
-| `b = 2`, all `a ≥ 4` (Thanatipanonda's theorem, incl. his Lemma C.1) | `infinitesimal_start_b_two`, `upperZero_c1` |
-| One-sided Death Leap Principle (Thanatipanonda), general | `le_zero_of_dlp` |
-| Every case with `2a + b ≤ 12`, kernel-checked | `Cgt/FiniteCases.lean` |
-| `(3,7)` to `(3,12)`, `(4,5)`, `(5,3)`, `(6,3)`: strategy certificates | `Cgt/Cert/` (`lake build CgtCerts`) |
-| Combined partial result | `conjecture5_partial`, `conjecture5_provedRegion` |
-| **General case** | **open** |
+| What | Lean | Origin |
+| --- | --- | --- |
+| Statement of the conjecture (`Conjecture5 : Prop`) | `Cgt/Conjecture5.lean` | Erickson [[E96]](#references), Conjecture 7.5 |
+| `(3, 2)` is **not** infinitesimal (`TTT□□FFF = ±1/8`) | `not_infinitesimal_3_2` | Known: the value `±1/8` is in [[E96]](#references) |
+| `a = 0`, all `b` | `infinitesimal_start_a_zero` | Trivial (no pieces) |
+| `a = 1`, all `b` (`T □ᵇ F`) | `infinitesimal_start_one` | Known: `T□ᵇF = b·∗` ([[WW]](#references); [[E96]](#references) Lemma 5.1) |
+| **`a = 2`, all `b` (`TT □ᵇ FF`)**: machine-checked strategy over 1,543 shapes | `infinitesimal_start_two` (`Cgt/RowA2.lean`) | **New** as far as we know; values computed for `b ≤ 103` in [[T11]](#references) |
+| `b = 0`, all `a` | `infinitesimal_start_b_zero` | Trivial (no moves) |
+| `b = 1`, all `a` (`Tᵃ □ Fᵃ`) | `infinitesimal_start_b_one` | Known ([[WW]](#references), as cited in [[E96]](#references) §7) |
+| `b = 2`, all `a ≥ 4` (incl. Lemma C.1) | `infinitesimal_start_b_two`, `upperZero_c1` | Known: Thanatipanonda's theorem [[T11]](#references) |
+| One-sided Death Leap Principle, general | `le_zero_of_dlp` | Known: [[T11]](#references); the two-sided version is in [[E96]](#references) |
+| Every case with `2a + b ≤ 12`, kernel-checked | `Cgt/FiniteCases.lean` | Known numerically ([[E96]](#references), [[T11]](#references) tables) |
+| `(3,7)` to `(3,12)`, `(4,5)`, `(5,3)`, `(6,3)`: strategy certificates | `Cgt/Cert/` (`lake build CgtCerts`) | Known numerically ([[T11]](#references) table) |
+| Combined partial result | `conjecture5_partial`, `conjecture5_provedRegion` | Combines the rows above |
+| **General case** | — | **Open** since 1996 |
 
-The full conjecture is **not** proved here. It has been open since 1996:
-
-* Thanatipanonda proved the column `b = 2` for `a ≥ 4` [[T11]](#references), and Conjecture 5 is
-  the only one of Erickson's conjectures still open.
-* Before this repository, the row `a = 2` was known only numerically: Erickson tabulated
-  `b ≤ 6` [[E96]](#references), Thanatipanonda `b ≤ 103` [[T11]](#references).
-* The method used for it here is in the spirit of Thanatipanonda and Zeilberger's symbolic
-  finite-state approach [[TZ07]](#references).
-
-See [docs/ROW_A2.md §9](docs/ROW_A2.md#9-related-work) for details.
+The full conjecture is **not** proved here. It has been open since 1996 and is the only one of
+Erickson's conjectures still open. The main earlier partial result is Thanatipanonda's proof of
+the column `b = 2` for `a ≥ 4` [[T11]](#references).
 
 ## Grid of proved cases
 

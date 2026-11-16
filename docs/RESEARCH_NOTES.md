@@ -189,3 +189,26 @@ verify it for every board size.
   * The kernel checks the generated list of shapes in about 30 seconds.
   * `tools/regular/a2_strategy.py` and `a2_abstract.py` are the exploratory versions;
     `scripts/gen_row2.py` generates the Lean data.
+
+## 10. The row `a = 3`: the `a = 2` method does not extend
+
+`tools/regular/a3_explore.cpp` (positions as piece order plus seven gaps).
+
+* **The reduction holds.** `TT□T□ᵐFFF ≤ 0` for every `m` from 5 to 20 (it fails for `m = 1, 2, 4`).
+  So for `b ≥ 6`, Right can again pass after Left's only move, and the row reduces to this
+  normal-play claim.
+* **But no bounded-asymmetry strategy exists.**
+  * The bound on the mirrored gap differences `|g₆ − g₀|, |g₅ − g₁|, |g₄ − g₂|` that Right can
+    maintain has to grow with the board. A bound of 4 suffices up to about `m = 11`, 6 up to
+    about 15, and 8 up to about 21. It fails beyond, for every strategy.
+  * Requiring the bound only until the first frog passes all toads (or a toad all frogs) does not
+    help: 4 suffices only up to `m = 16`.
+  * Under a bound of 8, the shapes reached do not stabilise (161,000 at `m = 21`, still growing
+    by about 40,000 per `m`), and the large differences occur in almost every piece order.
+* **What this suggests.** With three toads, Right's winning play needs asymmetry linear in the
+  board length already in the approach phase. A finite-shape argument would need shapes with
+  unbounded linear parameters (for example the difference `g₆ − g₀` kept exactly, with the
+  outcome a linear condition on it), not just capped values. Doing this is open.
+* **Columns.** For `b = 3` and `b = 4`, Left's first move is not `≤ 0` once `a ≥ 3` (resp.
+  `a ≥ 4`). So a column proof would also need the symmetric (`UpperZero`) part, not just normal
+  play.

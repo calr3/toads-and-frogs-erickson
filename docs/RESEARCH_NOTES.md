@@ -241,3 +241,26 @@ verify it for every board size.
 * **A possible next step.** Split the proof into an approach phase with an exact rule (outcome
   as a function of each side's arrangement and the distance, if it has a clean form) and a
   contact phase with the centre gap small, where finite shapes may work.
+
+### 10.2 The approach phase has no simple rule (at testable sizes)
+
+`tools/regular/a3_approach.cpp` tabulates the exact normal-play outcome of every pre-contact
+position `□^g₀ T □^g₁ T □^g₂ T □^g₃ F □^g₄ F □^g₅ F □^g₆` on boards of up to 32 cells
+(398,126 positions).
+
+* **The tails are not summarised by `A − B`.** Fixing the waiting-room gaps `g₁, g₂, g₄, g₅`, the
+  distance `g₃` and `A − B` (which then fixes `g₆ − g₀`) still leaves both outcomes in about 3.5%
+  of groups, even with both tails at least 3. Example: `....T..T..T.....F...F.F....` is `≤ 0`
+  but the same with tails 6 instead of 4 is a Left win.
+* **Not a threshold in `A − B`.** For about a quarter of the (waiting rooms, distance) pairs, the
+  outcome is not monotone in `A − B`.
+* **Not periodic in the distance.** `.T..TT` followed by `F..F...F` at distance 9, 11, 13, 15, 17
+  is lost, won, lost, lost, lost for Right.
+* **Caps don't fix it.** Capping the waiting rooms, the distance (with residue modulo 2, 4 or 6)
+  and the shorter tail, with the tail difference exact, still leaves 300–3,000 ambiguous groups
+  for caps up to 12 on the distance and 5 on the tails. The count shrinks only slowly.
+
+These irregular positions have `A − B` near 0, which is exactly where Right's play from
+`TT□T□ᵐFFF` stays. Whether the behaviour becomes regular on larger boards is open: the exact
+solver needs more memory than available beyond 32 cells. So the two-phase plan of §10.1 has no
+clean approach-phase rule to build on, at least not at these sizes.

@@ -196,6 +196,10 @@ short:
 
 **[docs/COLUMN_B3.md](docs/COLUMN_B3.md)** has the full account.
 
+The same method does not reach `b = 4`. There Right needs 13 runs, and his strategy passes
+through about 20,000 new shapes per step of `a`, against about 500 for `b = 3`; the shape search
+does not close (`docs/RESEARCH_NOTES.md` §14).
+
 ## Computational evidence beyond the formal results
 
 An exact C++ solver for "Left stop `≤ 0`" (the same recursion as `Cgt/Infinitesimal.lean`)

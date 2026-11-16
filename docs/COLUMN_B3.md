@@ -136,10 +136,11 @@ Independent checks of the same certificate:
 
 ## 8. Other columns
 
-The same framework applies to any fixed `b`; only the data changes. For `b = 4` and `b = 5` the
-smallest number of runs Right needs is 12 and 13 for every `a` tested
-([docs/RESEARCH_NOTES.md](RESEARCH_NOTES.md) §13). Whether their shape searches close, and at what
-size, is untested.
+The framework itself does not depend on `b`, but its abstraction does not scale to `b = 4`.
+There Right needs 13 runs (from `a = 10` on), and his strategy passes through far more shapes:
+about 20,000 new ones per step of `a`, against about 500 for `b = 3`. The shape search does not
+close. A different abstraction of the races between reservoirs would be needed
+([docs/RESEARCH_NOTES.md](RESEARCH_NOTES.md) §14).
 
 ## References
 

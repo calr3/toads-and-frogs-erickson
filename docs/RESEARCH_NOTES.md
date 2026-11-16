@@ -371,5 +371,42 @@ The `a = 2` row works because a few pieces are separated by long gaps. In a colu
   * dead runs kept one by one, so that real positions and witnesses have the same runs;
   * runs of empty squares kept exact.
 * **Other columns.** The same framework applies to any fixed `b`; only the data changes. For
-  `b = 4` and `b = 5` Right needs 12 and 13 runs, at every `a` tested. Their shape searches are
-  untried.
+  `b = 4` the shape search does not close at a usable size (§14).
+
+## 14. The column `b = 4`: the shape method does not scale (`tools/column/`)
+
+We tried the `b = 3` method on `Tᵃ□⁴Fᵃ`. It runs into a size wall, not a soundness problem.
+
+* **Right's run bound.** The smallest number of runs with which Right still wins (`col_bound`,
+  all runs counted) is 12 for every `a` from 4 to 9, and 13 for `a = 10, 11, 12`. Counting a dead
+  `TTFF` junction as one run changes nothing (12 at `a = 9`, 13 at `a = 10`). So the bound steps up
+  once and then holds, as far as we can test; 13 is plausible for every `a`.
+* **The abstract search with 12 runs loses the start** after 3,814 shapes (cap `K = 2`, cluster
+  gap `M = 2`, margin 4, dead runs kept, as for `b = 3`). The losing line: after `T⁷□⁴F⁷`, Left
+  slides a toad and only one of Right's replies stays within 12 runs at `a = 7`; the same reply
+  fails at `a = 10`. This matches the step to 13.
+* **With 13 runs the search does not close.** It explores millions of shapes without closing.
+  Speeding up the search (shapes as integers, a bit-packed concrete solver, trying the most
+  constrained challenges first, dropping options whose small witnesses lose concretely) cut the
+  memory to about 0.5 GB per million shapes; it did not change the outcome. The search stack
+  runs 1,000 to 10,000 shapes deep, through shapes with four or five long runs that differ only in
+  the order and exact spacing of their lengths. A typical skeleton is
+  `Tᵇ □ [dead] □ Fᶜ T □ Fᵃ T F □ Fᵈ`: one toad reservoir against three frog reservoirs. All
+  orderings and all gap patterns of the three frog runs turn up, although what matters for the
+  race is presumably only how Left's total compares with Right's.
+  * Allowing at most 3 long runs after Right's replies loses the start; allowing 4 still explodes.
+  * `M = 0` loses the start; `M = 1`, `M = 2` and cap `K = 3` explode.
+* **Real play confirms that the set would be large.** Right's concrete strategy (13 runs, replies
+  chosen to reuse shapes) visits 126,203 shapes over `a = 4…12`, and still adds about 20,000 new
+  shapes per step of `a`. The same measurement for `b = 3` gives 4,738 shapes by `a = 12`, about
+  500 new per step, and the closed set there has 3,031. Choosing replies by fewest runs or by
+  fewest live runs instead gives the same counts (about 84,000 by `a = 10`).
+* **Splitting at dead regions helps only a little.** A dead region is a wall: the pieces on
+  either side can never interact, so a position is a sum of independent components. At `a = 12`,
+  59% of the positions Right's strategy visits split into two or three components with empty
+  squares. But the components still have 39,245 distinct shapes, growing by about 4,500 per step.
+* **What it would take.** The shape records every pairwise difference between up to five
+  reservoirs, and for `b = 4` play passes through too many of these combinations. A working
+  abstraction would have to record races more coarsely: for example the total of Left's reservoirs
+  against Right's, rather than each difference. Or it would have to evaluate components separately
+  and add their values. Either needs a new margin lemma in Lean, not just new data.

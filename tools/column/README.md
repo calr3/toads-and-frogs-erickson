@@ -21,9 +21,9 @@ Build each tool with `g++ -O2 -std=c++17 -o NAME NAME.cpp`.
 ## Results for `b = 3`
 
 * **Bounded structure.** Right can win while keeping at most 10 runs, for every `a` from 4 to 12
-  (`col_bound 3 3 12 1`). Counting each dead `TTFF` block as one run gives the same bound. The
-  columns `b = 4` and `b = 5` behave the same way, with bounds 12 (`a` = 4 to 8) and 13 (`a` = 4
-  to 7).
+  (`col_bound 3 3 12 1`). Counting each dead `TTFF` block as one run gives the same bound. For
+  `b = 4` the bound is 12 up to `a = 9` and 13 for `a = 10…12`; for `b = 5` it is 13 (`a` = 4 to
+  7).
 * **Plain capped shapes fail.** Capping long runs at 4 (keeping parity, as for the `a = 2` row)
   loses the start shape. The reason is a race: Left's toad reservoir in front of 2 empty squares
   is worth twice its length in moves. Meanwhile a dead block can hold unequal numbers of toads and
@@ -76,3 +76,23 @@ Build each tool with `g++ -O2 -std=c++17 -o NAME NAME.cpp`.
   `ColGen.lean` recomputes the keys with the Lean definitions and checks the closure again.
   `gen_col_chunks.py` writes the kernel checks `Cgt/Col/B3Check*.lean` and `B3Blocks.lean`; the
   block sizes it prints go into `hcU` and `hcN` in `Cgt/Col/B3.lean`.
+
+## `b = 4`: does not close
+
+See `docs/RESEARCH_NOTES.md` §14. With 12 runs the start is lost; with 13 the search explores
+millions of shapes without closing. Right's concrete strategy visits about 20,000 new shapes per
+step of `a` (126,203 for `a = 4…12`), against about 500 for `b = 3`.
+
+`col_shapes` options added for this:
+
+| Option | Effect |
+| --- | --- |
+| `FAILFIRST=1` | Fast mode: a shape with an unanswerable challenge loses at once, the most constrained challenges go first, options whose small witnesses lose concretely are dropped, duplicate and subsumed challenges are removed, and lost shapes free their challenges. |
+| `PROGRESS=1`, `MAXEXPLORE=n` | Progress lines; give up after `n` explored shapes, printing the search stack and statistics of the explored shapes. |
+| `EB=n` | At most `n` long runs after Right's replies. |
+| `REAL=amin-amax` | Play Right's concrete strategy on the real boards (at most 28 cells) and count the shapes it visits. `REALPREF` picks the reply heuristic, `REALOUT=file` writes the shapes, `COMPONENTS=1` also counts the components between dead regions. |
+
+Without these options the search behaves as before and reproduces `b3_shapes.txt` exactly.
+
+    FAILFIRST=1 MAXEXPLORE=300000 MARGIN=4 DEADRUNS=1 col_shapes 4 13 2 2 28
+    FAILFIRST=1 REAL=4-12 COMPONENTS=1 MARGIN=4 DEADRUNS=1 col_shapes 4 13 2 2 28

@@ -184,6 +184,12 @@ confirms the conjecture for all of the following:
 * `a = 10` and `a = 11` with `b ≤ 4`;
 * `a = 12` with `b ≤ 4`, and `a = 13, 14` with `b ≤ 3`.
 
+A strategy check takes the column `b = 3` much further: `Tᵃ□³Fᵃ` is infinitesimal for every
+`a ≤ 40`. `tools/column/col_realcheck.cpp` checks every position of Right's strategy on the real
+board, which is a complete proof for each `a`. The strategy comes from a finite set of "run
+shapes" that covers every `a` at once, so it may lead to a proof of the whole column. That is not
+formalised yet; see `docs/RESEARCH_NOTES.md` §13.
+
 ## What we learned about a general proof
 
 See `docs/RESEARCH_NOTES.md` for the full record (strategies tried, data, obstructions). The

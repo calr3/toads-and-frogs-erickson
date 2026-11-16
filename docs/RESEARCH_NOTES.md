@@ -310,3 +310,48 @@ paper [TZ07]. Several observations above have precedents there:
   * shapes that cap the mirrored differences too; this needs a new margin argument;
   * a strategy for Right that is symmetric about a moving centre instead of the board's
     centre.
+
+## 13. The column `b = 3`: runs of pieces instead of gaps (`tools/column/`)
+
+The `a = 2` row works because a few pieces are separated by long gaps. In a column (`b` fixed,
+`a` growing) the roles swap: a few empty squares are separated by long runs of pieces.
+
+* **Right needs only boundedly many runs.** The smallest bound on the number of runs (maximal
+  blocks of equal cells) with which Right still wins is:
+  * `b = 3`: 10, for every `a` from 4 to 12;
+  * `b = 4`: 12, for every `a` from 4 to 8;
+  * `b = 5`: 13, for every `a` from 4 to 7.
+
+  This is the column analogue of the bounded asymmetry of the `a = 2` row, and it holds at every
+  size tested. Greedy strategies (fewest runs, most dead pieces) do not show it: their run counts
+  grow like `2a`, through long interleavings `TFTF…`.
+* **The Left-stop phase cannot be skipped.** Unlike the `a = 2` row, Left's first move from
+  `Tᵃ□³Fᵃ` is not `≤ 0` for `a ≥ 3`. So Right must keep replying while he holds his pass, and the
+  abstraction must handle the Left stop, not only `≤ 0`.
+* **Plain capped runs lose a race.** Capping long runs (cap 4 with parity) loses the start
+  shape. The first lost line ends in `TTTTTT..FTTTTFFFFFF.FFF`. There Left's reservoir `T⁶` in
+  front of two empty squares is worth 12 moves, while the dead block `TTTTFFFFFF` holds 4 toads and
+  6 frogs. The same shape also contains positions with a 4-toad reservoir, and Right may win those.
+  Because dead blocks absorb pieces unequally, the global balance (`a` toads, `a` frogs) does not
+  pin down the race between the live reservoirs.
+* **Clusters of exact differences work.** The shape keeps the exact difference between any two
+  long runs, and between a long run and the cap, when it is at most `M = 4`, and only sign and
+  parity when it is larger. The cap acts as an anchor. Without it, a short run that grows long
+  would land next to reservoirs that are far above it in one position and close to it in another.
+  * One move changes one long run by 1 and never merges two long runs, so the usual margin
+    argument applies. Each far gap is witnessed by its own value or that value plus 2.
+  * The abstract search (`col_shapes 3 10 4 4`) closes with 646,574 shapes, every witness checked.
+  * An independent re-check of the closure found no failures.
+  * A first attempt that used single normal forms as shapes also "closed", with 4,309. It was
+    unsound: the real-tree check below failed at `a = 13`, because "same shape with margin 0"
+    did not imply "same normal form".
+* **Every `a ≤ 40` checked directly.** `col_realcheck` builds the real game tree of `Tᵃ□³Fᵃ`, with
+  Right's replies taken from the set, and checks every real position it reaches. It finds no
+  failure for any `a` from 4 to 40. Each such run is a complete proof for that `a`, independent of
+  the margin argument. The exact solver reached only `a ≈ 14`.
+* **What is missing for a theorem.**
+  * The set is far too large for a kernel check, and its witnesses reach 195 cells. With at most
+    1, 2 or 3 far gaps allowed after Right's replies, the start shape is lost.
+  * Formalising needs a Lean framework for positions with any number of runs. It needs the
+    pairwise-difference margin lemma, normal forms, and soundness for the Left stop.
+  * The same approach should apply to `b = 4` and `b = 5`.

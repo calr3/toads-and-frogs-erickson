@@ -100,6 +100,22 @@ bool reply(const S& q, S& out) {
   return have;
 }
 
+// Race count A - B: sum over toads of empty squares to their right, minus the same for frogs
+// to their left.
+int raceAB(const S& s) {
+  int r = 0, tl = 0, fr = 0;
+  for (int i = 0; i < P; i++) if (!toad(s, i)) fr++;
+  for (int k = 0; k <= P; k++) {
+    // gap k lies right of the pieces 0..k-1 and left of k..P-1
+    int toadsLeft = 0, frogsRight = 0;
+    for (int i = 0; i < k; i++) if (toad(s, i)) toadsLeft++;
+    for (int i = k; i < P; i++) if (!toad(s, i)) frogsRight++;
+    r += (toadsLeft - frogsRight) * s.g[k];
+  }
+  (void)tl; (void)fr;
+  return r;
+}
+
 // A runner: a frog left of every toad, or a toad right of every frog.
 bool hasRunner(const S& s) { return !toad(s, 0) || toad(s, P - 1); }
 unordered_map<u64, int8_t> w2memo;
@@ -156,6 +172,31 @@ int main(int argc, char** argv) {
       printf("m=%d D=%d: %s\n", m, D, winB2(q) ? "bounded until a runner appears" : "FAILS");
       fflush(stdout);
     }
+  } else if (mode == "line") {
+    // A line of play in which Left forces Right out of the bound D (normal play, from q_m).
+    S z = qstart(M);
+    printf("start %s  winB=%d\n", str(z).c_str(), (int)winB(z));
+    for (int step = 0; step < 200; step++) {
+      S ql[P]; int kl = lms(z, ql); bool moved = false;
+      for (int i = 0; i < kl; i++) {
+        S rr[P]; int kr = rms(ql[i], rr); bool any = false;
+        for (int j = 0; j < kr; j++) if (bounded(rr[j]) && winB(rr[j])) any = true;
+        if (any) continue;
+        // Left's forcing move
+        printf("L: %s   d=(%d,%d,%d)\n", str(ql[i]).c_str(), ql[i].g[6]-ql[i].g[0], ql[i].g[5]-ql[i].g[1], ql[i].g[4]-ql[i].g[2]);
+        // Right's options: show le0 ones; continue with the in-bound reply that survives longest
+        S best; bool have = false;
+        for (int j = 0; j < kr; j++) {
+          bool ok = le0(rr[j]);
+          printf("    R: %s  %s bounded=%d d=(%d,%d,%d)\n", str(rr[j]).c_str(), ok ? "<=0" : "   ", (int)bounded(rr[j]),
+                 rr[j].g[6]-rr[j].g[0], rr[j].g[5]-rr[j].g[1], rr[j].g[4]-rr[j].g[2]);
+          if (ok && bounded(rr[j]) && !have) { best = rr[j]; have = true; }
+        }
+        if (!have) { printf("  -> Right has no good reply within the bound\n"); return 0; }
+        z = best; moved = true; break;
+      }
+      if (!moved) { printf("no forcing move found\n"); return 0; }
+    }
   } else if (mode == "shapes") {
     set<Shape> all;
     map<Shape, set<pair<int, int>>> rtype;
@@ -185,6 +226,13 @@ int main(int argc, char** argv) {
         }
         auto pr = [](const char* n, map<int, int>& h) { printf("   %s:", n); for (auto& kv : h) printf(" %d:%d", kv.first, kv.second); printf("\n"); };
         pr("g6-g0", h0); pr("g5-g1", h1); pr("g4-g2", h2); pr("sum", hs); pr("d0+d1", h01);
+        map<int, int> hab;
+        for (u64 e : seen) {
+          S z; u64 x = e;
+          for (int i = P; i >= 0; i--) { z.g[i] = x % 256; x /= 256; }
+          z.c = x; hab[raceAB(z)]++;
+        }
+        pr("A-B", hab);
         map<string, pair<int, int>> byOrder;   // order -> (positions, positions with max|d| > 3)
         for (u64 e : seen) {
           S z; u64 x = e;

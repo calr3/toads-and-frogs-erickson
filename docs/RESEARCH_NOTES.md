@@ -212,3 +212,32 @@ verify it for every board size.
 * **Columns.** For `b = 3` and `b = 4`, Left's first move is not `≤ 0` once `a ≥ 3` (resp.
   `a ≥ 4`). So a column proof would also need the symmetric (`UpperZero`) part, not just normal
   play.
+
+### 10.1 Race-count shapes (`tools/regular/a3_ab.cpp`, `a3_lazy.cpp`)
+
+* **Why the race count.** Left advances its toads as a tight block and Right must *not* mirror
+  it: a frog block with space behind it is the hot pattern of §3. So Right keeps its frogs spread
+  out, and the mirrored gaps drift apart. But the race count `A − B` stays in a fixed window
+  (about `[−10, 3]` for every board size tried).
+* **Shapes.** Piece order, exact `A − B`, each gap capped at `K` with its residue modulo a period
+  above the cap. They are compatible with moves: each move shifts `A − B` by a fixed amount, so
+  "same shape with margin `j`" is preserved as for `a = 2`. One witness per pattern of "which
+  large gaps exceed the cap by 2" suffices, found by solving the linear equation for `A − B`.
+* **Solving the abstract game.** Exploring all of Right's replies (window `[−6, 3]`, cap 6) passed
+  3 million shapes. A lazy depth-first search (losing verdicts sound for the abstract game) gave:
+
+  | Outer cap | Centre cap / period | Window | Result |
+  | --- | --- | --- | --- |
+  | 4 | 6 / 2 | `[−6, 3]` | every start shape lost |
+  | 6 | 6 / 2 | `[−8, 4]` | every start shape lost |
+  | 4 | 6 / 3, 4, 6 | `[−8, 4]` | every start shape lost |
+  | 6 | 8 / 2, 3, 4, 6 | `[−8, 4]` | ran out of memory or time |
+
+* **Where it breaks.** Traces show the losing chains in the *approach* phase. All concrete
+  replies there are `≤ 0`, but positions that the shapes merge (centre gap 6 or 8, say) need
+  *different* replies. Which frog Right should advance depends on the distance to contact and on
+  how the spare empty squares behind each side are distributed. That is waiting moves and
+  zugzwang at contact, which capped gaps (even with a residue) do not record.
+* **A possible next step.** Split the proof into an approach phase with an exact rule (outcome
+  as a function of each side's arrangement and the distance, if it has a clean form) and a
+  contact phase with the centre gap small, where finite shapes may work.

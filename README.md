@@ -2,7 +2,7 @@
 
 **Erickson's Conjecture 5 (1996).** For Toads and Frogs, the starting position
 `Tᵃ □ᵇ Fᵃ` (`a` toads, `b` empty squares, `a` frogs) is infinitesimal for every
-`(a, b)` except `(a, b) = (3, 2)`.
+`(a, b)` except `(a, b) = (3, 2)`. (Conjecture 7.5 in [[E96]](#references).)
 
 This repository is a self-contained Lean 4 development aimed at this conjecture. It
 uses Lean core only (no Mathlib) and has no `sorry`.
@@ -25,9 +25,16 @@ uses Lean core only (no Mathlib) and has no `sorry`.
 | Combined partial result | `conjecture5_partial`, `conjecture5_provedRegion` |
 | **General case** | **open** |
 
-The full conjecture is **not** proved here. It has been open since 1996: Thanatipanonda
-proved the column `b = 2` for `a ≥ 4` (2008), and Conjecture 5 is the only one of Erickson's
-conjectures still open.
+The full conjecture is **not** proved here. It has been open since 1996:
+
+* Thanatipanonda proved the column `b = 2` for `a ≥ 4` [[T11]](#references), and Conjecture 5 is
+  the only one of Erickson's conjectures still open.
+* Before this repository, the row `a = 2` was known only numerically: Erickson tabulated
+  `b ≤ 6` [[E96]](#references), Thanatipanonda `b ≤ 103` [[T11]](#references).
+* The method used for it here is in the spirit of Thanatipanonda and Zeilberger's symbolic
+  finite-state approach [[TZ07]](#references).
+
+See [docs/ROW_A2.md §9](docs/ROW_A2.md#9-related-work) for details.
 
 ## Grid of proved cases
 
@@ -174,3 +181,14 @@ exact solvers are in `tools/` (`stops.cpp` decides "Left stop `≤ 0`" for `Tᵃ
   size, but none was found. Learned invariants need more than 10 states already for boards of
   at most 8 cells. For the `a = 2` row, the normal-play part needs hundreds of states and does
   not generalise. See `tools/regular/README.md`.
+
+## References
+
+* **[E96]** Jeff Erickson, *New Toads and Frogs Results*. In R. J. Nowakowski (ed.), *Games of No
+  Chance*, MSRI Publications 29, Cambridge University Press, 1996, pp. 299–310.
+* **[TZ07]** Thotsaporn Thanatipanonda and Doron Zeilberger, *A Symbolic Finite-State Approach
+  for Automated Proving of Theorems in Combinatorial Game Theory*. arXiv:0710.4951, 2007.
+* **[T11]** Thotsaporn Thanatipanonda, *Further Hopping with Toads and Frogs*. Electronic Journal
+  of Combinatorics 18(1), 2011, #P67. arXiv:0804.0640.
+* **[WW]** Elwyn Berlekamp, John Conway and Richard Guy, *Winning Ways for your Mathematical
+  Plays*. Academic Press, 1982.

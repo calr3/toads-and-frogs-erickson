@@ -6,9 +6,12 @@ This note explains the Lean proof of
 theorem Cgt.infinitesimal_start_two (b : Nat) : Infinitesimal (tf (start 2 b))
 ```
 
-in `Cgt/RowA2.lean`, the case `a = 2` of Erickson's Conjecture 5 for every number `b` of empty
-squares. The proof uses Lean core only, has no `sorry`, and depends only on the standard axioms
-`propext`, `Classical.choice` and `Quot.sound`.
+in `Cgt/RowA2.lean`, the case `a = 2` of Erickson's Conjecture 5 (Conjecture 7.5 in [E96]) for
+every number `b` of empty squares. The proof uses Lean core only, has no `sorry`, and depends
+only on the standard axioms `propext`, `Classical.choice` and `Quot.sound`.
+
+As far as we can tell from the literature (§9), this row had not been proved before. Its exact
+values, `0` or `∗` in a pattern of period 6, are still only conjectured.
 
 The argument has three parts:
 
@@ -199,3 +202,56 @@ The same reduction holds for `a = 3`: `TT□T□ᵐFFF ≤ 0` for `5 ≤ m ≤ 2
 keeps the mirrored differences bounded there: the bound needed grows with the board. Shapes
 built on the race count instead, and an analysis of the phase before the pieces meet, found no
 finite description either. See `docs/RESEARCH_NOTES.md` §10.
+
+## 9. Related work
+
+**Erickson [E96]** states the conjecture and tabulates `Tᵃ□ᵇFᵃ` for `a, b ≤ 6`. The `a = 2` row
+there is `∗ ∗ ∗ ∗ 0 0` for `b = 1, …, 6`. He also introduces the simplification rules used
+throughout the subject:
+
+* the *dead pieces* rule (a contiguous block from two toads to two frogs never moves again);
+* the *Death Leap Principle*;
+* the *Terminal Toads Theorem* `XT□ⁿ = X□ⁿ + n` and its mirror, the *Finished Frogs Formula*,
+  which replace a piece with no opposing piece ahead of it by its number of remaining moves.
+
+He gives closed forms for contiguous blocks of pieces and for starting positions with one frog.
+For two frogs he has only partial results, such as `Tⁿ□F□F = 0`.
+
+**Thanatipanonda and Zeilberger [TZ07]** introduce a *symbolic finite-state* method: positions
+with symbolic parameters fall into finitely many symbolic states, a computer guesses a formula
+for each state's value, and the formulas are proved together by induction. Their "class B" is
+exactly the setting of this note: a fixed number of toads and frogs with a variable number of
+empty squares. They solved one toad and one frog. Two toads and one frog already resisted, and
+they expected `TTFF` to be harder still.
+
+The shapes of §4 are in the same spirit. Two differences may explain why the method works here:
+
+* we prove only the one-sided statement `T□T□ᵐFF ≤ 0`, through a strategy for Right, not exact
+  values;
+* the shapes keep the mirrored gap differences exactly, which is what lets Right's strategy use
+  finitely many shapes.
+
+**Thanatipanonda [T11]** proves the column `b = 2` for `a ≥ 4` (formalised in this repository,
+`Cgt/FamilyB2.lean`) and splits Conjecture 5 into stronger conjectures that the values are `0` or
+`∗`. He computes `T²□ᵇF²` for `b ≤ 103`:
+
+* every value is `0` or `∗`;
+* `∗` occurs exactly at `b = 1, 2, 3, 4, 7, 13, 19` among `b ≤ 20`;
+* for `21 ≤ b ≤ 103` the value is `0` except at `b = 25, 31, …, 103`.
+
+So the data fit "`∗` when `b ≤ 4` or `b ≡ 1 (mod 6)`, otherwise `0`". That exact-value statement
+is stronger than the theorem proved here, and as far as we know it is still open.
+
+We found no later work resolving Conjecture 5 or the row `a = 2`. Our search covered these
+papers, the Wikipedia article and general web searches, not a systematic database search.
+
+## References
+
+* **[E96]** Jeff Erickson, *New Toads and Frogs Results*. In R. J. Nowakowski (ed.), *Games of No
+  Chance*, MSRI Publications 29, Cambridge University Press, 1996, pp. 299–310.
+* **[TZ07]** Thotsaporn Thanatipanonda and Doron Zeilberger, *A Symbolic Finite-State Approach
+  for Automated Proving of Theorems in Combinatorial Game Theory*. arXiv:0710.4951, 2007.
+* **[T11]** Thotsaporn Thanatipanonda, *Further Hopping with Toads and Frogs*. Electronic Journal
+  of Combinatorics 18(1), 2011, #P67. arXiv:0804.0640.
+* **[WW]** Elwyn Berlekamp, John Conway and Richard Guy, *Winning Ways for your Mathematical
+  Plays*. Academic Press, 1982.

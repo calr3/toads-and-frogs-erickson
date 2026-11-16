@@ -264,3 +264,24 @@ These irregular positions have `A − B` near 0, which is exactly where Right's 
 `TT□T□ᵐFFF` stays. Whether the behaviour becomes regular on larger boards is open: the exact
 solver needs more memory than available beyond 32 cells. So the two-phase plan of §10.1 has no
 clean approach-phase rule to build on, at least not at these sizes.
+
+## 11. Literature (read late; references in `README.md`)
+
+These notes were written before reading Erickson's paper [E96] and the Thanatipanonda–Zeilberger
+paper [TZ07]. Several observations above have precedents there:
+
+* **Jammed blocks (§5).** Erickson's *dead pieces* rule says that a contiguous block from two
+  toads to two frogs never moves again, so the board splits into independent sums there.
+* **Runners (§10).** His *Terminal Toads Theorem* `XT□ⁿ = X□ⁿ + n` and *Finished Frogs Formula*
+  replace a piece with no opposing piece ahead of it by an integer. This is exactly the "replace
+  runners by their move counts" reduction considered for `a = 3`. It is the right tool once
+  pieces have fully crossed, but the obstruction found in §10.1–10.2 arises before that, in the
+  approach phase.
+* **Shapes (§9).** [TZ07]'s symbolic finite-state method (finitely many symbolic states, values
+  guessed and proved by induction) is the same idea. Their class B (fixed pieces, variable gaps)
+  stalled at `TTF`. The `a = 2` proof here succeeds for `TTFF` by proving only `≤ 0` via a
+  strategy, with mirrored gap differences in the shapes.
+* **Exact values for `a = 2`.** [T11] computes `T²□ᵇF²` for `b ≤ 103`. The values fit "`∗` when
+  `b ≤ 4` or `b ≡ 1 (mod 6)`, otherwise `0`". Proving this would mean showing `G + ∗ = 0` or
+  `G = 0`. Both are normal-play statements about a sum with an extra `T□F` component
+  (`T□F = ∗`, [E96] Lemma 5.1), so the shape machinery might extend to them. Untried.

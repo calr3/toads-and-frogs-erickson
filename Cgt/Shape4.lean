@@ -5,14 +5,19 @@ import Cgt.Four
 
 The *shape* of a four-piece position records its pieces, the differences `g₄ - g₀` and
 `g₃ - g₁` of mirrored gaps, and the smaller gap of each mirrored pair and the centre gap,
-capped at `K = 4` (above the cap only the parity is kept).
+capped at `K4 = 4` (above the cap only the parity is kept).
 
-`Rel j p q` says that `p` and `q` have the same shape with a margin of `j`: capped values are
-at least `K + j` on both sides. One move turns `Rel (j + 1)` into `Rel j`
-(`lm_rel`, `rm_rel`), and `Rel 0` positions have equal shapes. Every position is related with
-margin `2` to its normal form `norm`, one of finitely many witnesses of its shape. So "every
-Left move from a shape can be answered by a Right move into a given set of shapes" is a finite
-check on witnesses (`Inv4.step`).
+* `Rel j p q` says that `p` and `q` have the same shape with a margin of `j`: capped values are
+  at least `K4 + j` on both sides. One move turns `Rel (j + 1)` into `Rel j` (`lm1_rel` …
+  `rm4_rel`, `lms_rel`, `rms_rel`), and `Rel 0` positions have equal shapes (`shape_eq_of_rel`).
+* Every position is related with margin `2` to its normal form `P4.norm` (`rel_norm`), which is
+  one of the finitely many witnesses `wit` of its shape (`norm_mem_wit`).
+* So "every Left move from every position of a shape in a set `t` can be answered by a Right
+  move into a shape of `t`" reduces to the finite check `checkAll t`, and `le_zero_of_good`
+  concludes that every position whose shape is in `t` is `≤ 0`.
+
+Shapes are stored as numeric keys (`Shape.key`) in a search tree (`KTree`) so that the kernel
+evaluates `checkAll` quickly.
 -/
 
 namespace Cgt
@@ -61,8 +66,9 @@ def ORel {α : Type} (R : α → α → Prop) : Option α → Option α → Prop
   | some x, some y => R x y
   | _, _ => False
 
-theorem cap_eq {x y : Nat} (h : x = y ∨ (4 + 0 ≤ x ∧ 4 + 0 ≤ y ∧ x % 2 = y % 2)) : cap x = cap y := by
-  unfold cap K4
+theorem cap_eq {x y : Nat} (h : close 0 x y) : cap x = cap y := by
+  unfold close at h
+  unfold cap K4 at *
   by_cases hx : x < 4 <;> by_cases hy : y < 4 <;> simp only [hx, hy, ite_true, ite_false] <;> omega
 
 theorem shape_eq_of_rel {p q : P4} (h : Rel 0 p q) : p.shape = q.shape := by
@@ -70,7 +76,6 @@ theorem shape_eq_of_rel {p q : P4} (h : Rel 0 p q) : p.shape = q.shape := by
   obtain ⟨c1', c2', c3', c4', g0', g1', g2', g3', g4'⟩ := q
   dsimp only [Rel, PR] at h
   obtain ⟨rfl, rfl, rfl, rfl, ⟨h5, h7⟩, ⟨h6, h8⟩, h9⟩ := h
-  simp only [close, K4] at h7 h8 h9
   simp only [P4.shape, P4.code, Shape.mk.injEq, true_and]
   refine ⟨by omega, by omega, cap_eq h7, cap_eq h8, cap_eq h9⟩
 
@@ -102,7 +107,7 @@ theorem lm1_rel : ORel (Rel j) p.lm1 q.lm1 := by
   unfold P4.lm1
   by_cases a0 : c1 = true <;> by_cases a1 : c2 = false <;> by_cases zg1 : g1 = 0 <;> by_cases zg1' : g1' = 0 <;> by_cases zg2 : g2 = 0 <;> by_cases zg2' : g2' = 0 <;>
     simp only [a0, a1, zg1, zg1', zg2, zg2', ne_eq, not_true_eq_false, not_false_eq_true, and_true, true_and,
-      and_false, false_and, ite_true, ite_false, ORel, Rel] <;>
+      and_false, ite_true, ite_false, ORel, Rel] <;>
     rel_parts
 
 set_option maxHeartbeats 4000000 in
@@ -114,7 +119,7 @@ theorem lm2_rel : ORel (Rel j) p.lm2 q.lm2 := by
   unfold P4.lm2
   by_cases a0 : c2 = true <;> by_cases a1 : c3 = false <;> by_cases zg2 : g2 = 0 <;> by_cases zg2' : g2' = 0 <;> by_cases zg3 : g3 = 0 <;> by_cases zg3' : g3' = 0 <;>
     simp only [a0, a1, zg2, zg2', zg3, zg3', ne_eq, not_true_eq_false, not_false_eq_true, and_true, true_and,
-      and_false, false_and, ite_true, ite_false, ORel, Rel] <;>
+      and_false, ite_true, ite_false, ORel, Rel] <;>
     rel_parts
 
 set_option maxHeartbeats 4000000 in
@@ -126,7 +131,7 @@ theorem lm3_rel : ORel (Rel j) p.lm3 q.lm3 := by
   unfold P4.lm3
   by_cases a0 : c3 = true <;> by_cases a1 : c4 = false <;> by_cases zg3 : g3 = 0 <;> by_cases zg3' : g3' = 0 <;> by_cases zg4 : g4 = 0 <;> by_cases zg4' : g4' = 0 <;>
     simp only [a0, a1, zg3, zg3', zg4, zg4', ne_eq, not_true_eq_false, not_false_eq_true, and_true, true_and,
-      and_false, false_and, ite_true, ite_false, ORel, Rel] <;>
+      and_false, ite_true, ite_false, ORel, Rel] <;>
     rel_parts
 
 set_option maxHeartbeats 4000000 in
@@ -138,7 +143,7 @@ theorem lm4_rel : ORel (Rel j) p.lm4 q.lm4 := by
   unfold P4.lm4
   by_cases a0 : c4 = true <;> by_cases zg4 : g4 = 0 <;> by_cases zg4' : g4' = 0 <;>
     simp only [a0, zg4, zg4', ne_eq, not_true_eq_false, not_false_eq_true, and_true, true_and,
-      and_false, false_and, ite_true, ite_false, ORel, Rel] <;>
+      and_false, ite_true, ite_false, ORel, Rel] <;>
     rel_parts
 
 set_option maxHeartbeats 4000000 in
@@ -150,7 +155,7 @@ theorem rm1_rel : ORel (Rel j) p.rm1 q.rm1 := by
   unfold P4.rm1
   by_cases a0 : c1 = false <;> by_cases zg0 : g0 = 0 <;> by_cases zg0' : g0' = 0 <;>
     simp only [a0, zg0, zg0', ne_eq, not_true_eq_false, not_false_eq_true, and_true, true_and,
-      and_false, false_and, ite_true, ite_false, ORel, Rel] <;>
+      and_false, ite_true, ite_false, ORel, Rel] <;>
     rel_parts
 
 set_option maxHeartbeats 4000000 in
@@ -162,7 +167,7 @@ theorem rm2_rel : ORel (Rel j) p.rm2 q.rm2 := by
   unfold P4.rm2
   by_cases a0 : c2 = false <;> by_cases a1 : c1 = true <;> by_cases zg1 : g1 = 0 <;> by_cases zg1' : g1' = 0 <;> by_cases zg0 : g0 = 0 <;> by_cases zg0' : g0' = 0 <;>
     simp only [a0, a1, zg1, zg1', zg0, zg0', ne_eq, not_true_eq_false, not_false_eq_true, and_true, true_and,
-      and_false, false_and, ite_true, ite_false, ORel, Rel] <;>
+      and_false, ite_true, ite_false, ORel, Rel] <;>
     rel_parts
 
 set_option maxHeartbeats 4000000 in
@@ -174,7 +179,7 @@ theorem rm3_rel : ORel (Rel j) p.rm3 q.rm3 := by
   unfold P4.rm3
   by_cases a0 : c3 = false <;> by_cases a1 : c2 = true <;> by_cases zg2 : g2 = 0 <;> by_cases zg2' : g2' = 0 <;> by_cases zg1 : g1 = 0 <;> by_cases zg1' : g1' = 0 <;>
     simp only [a0, a1, zg2, zg2', zg1, zg1', ne_eq, not_true_eq_false, not_false_eq_true, and_true, true_and,
-      and_false, false_and, ite_true, ite_false, ORel, Rel] <;>
+      and_false, ite_true, ite_false, ORel, Rel] <;>
     rel_parts
 
 set_option maxHeartbeats 4000000 in
@@ -186,7 +191,7 @@ theorem rm4_rel : ORel (Rel j) p.rm4 q.rm4 := by
   unfold P4.rm4
   by_cases a0 : c4 = false <;> by_cases a1 : c3 = true <;> by_cases zg3 : g3 = 0 <;> by_cases zg3' : g3' = 0 <;> by_cases zg2 : g2 = 0 <;> by_cases zg2' : g2' = 0 <;>
     simp only [a0, a1, zg3, zg3', zg2, zg2', ne_eq, not_true_eq_false, not_false_eq_true, and_true, true_and,
-      and_false, false_and, ite_true, ite_false, ORel, Rel] <;>
+      and_false, ite_true, ite_false, ORel, Rel] <;>
     rel_parts
 
 end
@@ -194,10 +199,10 @@ end
 /-! ### Validity is preserved by moves -/
 
 theorem mem_lms {p q : P4} : q ∈ p.lms ↔ p.lm1 = some q ∨ p.lm2 = some q ∨ p.lm3 = some q ∨ p.lm4 = some q := by
-  simp [P4.lms, Option.mem_toList, Option.mem_def, or_assoc, eq_comm]
+  simp [P4.lms, Option.mem_toList, eq_comm]
 
 theorem mem_rms {p q : P4} : q ∈ p.rms ↔ p.rm1 = some q ∨ p.rm2 = some q ∨ p.rm3 = some q ∨ p.rm4 = some q := by
-  simp [P4.rms, Option.mem_toList, Option.mem_def, or_assoc, eq_comm]
+  simp [P4.rms, Option.mem_toList, eq_comm]
 
 /-! ### Transfer of moves between related positions -/
 
@@ -278,9 +283,9 @@ def wit (s : Shape) : List P4 :=
 theorem nrm_mem_capVals (m : Nat) : nrm m ∈ capVals (cap m) := by
   unfold nrm capVals cap K4
   by_cases h : m < 4 <;> by_cases h' : m < 4 + 2 <;>
-    simp only [h, h', ite_true, ite_false, List.mem_cons, List.mem_singleton, List.not_mem_nil] <;>
+    simp only [h, h', ite_true, ite_false, List.mem_cons, List.not_mem_nil] <;>
     (first | omega | (by_cases h'' : 4 + m % 2 < 4 <;> simp only [h'', ite_true, ite_false,
-      List.mem_cons, List.mem_singleton, List.not_mem_nil, or_false] <;> omega))
+      List.mem_cons, List.not_mem_nil, or_false] <;> omega))
 
 theorem codeCell_cellCode (c : Bool) : codeCell (cellCode c) = c := by
   cases c <;> rfl

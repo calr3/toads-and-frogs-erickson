@@ -166,7 +166,7 @@ large, and that letting a learner choose Right's replies does not produce one. A
 Right strategy that keeps the reachable set regular would be needed. The checker can then
 verify it for every board size.
 
-## 9. The row `a = 2` (proved: `Cgt/RowA2.lean`)
+## 9. The row `a = 2` (proved: `Cgt/RowA2.lean`; full account in `docs/ROW_A2.md`)
 
 * **Reduction.** For `b ≥ 2`, Left's only move from `TT□ᵇFF` is to `T□T□ᵇ⁻¹FF`, and that
   position is `≤ 0` (every `m = b − 1 ≥ 1` up to 40 checked first). So Right passes, and the

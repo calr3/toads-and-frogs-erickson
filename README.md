@@ -112,29 +112,20 @@ Build with `lake build` (Lean `v4.36.0-rc2`).
 
 ## The row a = 2
 
-`infinitesimal_start_two : ∀ b, Infinitesimal (tf (start 2 b))`. The proof has four steps.
+`infinitesimal_start_two : ∀ b, Infinitesimal (tf (start 2 b))`, in `Cgt/RowA2.lean`. In short:
 
-1. **One position.** For `b ≥ 2`, Left's only move from `TT□ᵇFF` is to `T□T□ᵇ⁻¹FF`. If that
-   position is `≤ 0`, Right can answer by passing, so the symmetric start has Left stop `≤ 0`.
-   So the row reduces to one claim: `T□T□ᵐFF ≤ 0` for all `m ≥ 1`.
-2. **Shapes.** A position with two toads and two frogs is a piece order plus five gaps
-   `g₀…g₄` (`Cgt/Four.lean`). Its *shape* (`Cgt/Shape4.lean`) records:
-   * the order;
-   * the mirrored differences `g₄ − g₀` and `g₃ − g₁`;
-   * the smaller gap of each mirrored pair and the centre gap, capped at 4 (above that only
-     the parity is kept).
-3. **Shapes behave uniformly.** One move turns "same shape with margin `j + 1`" into "same
-   shape with margin `j`". Every position has the same shape, with margin 2, as one of finitely
-   many witnesses of its shape. So "every Left move from this shape has a good Right reply" is
-   a finite check, and `le_zero_of_good` turns it into a proof for every position of every
-   shape in a list.
-4. **The finite check.** `scripts/gen_row2.py` finds 1,543 shapes containing every
-   `T□T□ᵐFF` and closed under Left moves and Right's replies. Right keeps the mirrored
-   differences within 2, a strategy found with the exact solver. The kernel checks the list
-   (`checkA2`, about 30 seconds).
+1. **Reduction.** For `b ≥ 2`, Left's only move from `TT□ᵇFF` is to `T□T□ᵇ⁻¹FF`. That position is
+   `≤ 0` (Right, moving second, wins), so Right can pass. The row reduces to
+   `T□T□ᵐFF ≤ 0` for all `m ≥ 1`.
+2. **Strategy.** Right keeps the differences between mirror-image gaps, `g₄ − g₀` and `g₃ − g₁`,
+   within 2. Every position reached then falls into one of 1,543 *shapes*: piece order,
+   mirrored differences, and the small gaps capped at 4 with their parity.
+3. **Finite check.** One move turns "same shape with margin `j + 1`" into "same shape with margin
+   `j`", so checking finitely many witnesses per shape covers every position of that shape
+   (`le_zero_of_good`). The kernel checks all 1,543 shapes in about 30 seconds.
 
-Simpler strategies fail: mirroring Left's move one turn late breaks down when the pieces meet,
-and a greedy "closest to symmetric" reply lets the asymmetry grow without bound for even `m`.
+**[docs/ROW_A2.md](docs/ROW_A2.md)** has the full account: background, the strategy with an
+example line, the margin lemma and soundness proof, the data, and a map of the files.
 
 ## Computational evidence beyond the formal results
 

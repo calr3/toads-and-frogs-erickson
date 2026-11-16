@@ -3,13 +3,14 @@ import Cgt.Certificate
 /-!
 # Positions with four pieces
 
-A position with four pieces is described by its pieces `c₁ c₂ c₃ c₄` (left to right) and the
-five gaps `g₀ … g₄` of empty squares around them:
-`□^g₀ c₁ □^g₁ c₂ □^g₂ c₃ □^g₃ c₄ □^g₄`.
+A position with four pieces is described by its pieces `c₁ c₂ c₃ c₄` (left to right; `true` is a
+toad, `false` a frog) and the five gaps `g₀ … g₄` of empty squares around them:
+`□^g₀ c₁ □^g₁ c₂ □^g₂ c₃ □^g₃ c₄ □^g₄` (`P4.toList`).
 
 Each piece has at most one move: a slide into the next square, or a jump over an adjacent
-opposing piece. `P4.lm i` and `P4.rm i` give that move for toad / frog number `i`, and
-`leftMoves_toList` / `toList_mem_rightMoves` relate them to `TF.leftMoves` / `TF.rightMoves`.
+opposing piece. `P4.lm1` … `P4.lm4` give that move for piece `i` if it is a toad, `P4.rm1` …
+`P4.rm4` if it is a frog. `leftMoves_toList` and `rightMoves_toList` show that these are exactly
+the moves of `TF.leftMoves` / `TF.rightMoves` on the corresponding list of cells.
 -/
 
 namespace Cgt
@@ -189,7 +190,7 @@ theorem rightMoves_toList (p : P4) : rightMoves p.toList = p.rms.map P4.toList :
   simp only [P4.rm1, P4.rm2, P4.rm3, P4.rm4]
   cases c1 <;> cases c2 <;> cases c3 <;> cases c4 <;>
     cases g0 <;> cases g1 <;> cases g2 <;> cases g3 <;> cases g4 <;>
-    simp_all [segR, headR0, pc, P4.toList, rep_succ_append', List.replicate_succ, Function.comp_def]
+    simp_all [segR, headR0, pc, P4.toList, List.replicate_succ, Function.comp_def]
 
 theorem toList_mem_rightMoves {p q : P4} (h : q ∈ p.rms) :
     q.toList ∈ rightMoves p.toList := by

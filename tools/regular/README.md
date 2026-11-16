@@ -47,6 +47,9 @@ language, for example by `starts_rows({2})` for a single row.
 * `learn_z.py`, `learn_n.py`: the same for the two halves separately, for the `a = 2` row.
 * `canonical_z.py`, `rpni_z.py`: the `a = 2` normal-play set built from a fixed local Right
   strategy, and learned by state merging (RPNI) instead of SAT.
+* `a2_strategy.py`, `a2_abstract.py`: the strategy for the `a = 2` row that *did* work, by
+  arithmetic shapes rather than automata. It became the Lean proof in `Cgt/RowA2.lean`; see
+  `docs/RESEARCH_NOTES.md` §9.
 * `forced.py`: lower bounds on the number of states of *any* invariant. They come from
   positions every invariant must contain (starts, and Right's only good reply to a Left move
   from such a position) and positions none may contain (losing ones).

@@ -165,3 +165,27 @@ None of this proves that no regular invariant exists. It does show that any such
 large, and that letting a learner choose Right's replies does not produce one. A hand-designed
 Right strategy that keeps the reachable set regular would be needed. The checker can then
 verify it for every board size.
+
+## 9. The row `a = 2` (proved: `Cgt/RowA2.lean`)
+
+* **Reduction.** For `b ≥ 2`, Left's only move from `TT□ᵇFF` is to `T□T□ᵇ⁻¹FF`, and that
+  position is `≤ 0` (every `m = b − 1 ≥ 1` up to 40 checked first). So Right passes, and the
+  row reduces to the normal-play claim `T□T□ᵐFF ≤ 0`. The same happens for `(3, 7)`, `(3, 8)`
+  and `(3, 9)`, which suggests the same reduction for the row `a = 3`.
+* **Exact outcome rules don't help.** Over *all* two-toad two-frog positions, "`≤ 0`" is
+  mostly the race count `A ≤ B`, but near `A − B = 0` it depends on comparisons of gap lengths
+  that no small table of capped gaps captures.
+* **A strategy with bounded asymmetry does.**
+  * Pair each gap with its mirror image.
+  * Delayed mirroring (copy Left's previous move) fails at contact.
+  * Greedy "closest to symmetric" replies keep the differences of mirrored gaps bounded for
+    odd `m` but not for even `m`.
+  * With lookahead, Right can always keep both differences within 2. The positions reached
+    then fall into 1,543–1,612 shapes (piece order, mirrored differences, capped minima with
+    parity), the same for all `m ≥ 29`, and Right's choice depends only on the shape.
+* **Formal proof.**
+  * Because one move changes each gap by at most one, shapes can be checked through
+    finitely many witnesses (`Rel`, `norm`, `wit` in `Cgt/Shape4.lean`).
+  * The kernel checks the generated list of shapes in about 30 seconds.
+  * `tools/regular/a2_strategy.py` and `a2_abstract.py` are the exploratory versions;
+    `scripts/gen_row2.py` generates the Lean data.

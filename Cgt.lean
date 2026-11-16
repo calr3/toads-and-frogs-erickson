@@ -12,3 +12,7 @@ import Cgt.DLP
 import Cgt.FamilyB1
 import Cgt.FamilyB2
 import Cgt.Certificate
+import Cgt.Four
+import Cgt.Shape4
+import Cgt.RowA2Data
+import Cgt.RowA2

@@ -3,7 +3,7 @@ import Cgt.FiniteCases
 import Cgt.SmallCases
 import Cgt.FamilyB1
 import Cgt.FamilyB2
-import Cgt.FiniteCasesExt
+import Cgt.RowA2
 
 /-!
 # Erickson's Conjecture 5 for Toads and Frogs
@@ -14,7 +14,8 @@ import Cgt.FiniteCasesExt
 This file states the conjecture (`Conjecture5`) and collects what is proved so far:
 
 * the exceptional case `(3, 2)` is indeed *not* infinitesimal (`not_infinitesimal_3_2`);
-* `a = 0`, `a = 1`, `b = 0` and `b = 1` hold for every value of the other parameter;
+* `a = 0`, `a = 1`, `a = 2`, `b = 0` and `b = 1` hold for every value of the other parameter
+  (`a = 2` via a machine-checked strategy over finitely many shapes, `Cgt/RowA2.lean`);
 * `b = 2` holds for every `a ≠ 3` (Thanatipanonda's theorem for `a ≥ 4`, formalised here);
 * every case with `2a + b ≤ 12` (other than `(3, 2)`) is checked by the kernel.
 
@@ -98,26 +99,17 @@ theorem conjecture5_partial (a b : Nat) (hab : (a, b) ≠ (3, 2))
 
 /-- The region of `(a, b)` covered by the results proved in this repository. -/
 def ProvedRegion (a b : Nat) : Prop :=
-  a ≤ 1 ∨ b ≤ 2 ∨ 2 * a + b ≤ 12 ∨ (a = 2 ∧ b ≤ 16)
+  a ≤ 2 ∨ b ≤ 2 ∨ 2 * a + b ≤ 12
 
 /-- Every case of the conjecture in `ProvedRegion` holds. -/
 theorem conjecture5_provedRegion (a b : Nat) (hab : (a, b) ≠ (3, 2)) (h : ProvedRegion a b) :
     Infinitesimal (tf (start a b)) := by
-  rcases h with h | h | h | ⟨rfl, hb⟩
-  · exact conjecture5_partial a b hab (Or.inl h)
+  rcases h with h | h | h
+  · by_cases h1 : a ≤ 1
+    · exact conjecture5_partial a b hab (Or.inl h1)
+    · obtain rfl : a = 2 := by omega
+      exact infinitesimal_start_two b
   · exact conjecture5_partial a b hab (Or.inr (Or.inl h))
   · exact conjecture5_partial a b hab (Or.inr (Or.inr h))
-  by_cases h8 : b ≤ 8
-  · exact conjecture5_partial 2 b hab (Or.inr (Or.inr (by omega)))
-  have key : b = 9 ∨ b = 10 ∨ b = 11 ∨ b = 12 ∨ b = 13 ∨ b = 14 ∨ b = 15 ∨ b = 16 := by omega
-  rcases key with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
-  · exact infinitesimal_start_2_9
-  · exact infinitesimal_start_2_10
-  · exact infinitesimal_start_2_11
-  · exact infinitesimal_start_2_12
-  · exact infinitesimal_start_2_13
-  · exact infinitesimal_start_2_14
-  · exact infinitesimal_start_2_15
-  · exact infinitesimal_start_2_16
 
 end Cgt

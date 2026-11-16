@@ -15,13 +15,13 @@ uses Lean core only (no Mathlib) and has no `sorry`.
 | `(3, 2)` is **not** infinitesimal (`TTT□□FFF = ±1/8`) | `not_infinitesimal_3_2` |
 | `a = 0`, all `b` | `infinitesimal_start_a_zero` |
 | `a = 1`, all `b` (`T □ᵇ F`) | `infinitesimal_start_one` |
+| **`a = 2`, all `b` (`TT □ᵇ FF`)**: machine-checked strategy over 1,543 shapes | `infinitesimal_start_two` (`Cgt/RowA2.lean`) |
 | `b = 0`, all `a` | `infinitesimal_start_b_zero` |
 | `b = 1`, all `a` (`Tᵃ □ Fᵃ`) | `infinitesimal_start_b_one` |
 | `b = 2`, all `a ≥ 4` (Thanatipanonda's theorem, incl. his Lemma C.1) | `infinitesimal_start_b_two`, `upperZero_c1` |
 | One-sided Death Leap Principle (Thanatipanonda), general | `le_zero_of_dlp` |
 | Every case with `2a + b ≤ 12`, kernel-checked | `Cgt/FiniteCases.lean` |
-| `a = 2`, `b ≤ 16`, kernel-checked | `Cgt/FiniteCasesExt.lean` |
-| `(2,17)`, `(2,20)`, `(2,24)`, `(3,10)`, `(3,11)`, `(3,12)`, `(6,3)`: strategy certificates | `Cgt/Cert/` (`lake build CgtCerts`) |
+| `(3,7)` to `(3,12)`, `(4,5)`, `(5,3)`, `(6,3)`: strategy certificates | `Cgt/Cert/` (`lake build CgtCerts`) |
 | Combined partial result | `conjecture5_partial`, `conjecture5_provedRegion` |
 | **General case** | **open** |
 
@@ -38,10 +38,10 @@ Each cell is the case `Tᵃ □ᵇ Fᵃ`, with `a` down the side and `b` across 
       b = 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8
 a = 0     S S S S S S S S S S S S S S S S S S S S S S S S S S S S S
 a = 1     S S S S S S S S S S S S S S S S S S S S S S S S S S S S S
-a = 2     S S K K K K K K K K K K K K K K K C . . C . . . C . . . .
-a = 3     S S X K K K K . . . C C C . . . . . . . . . . . . . .
-a = 4     S S S K K . . . . . . . . . . . . . . . . . . . .
-a = 5     S S S . . . . . . . . . . . . . .
+a = 2     S S S S S S S S S S S S S S S S S S S S S S S S S S S S S
+a = 3     S S X K K K K C C C C C C . . . . . . . . . . . . . .
+a = 4     S S S K K C . . . . . . . . . . . . . . . . . . .
+a = 5     S S S C . . . . . . . . . . . . .
 a = 6     S S S C . . . . . . .
 a = 7     S S S . . . . . .
 a = 8     S S S . . . .
@@ -56,8 +56,8 @@ a ≥ 15    S S S
 
 | Mark | Meaning |
 | --- | --- |
-| `S` | Proved by a theorem for a whole family: `a ≤ 1`, `b ≤ 1`, or `b = 2` with `a ≥ 4`. These rows and columns continue for every `a` and `b`. |
-| `K` | Single case checked by kernel `decide` (`Cgt/FiniteCases.lean`, `Cgt/FiniteCasesExt.lean`). |
+| `S` | Proved by a theorem for a whole family: `a ≤ 2`, `b ≤ 1`, or `b = 2` with `a ≥ 4`. These rows and columns continue for every `a` and `b`. |
+| `K` | Single case checked by kernel `decide` (`Cgt/FiniteCases.lean`). |
 | `C` | Single case proved by a strategy certificate: `Cgt.Cert_a_b.infinitesimal` in `Cgt/Cert/`, checked by `lake build CgtCerts`. |
 | `X` | `(3, 2)`: proved **not** infinitesimal (`not_infinitesimal_3_2`). |
 | `.` | Not proved in Lean, but confirmed by the exact solver (see below). |
@@ -66,8 +66,8 @@ a ≥ 15    S S S
 Apart from `(3, 2)`, the `S` and `K` cells are exactly `ProvedRegion`, which
 `conjecture5_provedRegion` covers in one theorem. The `C` cells are separate theorems, one per case.
 
-`Cgt/Cert/` also contains certificates for `(4, 5)`, `(4, 6)` and `(5, 3)`. They have not been
-checked yet, so they are not built with `CgtCerts` and are shown as `.` above.
+`Cgt/Cert/` also contains a certificate for `(4, 6)`. Checking it ran out of memory, so it is
+not built with `CgtCerts` and is shown as `.` above.
 
 ## Contents
 
@@ -86,15 +86,43 @@ checked yet, so they are not built with `CgtCerts` and are shown as `.` above.
 * `Cgt/FamilyB2.lean`: Thanatipanonda's proof for `b = 2` (Lemma C.1 plus a short case tree).
 * `Cgt/DLP.lean`: the one-sided Death Leap Principle (Left can only jump and there are no
   two adjacent empty squares, so the position is `≤ 0`).
+* `Cgt/Four.lean`, `Cgt/Shape4.lean`, `Cgt/RowA2.lean`: the row `a = 2`. See
+  [The row a = 2](#the-row-a--2) below.
 
 Build with `lake build` (Lean `v4.36.0-rc2`).
 
 * `Cgt/Certificate.lean` and `scripts/gen_cert.py`: turn an explicit Right strategy found by a
   solver into a Lean proof, with one small kernel-checked lemma per position. `lake build
-  CgtCerts` checks the generated certificates in `Cgt/Cert/` for `(2, 17)`, `(2, 20)`, `(2, 24)`,
-  `(3, 4)`, `(3, 10)`, `(3, 11)`, `(3, 12)` and `(6, 3)`. These are cases that plain kernel
-  `decide` cannot handle within memory. The larger ones take 20 to 50 minutes each and run to tens
-  of thousands of lemmas.
+  CgtCerts` checks the generated certificates in `Cgt/Cert/` for `(3, 4)`, `(3, 7)` to `(3, 12)`,
+  `(4, 5)`, `(5, 3)` and `(6, 3)`. These are cases that plain kernel `decide` cannot handle
+  within memory. The larger ones take 10 to 50 minutes each and run to tens of thousands of
+  lemmas.
+
+## The row a = 2
+
+`infinitesimal_start_two : ∀ b, Infinitesimal (tf (start 2 b))`. The proof has four steps.
+
+1. **One position.** For `b ≥ 2`, Left's only move from `TT□ᵇFF` is to `T□T□ᵇ⁻¹FF`. If that
+   position is `≤ 0`, Right can answer by passing, so the symmetric start has Left stop `≤ 0`.
+   So the row reduces to one claim: `T□T□ᵐFF ≤ 0` for all `m ≥ 1`.
+2. **Shapes.** A position with two toads and two frogs is a piece order plus five gaps
+   `g₀…g₄` (`Cgt/Four.lean`). Its *shape* (`Cgt/Shape4.lean`) records:
+   * the order;
+   * the mirrored differences `g₄ − g₀` and `g₃ − g₁`;
+   * the smaller gap of each mirrored pair and the centre gap, capped at 4 (above that only
+     the parity is kept).
+3. **Shapes behave uniformly.** One move turns "same shape with margin `j + 1`" into "same
+   shape with margin `j`". Every position has the same shape, with margin 2, as one of finitely
+   many witnesses of its shape. So "every Left move from this shape has a good Right reply" is
+   a finite check, and `le_zero_of_good` turns it into a proof for every position of every
+   shape in a list.
+4. **The finite check.** `scripts/gen_row2.py` finds 1,543 shapes containing every
+   `T□T□ᵐFF` and closed under Left moves and Right's replies. Right keeps the mirrored
+   differences within 2, a strategy found with the exact solver. The kernel checks the list
+   (`checkA2`, about 30 seconds).
+
+Simpler strategies fail: mirroring Left's move one turn late breaks down when the pieces meet,
+and a greedy "closest to symmetric" reply lets the asymmetry grow without bound for even `m`.
 
 ## Computational evidence beyond the formal results
 

@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """Print the README's table of proved cases, read from the Lean sources.
 
-* Whole families: a <= 2 (Cgt/RowA2.lean, FamilyA1, Basic), b <= 1, and b = 2 with a >= 4.
-* Single cases checked by kernel `decide`: the `start a b` cases in Cgt/FiniteCases.lean.
-* Strategy certificates: the CgtCerts roots in lakefile.toml.
-* (3, 2): proved not infinitesimal.
-* Otherwise: confirmed by the exact solver (README "Computational evidence") or not computed.
+A case is marked proved (however it is proved) if it is covered by
+* a whole family: a <= 2 (Cgt/RowA2.lean, FamilyA1, Basic), b <= 1, or b = 2 with a >= 4;
+* a single case checked by kernel `decide`: the `start a b` cases in Cgt/FiniteCases.lean;
+* a strategy certificate: the CgtCerts roots in lakefile.toml.
+(3, 2) is proved not infinitesimal. Otherwise a case is confirmed by the exact solver (README
+"Computational evidence") or not computed.
 
 Usage: gen_grid.py   (run from the repository root)
 """
@@ -22,12 +23,8 @@ certs = {(int(a), int(b)) for a, b in re.findall(r'Case_(\d+)_(\d+)', open('lake
 def mark(a, b):
     if (a, b) == (3, 2):
         return '❌'
-    if a <= 2 or b <= 1 or (b == 2 and a >= 4):
+    if a <= 2 or b <= 1 or (b == 2 and a >= 4) or (a, b) in kernel or (a, b) in certs:
         return '🟩'
-    if (a, b) in kernel:
-        return '🔵'
-    if (a, b) in certs:
-        return '🔶'
     if b <= SOLVER.get(a, -1):
         return '·'
     return ''

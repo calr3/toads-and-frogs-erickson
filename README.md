@@ -67,16 +67,16 @@ the side. Generated from the Lean sources by `scripts/gen_grid.py`.
 | **0** | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 |
 | **1** | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 |
 | **2** | 🟩 | 🟩 | 🟩 | ❌ | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 |
-| **3** | 🟩 | 🟩 | 🟩 | 🔵 | 🔵 | 🔶 | 🔶 | · | · | · | · | · | · | · | · |  |
-| **4** | 🟩 | 🟩 | 🟩 | 🔵 | 🔵 | · | · | · | · | · | · | · | · |  |  |  |
-| **5** | 🟩 | 🟩 | 🟩 | 🔵 | 🔶 | · | · | · | · | · |  |  |  |  |  |  |
-| **6** | 🟩 | 🟩 | 🟩 | 🔵 | · | · | · | · | · |  |  |  |  |  |  |  |
-| **7** | 🟩 | 🟩 | 🟩 | 🔶 | · | · | · | · |  |  |  |  |  |  |  |  |
-| **8** | 🟩 | 🟩 | 🟩 | 🔶 | · | · | · | · |  |  |  |  |  |  |  |  |
-| **9** | 🟩 | 🟩 | 🟩 | 🔶 | · | · | · |  |  |  |  |  |  |  |  |  |
-| **10** | 🟩 | 🟩 | 🟩 | 🔶 | · | · | · |  |  |  |  |  |  |  |  |  |
-| **11** | 🟩 | 🟩 | 🟩 | 🔶 | · | · |  |  |  |  |  |  |  |  |  |  |
-| **12** | 🟩 | 🟩 | 🟩 | 🔶 | · | · |  |  |  |  |  |  |  |  |  |  |
+| **3** | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | · | · | · | · | · | · | · | · |  |
+| **4** | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | · | · | · | · | · | · | · | · |  |  |  |
+| **5** | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | · | · | · | · | · |  |  |  |  |  |  |
+| **6** | 🟩 | 🟩 | 🟩 | 🟩 | · | · | · | · | · |  |  |  |  |  |  |  |
+| **7** | 🟩 | 🟩 | 🟩 | 🟩 | · | · | · | · |  |  |  |  |  |  |  |  |
+| **8** | 🟩 | 🟩 | 🟩 | 🟩 | · | · | · | · |  |  |  |  |  |  |  |  |
+| **9** | 🟩 | 🟩 | 🟩 | 🟩 | · | · | · |  |  |  |  |  |  |  |  |  |
+| **10** | 🟩 | 🟩 | 🟩 | 🟩 | · | · | · |  |  |  |  |  |  |  |  |  |
+| **11** | 🟩 | 🟩 | 🟩 | 🟩 | · | · |  |  |  |  |  |  |  |  |  |  |
+| **12** | 🟩 | 🟩 | 🟩 | 🟩 | · | · |  |  |  |  |  |  |  |  |  |  |
 | **13** | 🟩 | 🟩 | 🟩 | · | · | · |  |  |  |  |  |  |  |  |  |  |
 | **14** | 🟩 | 🟩 | 🟩 | · | · | · |  |  |  |  |  |  |  |  |  |  |
 | **15** | 🟩 | 🟩 | 🟩 | · | · | · |  |  |  |  |  |  |  |  |  |  |
@@ -96,15 +96,20 @@ the side. Generated from the Lean sources by `scripts/gen_grid.py`.
 
 | Mark | Meaning |
 | :-: | --- |
-| 🟩 | Proved by a theorem for a whole row or column: `a ≤ 2`, `b ≤ 1`, or `b = 2` with `a ≥ 4`. These continue for every `a` and `b`. |
-| 🔵 | Single case checked by kernel `decide` (`Cgt/FiniteCases.lean`). |
-| 🔶 | Single case proved by a strategy certificate: `Cgt.Cert_a_b.infinitesimal` in `Cgt/Cert/`, checked by `lake build CgtCerts`. |
+| 🟩 | Proved infinitesimal in Lean. |
 | ❌ | `(3, 2)`: proved **not** infinitesimal (`not_infinitesimal_3_2`). |
 | · | Not proved in Lean, but confirmed by the exact solver (see below). |
 | *(blank)* | Not computed. |
 
-Apart from `(3, 2)`, the 🟩 and 🔵 cells are exactly `ProvedRegion`, which
-`conjecture5_provedRegion` covers in one theorem. The 🔶 cells are separate theorems, one per case.
+How a cell is proved:
+
+* `a ≤ 2` (every `b`), `b ≤ 1` (every `a`) and `b = 2` with `a ≥ 4`: one theorem per family.
+  These continue beyond the edges of the table.
+* The other cells are single cases:
+  * most are checked by kernel `decide` (`Cgt/FiniteCases.lean`). With the families above they
+    make up `ProvedRegion`, covered by `conjecture5_provedRegion`;
+  * `(3, 7)` to `(3, 12)`, `(4, 5)`, `(5, 3)` and `(6, 3)` are proved by strategy certificates
+    (`Cgt.Cert_a_b.infinitesimal` in `Cgt/Cert/`, checked by `lake build CgtCerts`).
 
 `Cgt/Cert/` also contains a certificate for `(4, 6)`. Checking it ran out of memory, so it is
 not built with `CgtCerts` and is shown as · above.

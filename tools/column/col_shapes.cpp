@@ -10,6 +10,10 @@
 // the race between Left's and Right's reservoirs. Exact differences within clusters fix this; the
 // anchor keeps the reservoirs "far" when a short run grows long.)
 //
+// Dead regions (Erickson): in a block of pieces with no empty square, everything from the first
+// TT to the last FF after it never moves again. A dead region is one marker in the shape (witness
+// "TTFF"), and its runs take no part in the differences.
+//
 // Margin: if all these differences agree or are both >= M + 1 + j, they still are (with j - 1)
 // after the same move in both positions, because a move changes one long run by 1 and never
 // merges two long runs. So, as for the a = 2 row, it suffices to check the witnesses of a shape:
@@ -23,6 +27,12 @@
 // Right's replies must keep the number of runs <= RB (and the number of far gaps <= FB). Concrete
 // solving of small witnesses is used only to order and prune Right's options (a concretely losing
 // option cannot lead to a won shape). With DUMP=file the closed set is written out (mode + shape).
+// MINIMIZE=1 then shrinks it: it computes the exact won region of the explored shapes and rebuilds
+// Right's choices greedily, preferring shapes already used. EXPLORE=n first solves alternative
+// options too (up to n explored shapes). NODEAD=1 turns off dead regions.
+//
+// The certificate b3_shapes.txt (2,861 shapes) is: MINIMIZE=1 DUMP=out col_shapes 3 10 2 2
+// followed by sort.
 //
 // Usage: col_shapes B RB [K [M [CONC [FB]]]]   (shapes are classes; witnesses are all normal forms;
 //   CONC: largest board solved concretely for pruning; FB: most far gaps allowed after Right's replies)
@@ -60,14 +70,34 @@ int unbalanced = 0;
 // iff they are related with margin 0. A witness replaces each capped gap c by c (the position's
 // gap was c) or c + 2 (it was >= c + 2); the normal form of a position is one of its witnesses.
 typedef string Shape;
+int DEAD = 1;   // collapse dead TTFF blocks (their pieces never move; their lengths never matter)
+// Dead regions (Erickson): in a block of pieces with no empty square, everything from the first
+// TT to the last FF after it can never move again. Its contents never matter.
+vector<bool> deadRuns(const vector<pair<char,int>> &rs) {
+  int m = rs.size(); vector<bool> d(m, false);
+  if (DEAD == 0) return d;
+  int i = 0;
+  while (i < m) {
+    if (rs[i].first == '.') { i++; continue; }
+    int j = i; while (j < m && rs[j].first != '.') j++;   // runs i..j-1 form a block of pieces
+    int st = -1, en = -1;
+    for (int k = i; k < j; k++) if (rs[k].first == 'T' && rs[k].second >= 2) { st = k; break; }
+    if (st >= 0) for (int k = j - 1; k > st; k--) if (rs[k].first == 'F' && rs[k].second >= 2) { en = k; break; }
+    if (st >= 0 && en >= 0) for (int k = st; k <= en; k++) d[k] = true;
+    i = j;
+  }
+  return d;
+}
 Shape shapeOf(const Pos &p) {
-  auto rs = runs(p); int m = rs.size();
+  auto rs = runs(p); int m = rs.size(); auto dd = deadRuns(rs);
   vector<pair<int,int>> lv;
-  for (int i = 0; i < m; i++) if (rs[i].second >= K) lv.push_back({rs[i].second, i});
+  for (int i = 0; i < m; i++) if (rs[i].second >= K && !dd[i]) lv.push_back({rs[i].second, i});
   stable_sort(lv.begin(), lv.end());
   vector<int> rank(m, -1); for (int k = 0; k < (int)lv.size(); k++) rank[lv[k].second] = k;
   Shape t;
-  for (int i = 0; i < m; i++) { t += rs[i].first; t += rank[i] < 0 ? char('0' + rs[i].second) : char('a' + rank[i]); }
+  for (int i = 0; i < m; i++) {
+    if (dd[i]) { if (i == 0 || !dd[i - 1]) t += "XD"; continue; }
+    t += rs[i].first; t += rank[i] < 0 ? char('0' + rs[i].second) : char('a' + rank[i]); }
   t += '|';
   int prev = K;
   for (auto [l, i] : lv) { int g = l - prev; prev = l; t += char('0' + (g <= M ? g : M + 1 + (g - M - 1) % 2)); }
@@ -81,7 +111,7 @@ vector<Pos> wit(const Shape &s) {
     vector<int> g(L); for (int k = 0; k < L; k++) g[k] = gs[k] - '0';
     for (size_t j = 0; j < far.size(); j++) if (mask >> j & 1) g[far[j]] += 2;
     vector<int> len(L); int cur = K; for (int k = 0; k < L; k++) { cur += g[k]; len[k] = cur; }
-    Pos p; for (size_t i = 0; i < sk.size(); i += 2) { char c = sk[i], v = sk[i + 1]; p += string(v >= 'a' ? len[v - 'a'] : v - '0', c); }
+    Pos p; for (size_t i = 0; i < sk.size(); i += 2) { char c = sk[i], v = sk[i + 1]; if (c == 'X') p += "TTFF"; else p += string(v >= 'a' ? len[v - 'a'] : v - '0', c); }
     // balance check (all game positions have as many toads as frogs)
     if (count(p.begin(), p.end(), 'T') != count(p.begin(), p.end(), 'F')) unbalanced++;   // kept: needed for soundness
     out.push_back(p);
@@ -188,7 +218,7 @@ void why(const Node &x, int depth, set<Node> &seen) {
   }
 }
 int main(int argc, char **argv) {
-  B = atoi(argv[1]); RB = atoi(argv[2]); if (argc > 3) K = atoi(argv[3]); if (argc > 4) M = atoi(argv[4]); if (argc > 5) CONC = atoi(argv[5]); if (argc > 6) FB = atoi(argv[6]);
+  B = atoi(argv[1]); RB = atoi(argv[2]); if (argc > 3) K = atoi(argv[3]); if (argc > 4) M = atoi(argv[4]); if (argc > 5) CONC = atoi(argv[5]); if (argc > 6) FB = atoi(argv[6]); if (getenv("NODEAD")) DEAD = 0;
   if (getenv("PREF")) { ifstream f(getenv("PREF")); string l; while (getline(f, l)) if (!l.empty()) pref.insert(l); printf("%zu preferred shapes\n", pref.size()); }
   vector<Node> starts;
   { set<Node> st; for (int a = K; a < K + M + 8; a++) st.insert("U" + shapeOf(string(a, 'T') + string(B, '.') + string(a, 'F')));
@@ -211,6 +241,38 @@ int main(int argc, char **argv) {
     fflush(stdout);
     if (!bad) {
       printf("CLOSED\n");
+      if (getenv("EXPLORE")) {   // also solve every alternative option of the shapes in use
+        size_t cap = atol(getenv("EXPLORE"));
+        for (int pass = 0; pass < 3 && chal.size() < cap; pass++) {
+          vector<Node> todo2(W.begin(), W.end());
+          for (auto &x : todo2) { if (chal.size() >= cap) break; for (auto opts : challenges(x)) for (auto &o : opts) if (status[o] == 0) dfs(o); }
+          printf("  explore pass %d: %zu nodes explored\n", pass, chal.size()); fflush(stdout);
+        }
+      }
+      if (getenv("MINIMIZE")) {
+        // exact won region of the explored graph (greatest fixpoint): any choice inside it is closed
+        set<Node> valid; for (auto &[x, cs] : chal) valid.insert(x);
+        for (bool ch = true; ch; ) { ch = false;
+          for (auto it = valid.begin(); it != valid.end(); ) {
+            bool ok = true;
+            for (auto &opts : chal[*it]) { bool any = false; for (auto &o : opts) if (valid.count(o)) { any = true; break; } if (!any) { ok = false; break; } }
+            if (!ok) { it = valid.erase(it); ch = true; } else ++it; } }
+        map<Node, long> pop;
+        for (auto &x : valid) for (auto &opts : chal[x]) for (auto &o : opts) if (valid.count(o)) pop[o]++;
+        set<Node> cur = W;
+        for (int round = 0; round < 30; round++) {
+          set<Node> nw; deque<Node> td(starts.begin(), starts.end());
+          while (!td.empty()) { Node x = td.front(); td.pop_front(); if (!nw.insert(x).second) continue;
+            for (auto &opts : chal[x]) { Node best; long bs = -1;
+              for (auto &o : opts) if (valid.count(o)) { long sc = (cur.count(o) ? 1000000000L : 0) + (nw.count(o) ? 2000000000L : 0) + pop[o]; if (sc > bs) { bs = sc; best = o; } }
+              td.push_back(best); } }
+          printf("  minimise round %d: %zu shapes\n", round, nw.size()); fflush(stdout);
+          if (nw.size() >= cur.size() && round > 0) break;
+          cur = nw; }
+        W = cur;
+        int nu2 = 0; for (auto &x : W) if (x[0] == 'U') nu2++;
+        printf("MINIMISED to %zu shapes (%d U)\n", W.size(), nu2);
+      }
       if (getenv("DUMP")) { FILE *f = fopen(getenv("DUMP"), "w"); for (auto &x : W) fprintf(f, "%s\n", x.c_str()); fclose(f); }
       return 0; }
   }

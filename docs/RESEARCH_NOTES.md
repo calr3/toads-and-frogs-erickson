@@ -340,7 +340,8 @@ The `a = 2` row works because a few pieces are separated by long gaps. In a colu
   would land next to reservoirs that are far above it in one position and close to it in another.
   * One move changes one long run by 1 and never merges two long runs, so the usual margin
     argument applies. Each far gap is witnessed by its own value or that value plus 2.
-  * The abstract search (`col_shapes 3 10 4 4`) closes with 646,574 shapes, every witness checked.
+  * The abstract search (`col_shapes 3 10 4 4`, before dead regions) closes with 646,574 shapes,
+    every witness checked.
   * An independent re-check of the closure found no failures.
   * A first attempt that used single normal forms as shapes also "closed", with 4,309. It was
     unsound: the real-tree check below failed at `a = 13`, because "same shape with margin 0"
@@ -349,9 +350,20 @@ The `a = 2` row works because a few pieces are separated by long gaps. In a colu
   Right's replies taken from the set, and checks every real position it reaches. It finds no
   failure for any `a` from 4 to 40. Each such run is a complete proof for that `a`, independent of
   the margin argument. The exact solver reached only `a ≈ 14`.
-* **What is missing for a theorem.**
-  * The set is far too large for a kernel check, and its witnesses reach 195 cells. With at most
-    1, 2 or 3 far gaps allowed after Right's replies, the start shape is lost.
-  * Formalising needs a Lean framework for positions with any number of runs. It needs the
-    pairwise-difference margin lemma, normal forms, and soundness for the Left stop.
-  * The same approach should apply to `b = 4` and `b = 5`.
+* **Shrinking the certificate.**
+  * Collapsing dead regions brings 646,574 shapes down to 11,034. A dead region is everything
+    from the first `TT` to the last `FF` in a block of pieces with no empty square. Erickson's
+    dead-pieces rule says these pieces never move, so their lengths never matter. The extra
+    ingredient checks out: the real game trees for `a = 4…40` still pass.
+  * Smaller parameters help: cap `K = 2` and cluster gap `M = 2`.
+  * A greedy minimisation helps too. It computes the exact won region of the explored shapes,
+    then rebuilds Right's choices preferring shapes already in use.
+  * Result: **2,861 shapes** (`tools/column/b3_shapes.txt`), with 5,451 witnesses averaging 25
+    cells and 9,871 Left moves and passes to answer. That is about the size of the `a = 2`
+    certificate.
+  * `tools/column/verify_shapes.py` re-implements everything independently and finds it closed.
+    It also confirms that every start `Tᵃ□³Fᵃ`, `a ≥ 2`, has a shape in the set.
+* **What is missing for a theorem.** A Lean framework for positions with any number of runs.
+  It needs the pairwise-difference margin lemma, dead regions, normal forms, and soundness for
+  the Left stop. With it, a kernel check of the 2,861 shapes would prove the whole column `b = 3`.
+  The same approach should apply to `b = 4` and `b = 5`.

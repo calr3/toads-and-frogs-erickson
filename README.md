@@ -186,7 +186,7 @@ confirms the conjecture for all of the following:
 
 A strategy check takes the column `b = 3` much further: `Tᵃ□³Fᵃ` is infinitesimal for every
 `a ≤ 40`. `tools/column/col_realcheck.cpp` checks every position of Right's strategy on the real
-board, which is a complete proof for each `a`. The strategy comes from a finite set of "run
+board, which is a complete proof for each `a`. The strategy comes from a finite set of 2,861 "run
 shapes" that covers every `a` at once, so it may lead to a proof of the whole column. That is not
 formalised yet; see `docs/RESEARCH_NOTES.md` §13.
 

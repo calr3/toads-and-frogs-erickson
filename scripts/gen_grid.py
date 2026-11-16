@@ -12,12 +12,17 @@ Usage: gen_grid.py   (run from the repository root)
 """
 import re
 
-AMAX, BMAX = 14, 28
 # Largest b confirmed by the exact solver, per a (README "Computational evidence").
 SOLVER = {2: 28, 3: 26, 4: 24, 5: 16, 6: 10, 7: 8, 8: 6, 9: 5, 10: 4, 11: 4, 12: 4, 13: 3, 14: 3}
 
 kernel = {(int(a), int(b)) for a, b in re.findall(r'start (\d+) (\d+)', open('Cgt/FiniteCases.lean').read())}
 certs = {(int(a), int(b)) for a, b in re.findall(r'Case_(\d+)_(\d+)', open('lakefile.toml').read())}
+
+# Explicit columns and rows up to the last a and b where anything changes; beyond them every
+# column looks like the last one ("≥ AMAX + 1") and every row like the last one ("≥ BMAX + 1").
+AMAX = max(SOLVER)
+BMAX = max(b for a, b in SOLVER.items() if a > 2)
+INF = 10 ** 6
 
 
 def mark(a, b):
@@ -30,9 +35,10 @@ def mark(a, b):
     return ''
 
 
-cols = [str(a) for a in range(AMAX + 1)] + ['≥ 15']
+assert all(a <= AMAX and b <= BMAX for a, b in kernel | certs)
+cols = [str(a) for a in range(AMAX + 1)] + [f'≥ {AMAX + 1}']
 print('| **b** \\ **a** | ' + ' | '.join(cols) + ' |')
 print('|---:|' + ':-:|' * len(cols))
-for b in range(BMAX + 1):
-    cells = [mark(a, b) for a in range(AMAX + 1)] + [mark(99, b)]
-    print(f'| **{b}** | ' + ' | '.join(cells) + ' |')
+for b, label in [(b, str(b)) for b in range(BMAX + 1)] + [(INF, f'≥ {BMAX + 1}')]:
+    cells = [mark(a, b) for a in range(AMAX + 1)] + [mark(INF, b)]
+    print(f'| **{label}** | ' + ' | '.join(cells) + ' |')

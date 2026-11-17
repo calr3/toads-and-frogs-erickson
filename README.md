@@ -6,9 +6,9 @@
 
 This repository is a self-contained Lean 4 development aimed at this conjecture. It
 uses Lean core only (no Mathlib) and has no `sorry`. Everything in the default build is checked
-by Lean's kernel. The one exception is the column `b = 4` (🟦 below): its finite check is too
-large for the kernel and is evaluated by `native_decide`, which also trusts Lean's compiler. It
-is built separately, with `lake build CgtNative`.
+by Lean's kernel. The one exception is the column `b = 4` and its exact values (🟦 below): their
+finite checks are too large for the kernel and are evaluated by `native_decide`, which also trusts
+Lean's compiler. They are built separately, with `lake build CgtNative`.
 
 ## What is new
 
@@ -24,6 +24,11 @@ is built separately, with `lake build CgtNative`.
   `a ≤ 10`.
   The proof is the `b = 3` method with "`≤ ∗`" in place of "Left stop `≤ 0`": a strategy over
   1,263 run shapes, kernel-checked.
+* **New, as far as we know: the exact values of the column `b = 4`, proved with `native_decide`.**
+  `Tᵃ□⁴Fᵃ = ∗` for every `a ≥ 5`; with the small cases, `0` for `a = 0, 1, 4` and `∗` otherwise
+  (`start_four_value`). The same `≤ ∗` method, with gaps exact up to 2 and no parity; Right's
+  strategy uses 361,981 run shapes, and the finite check (3.5 million witnesses) is evaluated by
+  `native_decide`, like the `b = 4` theorem below.
 * **New, as far as we know: the column `b = 4`, proved with `native_decide`.** `Tᵃ□⁴Fᵃ` is
   infinitesimal for every `a` (`infinitesimal_start_b_four`). The method is that of `b = 3`, with
   far gaps between long runs recorded without their parity; Right's strategy uses 233,087 run
@@ -73,6 +78,7 @@ is built separately, with `lake build CgtNative`.
 | `b = 2`, all `a ≥ 4` (incl. Lemma C.1) | `infinitesimal_start_b_two`, `upperZero_c1` | Known: Thanatipanonda's theorem [[T11]](#references) |
 | **`b = 3`, all `a` (`Tᵃ □³ Fᵃ`)**: machine-checked strategy over 3,031 run shapes | `infinitesimal_start_b_three` (`Cgt/Col/Column3.lean`) | **New** as far as we know; values known numerically for small `a` ([[E96]](#references), [[T11]](#references) tables) |
 | **Exact values of `Tᵃ □³ Fᵃ`**: `∗` for every `a ≥ 4` (and `0` for `a = 0, 3`, `∗` for `a = 1, 2`); machine-checked strategy over 1,263 run shapes | `start_three_value`, `start_three_equiv_star` (`Cgt/Col/Value3.lean`) | **New** as far as we know; conjectured in [[T11]](#references), values known for `a ≤ 10` |
+| **Exact values of `Tᵃ □⁴ Fᵃ`**: `∗` for every `a ≥ 5` (and `0` for `a = 0, 1, 4`, `∗` for `a = 2, 3`); strategy over 361,981 run shapes; 🟦 finite check by `native_decide` | `start_four_value`, `start_four_equiv_star` (`Cgt/Col/Value4.lean`; `lake build CgtNative`) | **New** as far as we know; conjectured in [[T11]](#references), values known for `a ≤ 10` |
 | **`b = 4`, all `a` (`Tᵃ □⁴ Fᵃ`)**: strategy over 233,087 run shapes; 🟦 finite check by `native_decide` (trusts the compiler) | `infinitesimal_start_b_four` (`Cgt/Col/Column4.lean`; `lake build CgtNative`) | **New** as far as we know; values known numerically for small `a` ([[E96]](#references), [[T11]](#references) tables) |
 | One-sided Death Leap Principle, general | `le_zero_of_dlp` | Known: [[T11]](#references); the two-sided version is in [[E96]](#references) |
 | Every case with `2a + b ≤ 12`, kernel-checked | `Cgt/FiniteCases.lean` | Known numerically ([[E96]](#references), [[T11]](#references) tables) |
@@ -198,7 +204,8 @@ The exact value of `Tᵃ □ᵇ Fᵃ` where it is known, and where it comes from
   except `∗` when `b ≡ 1 (mod 6)`; for `a = 3` and `31 ≤ b ≤ 53` it is `0` [[T11]](#references).
 * **What is proved in Lean.** The row `a = 2`: every `b ≤ 30` and every even `b`
   (`start_two_value`, `start_two_equiv_zero`). The row `b = 3`: every `a` (`start_three_value`).
-  The other values are not formalised; the grid above shows which cells are proved infinitesimal.
+  The row `b = 4`: every `a` (`start_four_value`, with `native_decide`). The other values are not
+  formalised; the grid above shows which cells are proved infinitesimal.
 * **How the values are computed.** `Tᵃ □ᵇ Fᵃ` is its own mirror image (reverse the board, swap
   toads and frogs), so its value `G` satisfies `G = −G`. Hence `G ≤ 0` already means `G = 0`, and
   `G + ∗ ≤ 0` means `G = ∗`. `tools/values.cpp` decides both by exhaustive search on boards of up
@@ -297,7 +304,9 @@ framework with another gap rule: far gaps between long runs keep only their sign
 (`ruleF`; `b = 3` uses `ruleP`). Right needs 13 runs and 233,087 shapes
 (`tools/column/b4_shapes.txt.gz`). The finite check is about 270 times the size of the `b = 3`
 one. It is evaluated by `native_decide` in 8 files, so this theorem trusts Lean's compiler as well
-as the kernel (`docs/RESEARCH_NOTES.md` §14).
+as the kernel (`docs/RESEARCH_NOTES.md` §14). The exact values of `b = 4` (`start_four_value`,
+`Cgt/Col/Value4.lean`) follow the `b = 3` pattern with the gap rule `ruleF2` (exact up to 2, no
+parity), 361,981 shapes (`tools/column/b4_star_shapes.txt.gz`) and 9 `native_decide` files.
 
 ## Computational evidence beyond the formal results
 

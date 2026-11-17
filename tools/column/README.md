@@ -20,6 +20,7 @@ Build each tool with `g++ -O2 -std=c++17 -o NAME NAME.cpp`.
 | `verify_shapes.py` | An independent re-implementation (moves, runs, dead regions, shapes, witnesses) that checks a shape set exactly as a kernel check would. |
 | `b3_shapes.txt` | The certificate for `b = 3`: 3,031 shapes (`U` = Left-stop phase, `N` = normal play), in the format of the Lean proof. |
 | `b3_star_shapes.txt` | The certificate for the exact values of `b = 3` (`Tᵃ□³Fᵃ = ∗`, `a ≥ 4`): 55 `S` (`≤ ∗`) and 1,208 `N` shapes. |
+| `b4_star_shapes.txt.gz` | The certificate for the exact values of `b = 4` (`Tᵃ□⁴Fᵃ = ∗`, `a ≥ 5`): 692 `S` and 361,289 `N` shapes, far gaps exact up to 2 and without parity. Into Lean with `scripts/gen_b4.py --star`. |
 | `b4_shapes.txt.gz` | The certificate for `b = 4`: 233,087 shapes, far gaps without parity (`M = 1`). Into Lean with `scripts/gen_b4.py`. |
 | `to_witness.py` | One witness position per shape, the input of `scripts/ColGen.lean`. |
 | `col_local.cpp` | Decides whether Right wins with a *component-local* strategy: dead regions split a position into independent components, and Right answers inside the component Left moved in. |
@@ -132,4 +133,16 @@ Without these options the search behaves as before and reproduces `b3_shapes.txt
 
 The `≤ ∗` search closes at once (1,807 shapes explored) and minimises to 1,263 shapes, fewer than
 the infinitesimal certificate. Lean: `start_three_value` (`Cgt/Col/Value3.lean`).
+
+## Exact values of `b = 4`
+
+    START=S AMIN=5 NOPARITY=1 MINW=1 FAILFIRST=1 MARGIN=4 DEADRUNS=1 MINIMIZE=1 DUMP=out col_shapes 4 13 2 2 28 3
+    sort out | gzip -9 -n > b4_star_shapes.txt.gz
+    NOPARITY=1 DEADRUNS=1 MARGIN=4 verify_shapes.py <(gunzip -c b4_star_shapes.txt.gz) 4 2 2 5 60
+    NOPARITY=1 DEADRUNS=1 col_realcheck <(gunzip -c b4_star_shapes.txt.gz) 4 5 22 2 2
+    python3 scripts/gen_b4.py --star && lake build CgtNative      # start_four_value
+
+The search needs the gap threshold 2 (with 1, the start shape also contains `T⁴□⁴F⁴ = 0`). It closes
+with 361,981 shapes and 3,457,633 witnesses; the verifier and the real game trees (`a = 5…22`)
+find no failure.
 

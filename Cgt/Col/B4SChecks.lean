@@ -14,6 +14,7 @@ import Cgt.Col.B4SCheck8
 namespace Cgt
 namespace Col
 
+set_option maxHeartbeats 2000000 in
 theorem hcS4S : ∀ k ∈ colB4SS.toList, ∀ W ∈ witOf ruleF2 k, chkS ruleF2 colB4SS colB4SN W = true := by
   have h : colB4SS.toList.all (fun k => (witOf ruleF2 k).all (chkS ruleF2 colB4SS colB4SN)) = true :=
     all_of_sizes _ [692] _ (by native_decide) fun i hi => by
@@ -23,6 +24,7 @@ theorem hcS4S : ∀ k ∈ colB4SS.toList, ∀ W ∈ witOf ruleF2 k, chkS ruleF2 
   simp only [List.all_eq_true] at h
   exact h
 
+set_option maxHeartbeats 2000000 in
 theorem hcN4S : ∀ k ∈ colB4SN.toList, ∀ W ∈ witOf ruleF2 k, chkN ruleF2 colB4SN W = true := by
   have h : colB4SN.toList.all (fun k => (witOf ruleF2 k).all (chkN ruleF2 colB4SN)) = true :=
     all_of_sizes _ [45162, 45161, 45161, 45161, 45161, 45161, 45161, 45161] _ (by native_decide) fun i hi => by

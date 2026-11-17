@@ -165,6 +165,10 @@ for `a > b > 0`, `b ≠ 2` [T11].
   (`B3SCheck*.lean`). The start keys cover every `a ≥ 4`; from `a = 6` on they repeat with period 2.
 * **Small cases.** `a = 0` and `a = 3` are `0` and `a = 1` is `∗`, each by a small kernel
   computation; `a = 2` is the row `a = 2`.
+* **The column `b = 4`.** The same argument gives `Tᵃ□⁴Fᵃ = ∗` for every `a ≥ 5`
+  (`start_four_value`, `Cgt/Col/Value4.lean`), with the gap rule `ruleF2` (exact up to 2, no parity:
+  the start `T⁴□⁴F⁴ = 0` has gap 2 and must be told apart from `a ≥ 5`) and 361,981 shapes. Its
+  finite check (3.5 million witnesses) is evaluated by `native_decide` (`lake build CgtNative`).
 
 ## References
 

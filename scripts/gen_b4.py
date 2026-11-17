@@ -108,7 +108,8 @@ for mode, ss, tree, pred in ((M1, su, f'col{P}{M1}', PU), ('N', sn, f'col{P}N', 
 
 def assemble(mode, ss, tree, pred, stmt):
     arms = '\n'.join(f'      | {i}, _ => exact chk{P}{mode}_{i}' for i in range(len(ss)))
-    return (f'theorem hc{mode}{SUF} : {stmt} := by\n'
+    opt = 'set_option maxHeartbeats 2000000 in\n' if STAR else ''   # matching 8 chunks needs more than the default
+    return (f'{opt}theorem hc{mode}{SUF} : {stmt} := by\n'
             f'  have h : {tree}.toList.all {pred} = true :=\n'
             f'    all_of_sizes _ {ss} _ (by native_decide) fun i hi => by\n'
             f'      match i, hi with\n{arms}\n'

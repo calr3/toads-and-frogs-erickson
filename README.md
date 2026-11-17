@@ -11,57 +11,69 @@ Wikipedia; for game values, infinitesimals and `∗` see
 
 This repository is a self-contained Lean 4 development aimed at this conjecture. It
 uses Lean core only (no Mathlib) and has no `sorry`. Everything in the default build is checked
-by Lean's kernel. The one exception is the column `b = 4` and its exact values (🟦 below): their
-finite checks are too large for the kernel and are evaluated by `native_decide`, which also trusts
-Lean's compiler. They are built separately, with `lake build CgtNative`.
+by Lean's kernel. The exceptions (🟦 below) are the column `b = 4`, its exact values, and the
+counterexample `T⁶□¹²F⁶`: their finite checks are too large for the kernel and are evaluated by
+`native_decide`, which also trusts Lean's compiler. They are built separately, with
+`lake build CgtNative`.
 
 ## What is new
 
-* **New, as far as we know: the column `b = 3`.** `Tᵃ□³Fᵃ` is infinitesimal for every `a`
-  (`infinitesimal_start_b_three`). The only column previously proved for every `a` is `b = 2`
-  [[T11]](#references); `b = 3` was known numerically only for small `a`. The proof is a
-  computer-found strategy over 3,031 "run shapes", kernel-checked, with a general margin argument
-  for positions with any number of runs. See [docs/COLUMN_B3.md](docs/COLUMN_B3.md).
-* **New, as far as we know: the exact values of the column `b = 3`.** `Tᵃ□³Fᵃ = ∗` for every
-  `a ≥ 4` (`start_three_equiv_star`); with the small cases, `Tᵃ□³Fᵃ` is `0` for `a = 0, 3` and `∗`
-  otherwise (`start_three_value`). This is the case `b = 3` of Thanatipanonda's conjecture that
-  `Tᵃ□ᵇFᵃ = ∗` whenever `a > b > 0` and `b ≠ 2` [[T11]](#references); the values were known for
-  `a ≤ 10`.
-  The proof is the `b = 3` method with "`≤ ∗`" in place of "Left stop `≤ 0`": a strategy over
-  1,263 run shapes, kernel-checked.
+"New, as far as we know" means that a literature search (November 2026) found no earlier statement
+of the result as a theorem. It covered [[E96]](#references), [[T11]](#references) (the journal
+version and the arXiv preprint), Thanatipanonda's thesis [[Th08]](#references), the
+unsolved-problem lists of all six *Games of No Chance* volumes, the works citing these in four
+citation databases, and GitHub and the proof-assistant libraries. What it found and what it could not reach are in
+[docs/LITERATURE.md](docs/LITERATURE.md).
+
+* **New, as far as we know: counterexamples to Thanatipanonda's Conjecture T4.**
+  [[T11]](#references) conjectures that `Tᵃ□ᵇFᵃ` is `0` or `∗` whenever `b ≥ a > 0` (Conjecture T4;
+  Conjecture 4 in the preprint and in [[Th08]](#references)). `T⁶□¹²F⁶` is neither: proved in
+  Lean (`not_thanatipanonda_conjecture4`, 🟦), from a strategy table for Right of 21 million
+  positions checked by `native_decide`. `T⁷□¹⁰F⁷` is neither too (computed, not formalised). Both
+  are still infinitesimal, as Erickson's conjecture predicts, and neither is `∗2` or `∗3`. (This is
+  not Erickson's Conjecture 4, which [[T11]](#references) refutes.) See
+  [Values of the starting positions](#values-of-the-starting-positions).
+* **New, as far as we know: the column `b = 4`, proved with `native_decide`.** `Tᵃ□⁴Fᵃ` is
+  infinitesimal for every `a` (`infinitesimal_start_b_four`), the case `b = 4` of Erickson's
+  conjecture. Values were known for `a ≤ 10` [[T11]](#references), and [[Th08]](#references)
+  (p. 89) lists this family as open. The method is that of `b = 3` below, with far gaps between
+  long runs recorded without their parity; Right's strategy uses 233,087 run shapes. Its finite
+  check (2.8 million witnesses, about 270 times the `b = 3` one) is evaluated by `native_decide`,
+  so this theorem trusts Lean's compiler as well as the kernel: `#print axioms` lists, besides the
+  usual three, one axiom per `native_decide` use, asserting the result of that compiled
+  evaluation. It is kept out of the default build and of `conjecture5_provedRegion`. The shape set
+  is also checked by two independent programs, and on the real game trees for every `a ≤ 24`. See
+  [docs/RESEARCH_NOTES.md §14](docs/RESEARCH_NOTES.md).
 * **New, as far as we know: the exact values of the column `b = 4`, proved with `native_decide`.**
   `Tᵃ□⁴Fᵃ = ∗` for every `a ≥ 5`; with the small cases, `0` for `a = 0, 1, 4` and `∗` otherwise
-  (`start_four_value`). The same `≤ ∗` method, with gaps exact up to 2 and no parity; Right's
-  strategy uses 361,981 run shapes, and the finite check (3.5 million witnesses) is evaluated by
-  `native_decide`, like the `b = 4` theorem below.
-* **New, as far as we know: the column `b = 4`, proved with `native_decide`.** `Tᵃ□⁴Fᵃ` is
-  infinitesimal for every `a` (`infinitesimal_start_b_four`). The method is that of `b = 3`, with
-  far gaps between long runs recorded without their parity; Right's strategy uses 233,087 run
-  shapes. Its finite check (2.8 million witnesses, about 270 times the `b = 3` one) is evaluated by
-  `native_decide`, so this theorem trusts Lean's compiler as well as the kernel: `#print axioms`
-  lists, besides the usual three, one axiom per `native_decide` use, asserting the result of that
-  compiled evaluation. It is kept out of the default build and of `conjecture5_provedRegion`.
-  The shape set is also checked by two independent programs, and on the real game trees for
-  every `a ≤ 24`. See [docs/RESEARCH_NOTES.md §14](docs/RESEARCH_NOTES.md).
-* **New, as far as we know: the row `a = 2`.** `TT□ᵇFF` is infinitesimal for every
-  `b` (`infinitesimal_start_two`). Before this, the row was known only numerically: Erickson
-  tabulated `b ≤ 6` [[E96]](#references) and Thanatipanonda `b ≤ 103` [[T11]](#references). The
-  method is in the spirit of Thanatipanonda and Zeilberger's symbolic finite-state approach
-  [[TZ07]](#references). Our literature check covered those three papers, the Wikipedia article
-  and web searches; it was not exhaustive. See
+  (`start_four_value`). This is the case `b = 4` of Thanatipanonda's Conjecture T3
+  [[T11]](#references): `Tᵃ□ᵇFᵃ = ∗` whenever `a > b > 0`, `b ≠ 2`. The method is the `≤ ∗` one of
+  `b = 3`, with gaps exact up to 2 and no parity; Right's strategy uses 361,981 run shapes, and the
+  finite check (3.5 million witnesses) is evaluated by `native_decide`.
+* **New, as far as we know: the row `a = 2`.** `TT□ᵇFF` is infinitesimal for every `b`
+  (`infinitesimal_start_two`), the case `a = 2` of Erickson's conjecture, also predicted by
+  Thanatipanonda's Conjecture T2. It had been computed for `b ≤ 6` [[E96]](#references) and
+  `b ≤ 103` [[T11]](#references). The method is in the spirit of Thanatipanonda and Zeilberger's
+  symbolic finite-state approach [[TZ07]](#references). See
   [docs/ROW_A2.md §10](docs/ROW_A2.md#10-related-work).
-* **Also new, as far as we know: the exact values of that row for every even `b`.**
-  `TT□ᵇFF = 0` for every even `b ≥ 6` (`start_two_equiv_zero`), by the same method with 1,038
-  shapes. Together with kernel checks of each `b ≤ 30`, this gives the value predicted by the data
-  (below) for every even `b` and every `b ≤ 30` (`start_two_value`). The values for `b ≤ 30` were
-  already known numerically [[T11]](#references); only their formal proof is new.
-* **New, as far as we know: counterexamples to Thanatipanonda's Conjecture 4 (computed, not
-  proved in Lean).** [[T11]](#references) conjectures that `Tᵃ□ᵇFᵃ` is `0` or `∗` for every
-  `b ≥ a > 0`. Our exhaustive solver finds that `T⁶□¹²F⁶` and `T⁷□¹⁰F⁷` are neither. Both are
-  still infinitesimal, as Erickson's conjecture predicts, and neither is `∗2` or `∗3`
-  either. This is Thanatipanonda's own Conjecture 4, not Erickson's Conjecture 4 (which
-  Thanatipanonda and Zeilberger disproved). Our literature and web searches found no earlier
-  report. See [Values of the starting positions](#values-of-the-starting-positions).
+* **New, as far as we know: the exact values of that row for every even `b`.** `TT□ᵇFF = 0` for
+  every even `b ≥ 6` (`start_two_equiv_zero`), by the same method with 1,038 shapes: the even half
+  of Thanatipanonda's Conjecture T2 [[T11]](#references), which says `TT□ᵇFF = ∗` when
+  `b ≡ 1 (mod 6)` and `0` otherwise, for `b ≥ 7`. With kernel checks of each `b ≤ 30`, this gives
+  every even `b` and every `b ≤ 30` (`start_two_value`). The odd half is still open (below).
+* **Known, now machine-checked: the column `b = 3` and its exact values.** `Tᵃ□³Fᵃ` is
+  infinitesimal for every `a` (`infinitesimal_start_b_three`), and `Tᵃ□³Fᵃ = ∗` for every `a ≥ 4`
+  (`start_three_equiv_star`; `0` for `a = 0, 3` and `∗` otherwise, `start_three_value`).
+  Thanatipanonda proved more by hand in his thesis: `Tᵃ□³Fᵇ = {a − b | a − b}` for all
+  `a, b ≥ 4` ([[Th08]](#references), Theorem 5.6.1). It is Theorem D.3 of the arXiv preprint of
+  [[T11]](#references), stated there without proof, and the journal version omits it. Our proof
+  is independent, and as far as we know the first machine-checked one: a computer-found strategy
+  over 3,031 "run shapes" (1,263 for the values), kernel-checked, with a general margin argument
+  for positions with any number of runs. See [docs/COLUMN_B3.md](docs/COLUMN_B3.md).
+* **New, as far as we know: the exact values beyond the published tables** (🟠 in
+  [the values table](#values-of-the-starting-positions)), computed here, not proved.
+* **New, as far as we know: a Lean formalisation of Toads and Frogs.** The only other
+  formalisation we found is an unmerged Rocq development for boards of at most four squares.
 * **Everything else is a formal proof of a known (or trivial) result.** The *Origin* column below
   gives the source of each.
 * **Observations, not theorems.** `docs/RESEARCH_NOTES.md` and `tools/` record computational
@@ -83,25 +95,26 @@ Lean's compiler. They are built separately, with `lake build CgtNative`.
 | `(3, 2)` is **not** infinitesimal (`TTT□□FFF = ±1/8`) | `not_infinitesimal_3_2` | Known: the value `±1/8` is in [[E96]](#references) |
 | `a = 0`, all `b` | `infinitesimal_start_a_zero` | Trivial (no pieces) |
 | `a = 1`, all `b` (`T □ᵇ F`) | `infinitesimal_start_one` | Known: `T□ᵇF = b·∗` ([[WW]](#references); [[E96]](#references) Lemma 5.1) |
-| **`a = 2`, all `b` (`TT □ᵇ FF`)**: machine-checked strategy over 1,543 shapes | `infinitesimal_start_two` (`Cgt/RowA2.lean`) | **New** as far as we know; values computed for `b ≤ 103` in [[T11]](#references) |
-| **Exact values of `TT □ᵇ FF`**: `0` for every even `b ≥ 6` (1,038 shapes); `0` or `∗` as the data predict for every even `b` and every `b ≤ 30` | `start_two_equiv_zero`, `start_two_value` (`Cgt/RowA2Values.lean`) | **New** for all even `b`, as far as we know; `b ≤ 30` known numerically ([[T11]](#references)), `b ≤ 6` in [[E96]](#references) |
+| **`a = 2`, all `b` (`TT □ᵇ FF`)**: machine-checked strategy over 1,543 shapes | `infinitesimal_start_two` (`Cgt/RowA2.lean`) | **New** as far as we know; predicted by Conjecture T2 of [[T11]](#references), values computed for `b ≤ 103` |
+| **Exact values of `TT □ᵇ FF`**: `0` for every even `b ≥ 6` (1,038 shapes); `0` or `∗` as the data predict for every even `b` and every `b ≤ 30` | `start_two_equiv_zero`, `start_two_value` (`Cgt/RowA2Values.lean`) | **New** for all even `b`, as far as we know: the even half of Conjecture T2 of [[T11]](#references); `b ≤ 30` known numerically ([[T11]](#references)), `b ≤ 6` in [[E96]](#references) |
 | `b = 0`, all `a` | `infinitesimal_start_b_zero` | Trivial (no moves) |
 | `b = 1`, all `a` (`Tᵃ □ Fᵃ`) | `infinitesimal_start_b_one` | Known ([[WW]](#references), as cited in [[E96]](#references) §7) |
 | `b = 2`, all `a ≥ 4` (incl. Lemma C.1) | `infinitesimal_start_b_two`, `upperZero_c1` | Known: Thanatipanonda's theorem [[T11]](#references) |
-| **`b = 3`, all `a` (`Tᵃ □³ Fᵃ`)**: machine-checked strategy over 3,031 run shapes | `infinitesimal_start_b_three` (`Cgt/Col/Column3.lean`) | **New** as far as we know; values known numerically for small `a` ([[E96]](#references), [[T11]](#references) tables) |
-| **Exact values of `Tᵃ □³ Fᵃ`**: `∗` for every `a ≥ 4` (and `0` for `a = 0, 3`, `∗` for `a = 1, 2`); machine-checked strategy over 1,263 run shapes | `start_three_value`, `start_three_equiv_star` (`Cgt/Col/Value3.lean`) | **New** as far as we know; conjectured in [[T11]](#references), values known for `a ≤ 10` |
-| **Exact values of `Tᵃ □⁴ Fᵃ`**: `∗` for every `a ≥ 5` (and `0` for `a = 0, 1, 4`, `∗` for `a = 2, 3`); strategy over 361,981 run shapes; 🟦 finite check by `native_decide` | `start_four_value`, `start_four_equiv_star` (`Cgt/Col/Value4.lean`; `lake build CgtNative`) | **New** as far as we know; conjectured in [[T11]](#references), values known for `a ≤ 10` |
-| **`b = 4`, all `a` (`Tᵃ □⁴ Fᵃ`)**: strategy over 233,087 run shapes; 🟦 finite check by `native_decide` (trusts the compiler) | `infinitesimal_start_b_four` (`Cgt/Col/Column4.lean`; `lake build CgtNative`) | **New** as far as we know; values known numerically for small `a` ([[E96]](#references), [[T11]](#references) tables) |
+| **`b = 3`, all `a` (`Tᵃ □³ Fᵃ`)**: machine-checked strategy over 3,031 run shapes | `infinitesimal_start_b_three` (`Cgt/Col/Column3.lean`) | Known: follows from Theorem 5.6.1 of [[Th08]](#references) (`a ≥ 4`, by hand) and [[E96]](#references) (`a ≤ 3`); our proof is independent |
+| **Exact values of `Tᵃ □³ Fᵃ`**: `∗` for every `a ≥ 4` (and `0` for `a = 0, 3`, `∗` for `a = 1, 2`); machine-checked strategy over 1,263 run shapes | `start_three_value`, `start_three_equiv_star` (`Cgt/Col/Value3.lean`) | Known: the case `a = b` of Theorem 5.6.1 of [[Th08]](#references), `Tᵃ□³Fᵇ = {a − b \| a − b}` (`a, b ≥ 4`); our proof is independent |
+| **Exact values of `Tᵃ □⁴ Fᵃ`**: `∗` for every `a ≥ 5` (and `0` for `a = 0, 1, 4`, `∗` for `a = 2, 3`); strategy over 361,981 run shapes; 🟦 finite check by `native_decide` | `start_four_value`, `start_four_equiv_star` (`Cgt/Col/Value4.lean`; `lake build CgtNative`) | **New** as far as we know: Conjecture T3 of [[T11]](#references) for `b = 4`; values known for `a ≤ 10` |
+| **`b = 4`, all `a` (`Tᵃ □⁴ Fᵃ`)**: strategy over 233,087 run shapes; 🟦 finite check by `native_decide` (trusts the compiler) | `infinitesimal_start_b_four` (`Cgt/Col/Column4.lean`; `lake build CgtNative`) | **New** as far as we know; listed as open in [[Th08]](#references) (p. 89), values known for `a ≤ 10` |
 | One-sided Death Leap Principle, general | `le_zero_of_dlp` | Known: [[T11]](#references); the two-sided version is in [[E96]](#references) |
 | Every case with `2a + b ≤ 12`, kernel-checked | `Cgt/FiniteCases.lean` | Known numerically ([[E96]](#references), [[T11]](#references) tables) |
 | `(3,7)` to `(3,12)`, `(4,5)`, `(5,3)`, `(6,3)`: strategy certificates | `Cgt/Cert/` (`lake build CgtCerts`) | Known numerically ([[T11]](#references) table) |
 | Combined partial result | `conjecture5_partial`, `conjecture5_provedRegion` | Combines the rows above |
-| **`T⁶□¹²F⁶` and `T⁷□¹⁰F⁷` are neither `0` nor `∗`** (infinitesimal), against [[T11]](#references)'s Conjecture 4 | — (computed by `tools/values.cpp`, not formalised) | **New** as far as we know |
+| **`T⁶□¹²F⁶` is neither `0` nor `∗`**, so Conjecture T4 of [[T11]](#references) is false; strategy table of 21 million positions; 🟦 finite check by `native_decide` | `not_thanatipanonda_conjecture4`, `start_6_12_not_zero`, `start_6_12_not_star` (`Cgt/Value612.lean`; `lake build CgtNative`) | **New** as far as we know |
+| `T⁷□¹⁰F⁷` is neither `0` nor `∗` (infinitesimal) | — (computed by `tools/values.cpp`, not formalised) | **New** as far as we know |
 | **General case** | — | **Open** since 1996 |
 
 The full conjecture is **not** proved here. It has been open since 1996 and is the only one of
-Erickson's conjectures still open. The main earlier partial result is Thanatipanonda's proof of
-the column `b = 2` for `a ≥ 4` [[T11]](#references).
+Erickson's conjectures still open. The main earlier partial results are Thanatipanonda's proofs
+of the columns `b = 2` [[T11]](#references) and `b = 3` [[Th08]](#references) for `a ≥ 4`.
 
 ## Grid of proved cases
 
@@ -229,14 +242,16 @@ are the simplest infinitesimals, and `∗2`, `∗3` below are
   to 32 cells; [[T11]](#references)'s program likewise decides comparisons, not values. Every
   computed value is `0` or `∗`, except `(3, 2)`, the column `b = 2`, `(6, 12)` and `(7, 10)`.
 * **`(6, 12)` and `(7, 10)` contradict a conjecture of Thanatipanonda.** [[T11]](#references)
-  conjectures that `Tᵃ□ᵇFᵃ` is `0` or `∗` whenever `b ≥ a > 0` (Conjecture 4); its table stops at
-  `b = 8` for `a = 6` and at `b = 7` for `a = 7`. Both cells are neither. Both are infinitesimal
+  conjectures that `Tᵃ□ᵇFᵃ` is `0` or `∗` whenever `b ≥ a > 0` (Conjecture T4); its table stops at
+  `b = 8` for `a = 6` and at `b = 7` for `a = 7`. Both cells are neither; for `(6, 12)` this is
+  proved in Lean (`not_thanatipanonda_conjecture4`, with `native_decide`). Both are infinitesimal
   (`STOPS=1`, which decides "Left stop `≤ 0`", equivalent to infinitesimal when `G = −G`), so
   they agree with Erickson's conjecture. Neither is `∗2` or `∗3` either (`NIM=3`, a separate
   recursion that also confirms they are not `0` or `∗`). The same solver reproduces all 114 published values in reach. These are computations,
   not Lean proofs.
-* **"New" means "not in the tables above".** Our literature search covered those papers,
-  [[TZ07]](#references) and web searches; it was not exhaustive.
+* **"New" means "not in the tables above".** The largest published table is Figure 2 of the arXiv
+  preprint of [[T11]](#references) (the same as Figure 4.1 of [[Th08]](#references)); the journal
+  version's table is smaller. See [docs/LITERATURE.md](docs/LITERATURE.md).
 
 ## Contents
 
@@ -399,6 +414,10 @@ exact solvers are in `tools/` (`stops.cpp` decides "Left stop `≤ 0`" for `Tᵃ
 * **[TZ07]** Thotsaporn Thanatipanonda and Doron Zeilberger, *A Symbolic Finite-State Approach
   for Automated Proving of Theorems in Combinatorial Game Theory*. arXiv:0710.4951, 2007.
 * **[T11]** Thotsaporn Thanatipanonda, *Further Hopping with Toads and Frogs*. Electronic Journal
-  of Combinatorics 18(1), 2011, #P67. arXiv:0804.0640.
+  of Combinatorics 18(1), 2011, #P67. Preprint arXiv:0804.0640 (2008), which numbers the
+  conjectures 1–5 (T1–T5 in the journal version) and has an Appendix D of results stated without
+  proof.
+* **[Th08]** Thotsaporn Thanatipanonda, *Symbolic-computational methods in combinatorial game
+  theory and Ramsey theory*. PhD thesis, Rutgers University, 2008. doi:10.7282/T30G3K3F.
 * **[WW]** Elwyn Berlekamp, John Conway and Richard Guy, *Winning Ways for your Mathematical
   Plays*. Academic Press, 1982.

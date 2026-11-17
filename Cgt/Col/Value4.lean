@@ -8,7 +8,7 @@ import Cgt.Col.RuleF2
 
 **Theorem.** `Tᵃ □⁴ Fᵃ = ∗` for every `a ≥ 5` (`start_four_equiv_star`); with the small cases,
 `Tᵃ □⁴ Fᵃ = 0` for `a = 0, 1, 4` and `∗` otherwise (`start_four_value`). This is the case `b = 4`
-of Thanatipanonda's conjecture that `Tᵃ □ᵇ Fᵃ = ∗` whenever `a > b > 0`, `b ≠ 2` [T11].
+of Thanatipanonda's Conjecture T3, that `Tᵃ □ᵇ Fᵃ = ∗` whenever `a > b > 0`, `b ≠ 2` [T11].
 
 The proof is that of `Cgt/Col/Value3.lean` with the gap rule `ruleF2` (exact up to 2, "far" above,
 no parity) and the 692 + 361,289 keys of `Cgt/Col/B4SData.lean`.

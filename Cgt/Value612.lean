@@ -4,7 +4,8 @@ import Cgt.Tab.V612Checks
 # `T⁶ □¹² F⁶` is neither `0` nor `∗`
 
 Thanatipanonda conjectured that `Tᵃ □ᵇ Fᵃ` is `0` or `∗` whenever `b ≥ a > 0` ([T11],
-Conjecture 4). The case `(6, 12)` is a counterexample (`not_thanatipanonda_conjecture4`).
+Conjecture T4; Conjecture 4 in its arXiv preprint). The case `(6, 12)` is a counterexample
+(`not_thanatipanonda_conjecture4`).
 
 **Proof.** Right has a single move from `T⁶ □¹² F⁶`, to `r612`. We show `r612 ≤ 0` and
 `r612 ≤ ∗` with a strategy table for Right (`Cgt/Table.lean`, data in `Cgt/Tab/V612Data.lean`,

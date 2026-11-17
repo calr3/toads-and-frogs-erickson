@@ -287,6 +287,9 @@ paper [TZ07]. Several observations above have precedents there:
   guessed and proved by induction) is the same idea. Their class B (fixed pieces, variable gaps)
   stalled at `TTF`. The `a = 2` proof here succeeds for `TTFF` by proving only `≤ 0` via a
   strategy, with mirrored gap differences in the shapes.
+* **The column `b = 3`.** Thanatipanonda's thesis (2008, Theorem 5.6.1, found only in a later
+  literature search) proves `Tᵃ□³Fᵇ = {a − b | a − b}` for all `a, b ≥ 4` by hand, so §13's
+  column and its values were known; the proof here is independent. See `docs/LITERATURE.md`.
 * **Exact values for `a = 2`.** [T11] computes `T²□ᵇF²` for `b ≤ 103`. The values fit "`∗` when
   `1 ≤ b ≤ 4` or `b ≡ 1 (mod 6)`, otherwise `0`". See §12: this turned out to need no sum with
   `T□F`, only one more `≤ 0` claim per value.

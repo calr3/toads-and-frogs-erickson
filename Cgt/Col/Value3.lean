@@ -6,8 +6,9 @@ import Cgt.Col.SoundStar
 # The exact values of the column `b = 3`
 
 **Theorem.** `Tᵃ □³ Fᵃ = ∗` for every `a ≥ 4` (`start_three_equiv_star`); with the small cases,
-`Tᵃ □³ Fᵃ = 0` for `a = 0, 3` and `∗` otherwise (`start_three_value`). This is the case `b = 3` of
-Thanatipanonda's conjecture that `Tᵃ □ᵇ Fᵃ = ∗` whenever `a > b`, `b ≠ 2` [T11].
+`Tᵃ □³ Fᵃ = 0` for `a = 0, 3` and `∗` otherwise (`start_three_value`). This is the case `a = b` of
+Thanatipanonda's Theorem 5.6.1, `Tᵃ □³ Fᵇ = {a − b | a − b}` for `a, b ≥ 4`, proved by hand in his
+thesis [Th08]; the proof here is independent.
 
 The proof is that of the column `b = 3` (`Cgt/Col/Column3.lean`) with `≤ ∗` in place of "Left stop
 `≤ 0`": the 55 + 1,208 keys of `Cgt/Col/B3SData.lean` pass the finite check (`hcS3`, `hcN3S`,

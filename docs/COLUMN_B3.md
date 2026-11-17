@@ -7,9 +7,10 @@ theorem Cgt.infinitesimal_start_b_three (a : Nat) : Infinitesimal (tf (start a 3
 ```
 
 in `Cgt/Col/Column3.lean`: the case `b = 3` of Erickson's Conjecture 5 (Conjecture 7.5 in
-[E96]) for every number `a` of toads and frogs. The only column previously proved for every `a` is
-`b = 2`, by Thanatipanonda [T11]. As far as we know, `b = 3` is new; it had been computed up to
-`a ≈ 14`. The proof uses Lean core only and has no `sorry`.
+[E96]) for every number `a` of toads and frogs. The result was known: Thanatipanonda's thesis
+[Th08] proves `Tᵃ□³Fᵇ = {a − b | a − b}` for all `a, b ≥ 4` by hand (Theorem 5.6.1), and
+Erickson's table covers `a ≤ 3`. The proof here is independent and machine-checked; it uses Lean
+core only and has no `sorry`. See [LITERATURE.md](LITERATURE.md).
 
 The argument has the same outline as the row `a = 2` ([docs/ROW_A2.md](ROW_A2.md)):
 
@@ -150,8 +151,8 @@ compiler as well as the kernel; it is built with `lake build CgtNative`
 
 The same framework proves that `Tᵃ □³ Fᵃ = ∗` for every `a ≥ 4` (`start_three_equiv_star`,
 `Cgt/Col/Value3.lean`), and with the small cases the whole column (`start_three_value`: `0` for
-`a = 0, 3`, `∗` otherwise). This is the case `b = 3` of Thanatipanonda's conjecture `Tᵃ□ᵇFᵃ = ∗`
-for `a > b > 0`, `b ≠ 2` [T11].
+`a = 0, 3`, `∗` otherwise). This is the case `a = b` of Thanatipanonda's Theorem 5.6.1 [Th08],
+`Tᵃ□³Fᵇ = {a − b | a − b}` for `a, b ≥ 4`, proved there by hand.
 
 * **`≤ ∗` instead of the Left stop.** A position `X` is `≤ ∗` if Right has a move to a position
   `≤ 0` (the answer to Left taking the `∗`), and every Left move leads to a position that is `≤ 0`
@@ -176,3 +177,5 @@ for `a > b > 0`, `b ≠ 2` [T11].
   Chance*, MSRI Publications 29, Cambridge University Press, 1996, pp. 299–310.
 * **[T11]** Thotsaporn Thanatipanonda, *Further Hopping with Toads and Frogs*. Electronic Journal
   of Combinatorics 18(1), 2011, #P67. arXiv:0804.0640.
+* **[Th08]** Thotsaporn Thanatipanonda, *Symbolic-computational methods in combinatorial game
+  theory and Ramsey theory*. PhD thesis, Rutgers University, 2008. doi:10.7282/T30G3K3F.

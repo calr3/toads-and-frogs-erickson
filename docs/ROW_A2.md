@@ -303,11 +303,12 @@ The shapes of §4 are in the same spirit. Two differences may explain why the me
 * `∗` occurs exactly at `b = 1, 2, 3, 4, 7, 13, 19` among `b ≤ 20`;
 * for `21 ≤ b ≤ 103` the value is `0` except at `b = 25, 31, …, 103`.
 
-So the data fit "`∗` when `1 ≤ b ≤ 4` or `b ≡ 1 (mod 6)`, otherwise `0`". §8 proves this for every
-even `b` and every `b ≤ 30`. For odd `b ≥ 31` it is, as far as we know, still open.
+So the data fit "`∗` when `1 ≤ b ≤ 4` or `b ≡ 1 (mod 6)`, otherwise `0`", which is his
+Conjecture T2 for `b ≥ 7`. §8 proves this for every even `b` and every `b ≤ 30`. For odd `b ≥ 31`
+it is, as far as we know, still open.
 
-We found no later work resolving Conjecture 5 or the row `a = 2`. Our search covered these
-papers, the Wikipedia article and general web searches, not a systematic database search.
+We found no later work resolving Conjecture 5 or the row `a = 2`. The literature search behind
+this statement is described in [LITERATURE.md](LITERATURE.md).
 
 ## References
 

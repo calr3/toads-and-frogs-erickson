@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Print the README's table of exact values of T^a .^b F^a, colour-coded by where they come from.
+"""Print the README's table of exact values of T^a .^b F^a (published and computed).
 
 * Published values, transcribed from the papers:
   [WW]  Winning Ways: T .^b F = b·∗ (so ∗ for odd b, 0 for even b), and T^a . F^a = ∗;
@@ -9,7 +9,8 @@
 * Computed here: tools/values.txt, the output of tools/values.cpp (whether the value is 0, ∗ or
   neither), for every cell it could finish. For some cells that are neither, the file also holds
   the output of `STOPS=1` (`infinitesimal`) and `NIM=3` (`not *0..*3`, or the nimber).
-A computed value that contradicts a published one is marked ⚠️ (none so far).
+A computed value that contradicts a published one stops the script (none so far). Published values
+are shown as published, except that a published "≠ 0" is replaced by the computed value.
 
 Usage: gen_values.py [--readme]   (run from the repository root; with --readme the table in
 README.md between the markers `<!-- values table: begin/end -->` is replaced)
@@ -89,16 +90,18 @@ def agrees(pv, cv):
 
 def cell(a, b):
     p, c = pub.get((a, b)), comp.get((a, b))
-    if p and c and not agrees(p[0], c):
-        return f'⚠️ {p[0]}/{c}'
     if p and p[0] != NONZERO:
-        return f'🔵 {p[0]}'
+        return p[0]
     if c:
-        v = c if c != 'other' else (N if b == 2 else '≠0,∗')
-        return f'🟠 {v}'
+        return c if c != 'other' else (N if b == 2 else '≠0,∗')
     if p:
-        return f'🔵 {p[0]}'
+        return p[0]
     return ''
+
+
+bad = sorted(k for k in comp if k in pub and not agrees(pub[k][0], comp[k]))
+if bad:
+    sys.exit('computed values contradict published ones at ' + ', '.join(map(str, bad)))
 
 
 cols = [str(a) for a in range(1, AMAX + 1)] + [f'≥ {AMAX + 1}']
@@ -115,8 +118,7 @@ for k in odd:
 
 new = sum(1 for k in comp if k not in pub or pub[k][0] == NONZERO)
 checked = sum(1 for k in comp if k in pub and pub[k][0] != NONZERO)
-bad = sum(1 for k in comp if k in pub and not agrees(pub[k][0], comp[k]))
-summary = f'{len(comp)} cells computed: {checked} re-check published values, {new} new; {bad} disagreements'
+summary = f'{len(comp)} cells computed: {checked} re-check published values, {new} new; no disagreements'
 if '--readme' in sys.argv:
     text = open('README.md').read()
     begin, end = '<!-- values table: begin -->\n', '\n<!-- values table: end -->'

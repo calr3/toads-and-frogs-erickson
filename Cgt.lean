@@ -30,3 +30,5 @@ import Cgt.Col.B3
 import Cgt.Col.Mirror
 import Cgt.Col.Wit
 import Cgt.Col.Column3
+import Cgt.Col.SoundStar
+import Cgt.Col.Value3

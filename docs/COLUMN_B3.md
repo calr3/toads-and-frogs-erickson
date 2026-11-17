@@ -133,6 +133,7 @@ Independent checks of the same certificate:
 | `Cgt/Col/Sound.lean` | The soundness theorem |
 | `Cgt/Col/B3Data.lean`, `B3Check*.lean`, `B3Blocks.lean`, `B3.lean` | The data, the kernel check, the start keys |
 | `Cgt/Col/Column3.lean` | `infinitesimal_start_b_three` |
+| `Cgt/Col/SoundStar.lean`, `B3SData.lean`, `B3SCheck*.lean`, `B3SBlocks.lean`, `Value3.lean` | The exact values: `chkS`, `soundS`, the `≤ ∗` data and `start_three_value` |
 | `Cgt/Col/Text.lean`, `B4Data.lean`, `B4Check*.lean`, `B4Checks.lean`, `B4.lean`, `Column4.lean` | The column `b = 4`: key trees from run-length text, the `native_decide` check, `infinitesimal_start_b_four` |
 
 ## 8. Other columns
@@ -144,6 +145,26 @@ on), and the search closes once far gaps keep only their sign, not their parity 
 proves the column, but its finite check is evaluated by `native_decide`, which trusts Lean's
 compiler as well as the kernel; it is built with `lake build CgtNative`
 ([docs/RESEARCH_NOTES.md](RESEARCH_NOTES.md) §14).
+
+## 9. Exact values
+
+The same framework proves that `Tᵃ □³ Fᵃ = ∗` for every `a ≥ 4` (`start_three_equiv_star`,
+`Cgt/Col/Value3.lean`), and with the small cases the whole column (`start_three_value`: `0` for
+`a = 0, 3`, `∗` otherwise). This is the case `b = 3` of Thanatipanonda's conjecture `Tᵃ□ᵇFᵃ = ∗`
+for `a > b > 0`, `b ≠ 2` [T11].
+
+* **`≤ ∗` instead of the Left stop.** A position `X` is `≤ ∗` if Right has a move to a position
+  `≤ 0` (the answer to Left taking the `∗`), and every Left move leads to a position that is `≤ 0`
+  or has a Right reply `≤ ∗` (`le_star_of`, from the row `a = 2`). The finite check `chkS`
+  (`Cgt/Col/SoundStar.lean`) checks exactly this for every witness of the `≤ ∗` keys, and `soundS`
+  lifts it to every run list with such a key, with the same margin lemmas as `sound`.
+* **Symmetry.** `Tᵃ□³Fᵃ` is its own mirror image, so `≤ ∗` means `= ∗` (`equiv_star_of_mirror`).
+* **Data.** `col_shapes` with `START=S` finds 55 `≤ ∗` keys and 1,208 normal-play keys
+  (`tools/column/b3_star_shapes.txt`; 3,693 witnesses), in the same key format as the infinitesimal
+  proof. `Cgt/Col/B3SData.lean` holds them, and the kernel checks them in 6 files
+  (`B3SCheck*.lean`). The start keys cover every `a ≥ 4`; from `a = 6` on they repeat with period 2.
+* **Small cases.** `a = 0` and `a = 3` are `0` and `a = 1` is `∗`, each by a small kernel
+  computation; `a = 2` is the row `a = 2`.
 
 ## References
 

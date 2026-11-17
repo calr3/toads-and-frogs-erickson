@@ -17,6 +17,13 @@ is built separately, with `lake build CgtNative`.
   [[T11]](#references); `b = 3` was known numerically only for small `a`. The proof is a
   computer-found strategy over 3,031 "run shapes", kernel-checked, with a general margin argument
   for positions with any number of runs. See [docs/COLUMN_B3.md](docs/COLUMN_B3.md).
+* **New, as far as we know: the exact values of the column `b = 3`.** `Tᵃ□³Fᵃ = ∗` for every
+  `a ≥ 4` (`start_three_equiv_star`); with the small cases, `Tᵃ□³Fᵃ` is `0` for `a = 0, 3` and `∗`
+  otherwise (`start_three_value`). This is the case `b = 3` of Thanatipanonda's conjecture that
+  `Tᵃ□ᵇFᵃ = ∗` whenever `a > b > 0` and `b ≠ 2` [[T11]](#references); the values were known for
+  `a ≤ 10`.
+  The proof is the `b = 3` method with "`≤ ∗`" in place of "Left stop `≤ 0`": a strategy over
+  1,263 run shapes, kernel-checked.
 * **New, as far as we know: the column `b = 4`, proved with `native_decide`.** `Tᵃ□⁴Fᵃ` is
   infinitesimal for every `a` (`infinitesimal_start_b_four`). The method is that of `b = 3`, with
   far gaps between long runs recorded without their parity; Right's strategy uses 233,087 run
@@ -65,6 +72,7 @@ is built separately, with `lake build CgtNative`.
 | `b = 1`, all `a` (`Tᵃ □ Fᵃ`) | `infinitesimal_start_b_one` | Known ([[WW]](#references), as cited in [[E96]](#references) §7) |
 | `b = 2`, all `a ≥ 4` (incl. Lemma C.1) | `infinitesimal_start_b_two`, `upperZero_c1` | Known: Thanatipanonda's theorem [[T11]](#references) |
 | **`b = 3`, all `a` (`Tᵃ □³ Fᵃ`)**: machine-checked strategy over 3,031 run shapes | `infinitesimal_start_b_three` (`Cgt/Col/Column3.lean`) | **New** as far as we know; values known numerically for small `a` ([[E96]](#references), [[T11]](#references) tables) |
+| **Exact values of `Tᵃ □³ Fᵃ`**: `∗` for every `a ≥ 4` (and `0` for `a = 0, 3`, `∗` for `a = 1, 2`); machine-checked strategy over 1,263 run shapes | `start_three_value`, `start_three_equiv_star` (`Cgt/Col/Value3.lean`) | **New** as far as we know; conjectured in [[T11]](#references), values known for `a ≤ 10` |
 | **`b = 4`, all `a` (`Tᵃ □⁴ Fᵃ`)**: strategy over 233,087 run shapes; 🟦 finite check by `native_decide` (trusts the compiler) | `infinitesimal_start_b_four` (`Cgt/Col/Column4.lean`; `lake build CgtNative`) | **New** as far as we know; values known numerically for small `a` ([[E96]](#references), [[T11]](#references) tables) |
 | One-sided Death Leap Principle, general | `le_zero_of_dlp` | Known: [[T11]](#references); the two-sided version is in [[E96]](#references) |
 | Every case with `2a + b ≤ 12`, kernel-checked | `Cgt/FiniteCases.lean` | Known numerically ([[E96]](#references), [[T11]](#references) tables) |
@@ -189,8 +197,8 @@ The exact value of `Tᵃ □ᵇ Fᵃ` where it is known, and where it comes from
   for every `a` and `b` [[WW]](#references). For `a = 2` and `31 ≤ b ≤ 103` the value is `0`,
   except `∗` when `b ≡ 1 (mod 6)`; for `a = 3` and `31 ≤ b ≤ 53` it is `0` [[T11]](#references).
 * **What is proved in Lean.** The row `a = 2`: every `b ≤ 30` and every even `b`
-  (`start_two_value`, `start_two_equiv_zero`). The other values are not formalised; the grid above
-  shows which cells are proved infinitesimal.
+  (`start_two_value`, `start_two_equiv_zero`). The row `b = 3`: every `a` (`start_three_value`).
+  The other values are not formalised; the grid above shows which cells are proved infinitesimal.
 * **How the values are computed.** `Tᵃ □ᵇ Fᵃ` is its own mirror image (reverse the board, swap
   toads and frogs), so its value `G` satisfies `G = −G`. Hence `G ≤ 0` already means `G = 0`, and
   `G + ∗ ≤ 0` means `G = ∗`. `tools/values.cpp` decides both by exhaustive search on boards of up
@@ -276,6 +284,13 @@ short:
    minutes each.
 
 **[docs/COLUMN_B3.md](docs/COLUMN_B3.md)** has the full account.
+
+**The exact values** (`start_three_value`, `Cgt/Col/Value3.lean`) come from the same framework with
+"`≤ ∗`" in place of "Left stop `≤ 0`" (`chkS`, `soundS` in `Cgt/Col/SoundStar.lean`): a position is
+`≤ ∗` if Right has a move to a position `≤ 0`, and every Left move leads to a position `≤ 0` or one
+with a Right reply `≤ ∗`. Right's strategy uses 1,263 shapes (`tools/column/b3_star_shapes.txt`),
+checked by the kernel in 6 files of up to about three minutes. Since `Tᵃ□³Fᵃ` is its own mirror
+image, `≤ ∗` means `= ∗`.
 
 **The column `b = 4`** (`infinitesimal_start_b_four`, `Cgt/Col/Column4.lean`) uses the same
 framework with another gap rule: far gaps between long runs keep only their sign, not their parity

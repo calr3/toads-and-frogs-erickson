@@ -36,6 +36,10 @@
 // most constrained challenges are tried first, options whose witnesses of at most CONC cells lose
 // concretely are dropped, duplicate and subsumed challenges are dropped, and lost shapes forget
 // their challenges. This changes which closed set is found, not soundness.
+// START=S (with AMIN=a0) instead proves the starts T^a .^B F^a, a >= a0, are <= * ("S" shapes): for
+// every witness, Left's move in the * (leaving the witness, Right to move) has a Right reply into
+// an N shape, and every Left move q is an N shape itself or has a Right reply into an S shape.
+// A start that is its own mirror image and <= * equals *.
 // PROGRESS=1 prints the number of explored shapes now and then; MAXEXPLORE=n gives up after n
 // explored shapes and prints the DFS stack and statistics of the explored shapes. EB=n allows at
 // most n long runs after Right's replies. NOPARITY=1 drops the parity of far gaps (a far gap c is
@@ -188,7 +192,7 @@ struct Memo {
     for (size_t i = 0; i < ok.size(); i++) if (ok[i]) { size_t j = h(ok[i]) & mask; while (key[j]) j = (j + 1) & mask; key[j] = ok[i]; val[j] = ov[i]; cnt++; }
   }
 } memo;
-enum { LE = 0, LF = 2, UP = 4 };
+enum { LE = 0, LF = 2, UP = 4, LS = 6 };
 bool le0c(u64 s) {
   unsigned char f = memo.get(s); if (f >> LE & 1) return f >> (LE + 1) & 1;
   bool r = true; u64 qs[64], ts[64];
@@ -209,9 +213,23 @@ bool Upc(u64 s) {
   if (r) { int nq = lmc(s, qs); for (int a = 0; a < nq; a++) if (!Lfc(qs[a])) { r = false; break; } }
   memo.slot(s) |= (1 | (r ? 2 : 0)) << UP; return r;
 }
+// s <= *: some Right move reaches a position <= 0 (Left took the *), and every Left move q is <= 0
+// itself or has a Right reply <= * (Right's replies keep at most RB runs).
+bool LSc(u64 s) {
+  unsigned char f = memo.get(s); if (f >> LS & 1) return f >> (LS + 1) & 1;
+  bool r = false; u64 qs[64], ts[64];
+  int nt = rmc(s, ts); for (int b = 0; b < nt; b++) if (nrunsc(ts[b]) <= RB && le0c(ts[b])) { r = true; break; }
+  if (r) { int nq = lmc(s, qs);
+    for (int a = 0; a < nq && r; a++) {
+      if (nrunsc(qs[a]) <= RB && le0c(qs[a])) continue;
+      bool ok = false; int nr = rmc(qs[a], ts); for (int b = 0; b < nr; b++) if (nrunsc(ts[b]) <= RB && LSc(ts[b])) { ok = true; break; }
+      if (!ok) r = false; } }
+  memo.slot(s) |= (1 | (r ? 2 : 0)) << LS; return r;
+}
 // string interface; callers only solve boards of at most CONC <= 28 cells
 bool le0(const Pos &s) { return le0c(enc(s)); }
 bool Up(const Pos &s) { return Upc(enc(s)); }
+bool LeS(const Pos &s) { return LSc(enc(s)); }
 int farGaps(const Shape &s) { size_t bar = s.find('|'); int f = 0; for (size_t k = bar + 1; k < s.size(); k++) if (s[k] - '0' > M) f++; return f; }
 int EB = getenv("EB") ? atoi(getenv("EB")) : 99;   // most long runs (entries) after Right's replies
 bool okShape(const Pos &r) { if (nruns(r) > RB) return false; Shape s = shapeOf(r); return farGaps(s) <= FB && (int)(s.size() - s.find('|') - 1) <= EB; }
@@ -245,7 +263,7 @@ long cplx(int id) {         // complexity of a shape: far gaps first, then witne
 bool concOK(int id) {
   if (concv[id]) return concv[id] > 0;
   const Node &x = *nm[id]; bool ok = true;
-  for (auto &w : wit(x.substr(1))) if ((int)w.size() <= CONC && !(x[0] == 'U' ? Up(w) : le0(w))) { ok = false; break; }
+  for (auto &w : wit(x.substr(1))) if ((int)w.size() <= CONC && !(x[0] == 'U' ? Up(w) : x[0] == 'S' ? LeS(w) : le0(w))) { ok = false; break; }
   concv[id] = ok ? 1 : -1; return ok;
 }
 vector<vector<int>> unflat(const vector<int> &f) {
@@ -277,12 +295,18 @@ vector<vector<int>> challenges(int xid) {
   vector<vector<int>> cs; char mode = x[0]; Shape s = x.substr(1);
   for (auto &w : wit(s)) {
     vector<Pos> qs = lm(w); if (mode == 'U') qs.push_back(w);
+    if (mode == 'S') {   // Left takes the *: Right must move to a position <= 0
+      vector<int> opts; bool conc = (int)w.size() <= CONC;
+      for (auto &r : rm(w)) if (okShape(r) && (!conc || le0(r))) opts.push_back(idOf("N" + shapeOf(r)));
+      cs.push_back(opts);
+    }
     for (auto &q : qs) {
       vector<int> opts;
       bool conc = (int)q.size() <= CONC;   // concrete pruning only on small boards
-      if (mode == 'U') {
+      if (mode == 'U' || mode == 'S') {
         if (okShape(q) && (!conc || le0(q))) opts.push_back(idOf("N" + shapeOf(q)));
-        for (auto &r : rm(q)) if (okShape(r) && (!conc || Up(r))) opts.push_back(idOf("U" + shapeOf(r)));
+        if (mode == 'U') { for (auto &r : rm(q)) if (okShape(r) && (!conc || Up(r))) opts.push_back(idOf("U" + shapeOf(r))); }
+        else for (auto &r : rm(q)) if (okShape(r) && (!conc || LeS(r))) opts.push_back(idOf("S" + shapeOf(r)));
       } else {
         for (auto &r : rm(q)) if (okShape(r) && (!conc || le0(r))) opts.push_back(idOf("N" + shapeOf(r)));
       }
@@ -408,7 +432,8 @@ int main(int argc, char **argv) {
   if (getenv("REAL")) { int a0, a1; sscanf(getenv("REAL"), "%d-%d", &a0, &a1); realPlay(a0, a1); return 0; }
   if (getenv("PREF")) { ifstream f(getenv("PREF")); string l; while (getline(f, l)) if (!l.empty()) pref.insert(l); printf("%zu preferred shapes\n", pref.size()); }
   vector<int> starts;
-  { set<Node> st; for (int a = K; a < K + M + 8; a++) st.insert("U" + shapeOf(string(a, 'T') + string(B, '.') + string(a, 'F')));
+  { set<Node> st; const char *sm = getenv("START"); int a0 = getenv("AMIN") ? atoi(getenv("AMIN")) : K;
+    for (int a = max(K, a0); a < K + M + 8; a++) st.insert((sm && sm[0] == 'S' ? "S" : "U") + shapeOf(string(a, 'T') + string(B, '.') + string(a, 'F')));
     for (auto &x : st) printf("start %s\n", x.c_str());
     for (auto &x : st) starts.push_back(idOf(x)); }
   for (int it = 0; it < 500; it++) {
@@ -421,7 +446,7 @@ int main(int argc, char **argv) {
     while (!todo.empty()) { int x = todo.front(); todo.pop_front(); if (!W.insert(x).second) continue; for (int y : choicev[x]) todo.push_back(y); }
     int bad = 0; for (int x : W) for (int y : choicev[x]) if (status[y] == 3) { bad++; break; }
     int nu = 0, maxw = 0, maxlen = 0, maxd = 0;
-    for (int x : W) { if ((*nm[x])[0] == 'U') nu++; auto ws = wit(nm[x]->substr(1)); maxw = max(maxw, (int)ws.size()); for (auto &w : ws) maxlen = max(maxlen, (int)w.size()); maxd = max(maxd, abs(deltaOf(nm[x]->substr(1)))); }
+    for (int x : W) { if ((*nm[x])[0] != 'N') nu++; auto ws = wit(nm[x]->substr(1)); maxw = max(maxw, (int)ws.size()); for (auto &w : ws) maxlen = max(maxlen, (int)w.size()); maxd = max(maxd, abs(deltaOf(nm[x]->substr(1)))); }
     printf("[unbalanced witnesses skipped: %d] ", unbalanced);
     printf("iteration %d: %zu shapes (%d U), %d rely on lost ones; explored %zu; max witnesses %d, max length %d, max |Delta| %d; concrete states %zu\n",
            it, W.size(), nu, bad, nExplored, maxw, maxlen, maxd, memo.cnt);
@@ -463,7 +488,7 @@ int main(int argc, char **argv) {
           if (nw.size() >= cur.size() && round > 0) break;
           cur = nw; }
         W = cur;
-        int nu2 = 0; for (int x : W) if ((*nm[x])[0] == 'U') nu2++;
+        int nu2 = 0; for (int x : W) if ((*nm[x])[0] != 'N') nu2++;
         printf("MINIMISED to %zu shapes (%d U)\n", W.size(), nu2);
       }
       if (getenv("DUMP")) { set<Node> out; for (int x : W) out.insert(*nm[x]); FILE *f = fopen(getenv("DUMP"), "w"); for (auto &x : out) fprintf(f, "%s\n", x.c_str()); fclose(f); }

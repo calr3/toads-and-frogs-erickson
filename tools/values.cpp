@@ -10,8 +10,12 @@
 // A position that is neither 0 nor * is reported as "other" (for the starts: +-1/8 at (3, 2), and
 // longer infinitesimals; infinitesimality itself is decided by tools/stops.cpp).
 //
-// Boards of at most 32 cells: a position is a pair of 32-bit masks (toads, frogs).
-// Usage: values A B [A B ...]   prints "a b value states seconds" per pair.
+// Boards of at most 32 cells: a position is a pair of 32-bit masks (toads, frogs). The memo is a
+// table indexed by the rank of the position among all arrangements of a toads, a frogs and b empty
+// squares (4 bits per arrangement) when that fits in MEM bytes (environment, default 12e9), and a
+// hash table (about 18 bytes per visited position) otherwise.
+// Usage: values A B [A B ...]   prints "a b value states seconds" per pair (states: positions
+// visited with the hash table, arrangements with the indexed table).
 #include <bits/stdc++.h>
 using namespace std;
 typedef unsigned long long u64;
@@ -57,8 +61,29 @@ int rmoves(u32 t, u32 f, u64 *out) {
   }
   return k;
 }
+// Indexed memo: the rank of a position among all arrangements with its counts (E < T < F).
+u64 MN[17][17][33];   // multinomial (t + f + e)! / (t! f! e!)
+bool useIdx = false; vector<unsigned char> nib; u64 idxCount = 0;
+u64 rankOf(u64 s) {
+  u32 t = s >> 32, f = (u32)s; int rt = __builtin_popcount(t), rf = __builtin_popcount(f), re = n - rt - rf; u64 r = 0;
+  for (int i = 0; i < n; i++) {
+    int c = (t >> i & 1) ? 1 : (f >> i & 1) ? 2 : 0;
+    if (c >= 1 && re > 0) r += MN[rt][rf][re - 1];
+    if (c == 2 && rt > 0) r += MN[rt - 1][rf][re];
+    if (c == 0) re--; else if (c == 1) rt--; else rf--;
+  }
+  return r;
+}
+static inline unsigned char mget(u64 s) {
+  if (!useIdx) return memo.get(s);
+  u64 r = rankOf(s); return (nib[r >> 1] >> (4 * (r & 1))) & 15;
+}
+static inline void mput(u64 s, unsigned char bits) {
+  if (!useIdx) { memo.put(s, bits); return; }
+  u64 r = rankOf(s); nib[r >> 1] |= bits << (4 * (r & 1));
+}
 bool le0(u64 s) {
-  unsigned char m = memo.get(s); if (m & 1) return m & 2;
+  unsigned char m = mget(s); if (m & 1) return m & 2;
   u64 qs[32], rs[32]; bool r = true;
   int nq = lmoves(s >> 32, (u32)s, qs);
   for (int a = 0; a < nq && r; a++) {
@@ -66,10 +91,10 @@ bool le0(u64 s) {
     for (int b = 0; b < nr; b++) if (le0(rs[b])) { ok = true; break; }
     if (!ok) r = false;
   }
-  memo.put(s, 1 | (r ? 2 : 0)); return r;
+  mput(s, 1 | (r ? 2 : 0)); return r;
 }
 bool le0s(u64 s) {
-  unsigned char m = memo.get(s); if (m & 4) return m & 8;
+  unsigned char m = mget(s); if (m & 4) return m & 8;
   u64 qs[32], rs[32]; bool r = false;
   int nr = rmoves(s >> 32, (u32)s, rs);           // Left takes the *: Right must move in s to a position <= 0
   for (int b = 0; b < nr; b++) if (le0(rs[b])) { r = true; break; }
@@ -82,18 +107,28 @@ bool le0s(u64 s) {
       if (!ok) r = false;
     }
   }
-  memo.put(s, 4 | (r ? 8 : 0)); return r;
+  mput(s, 4 | (r ? 8 : 0)); return r;
 }
 int main(int argc, char **argv) {
+  double MEM = getenv("MEM") ? atof(getenv("MEM")) : 12e9;
+  for (int t = 0; t <= 16; t++) for (int f = 0; f <= 16; f++) for (int e = 0; e <= 32; e++) {
+    if (t + f + e > 32) continue;   // only boards of at most 32 cells are used
+    u64 c1 = 1; for (int k = 1; k <= t; k++) c1 = c1 * (e + k) / k;           // C(e + t, t)
+    u64 c2 = 1; for (int k = 1; k <= f; k++) c2 = c2 * (e + t + k) / k;       // C(e + t + f, f)
+    MN[t][f][e] = c1 * c2;
+  }
   for (int i = 1; i + 1 < argc; i += 2) {
     int a = atoi(argv[i]), b = atoi(argv[i + 1]); n = 2 * a + b;
     if (n > 32) { printf("%d %d skipped (more than 32 cells)\n", a, b); continue; }
-    memo.clear(); clock_t c0 = clock();
+    idxCount = MN[a][a][b]; useIdx = idxCount / 2.0 + 1 <= MEM;
+    memo.clear(); vector<unsigned char>().swap(nib); if (useIdx) nib.assign(idxCount / 2 + 1, 0);
+    clock_t c0 = clock();
     u32 t = (a ? (1u << a) - 1 : 0), f = 0;
     for (int j = a + b; j < n; j++) f |= 1u << j;
     u64 s = key(t, f);
     const char *v = le0(s) ? "0" : le0s(s) ? "*" : "other";
-    printf("%d %d %s %zu %.1f\n", a, b, v, memo.cnt, (double)(clock() - c0) / CLOCKS_PER_SEC);
+    printf("%d %d %s %llu %.1f%s\n", a, b, v, useIdx ? (unsigned long long)idxCount : (unsigned long long)memo.cnt,
+           (double)(clock() - c0) / CLOCKS_PER_SEC, useIdx ? " indexed" : "");
     fflush(stdout);
   }
 }

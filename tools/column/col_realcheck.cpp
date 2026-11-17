@@ -66,9 +66,10 @@ Pos norm(const Pos &p) {
   return t;
 }
 unordered_set<Pos> U, N;
+bool STAR = false;   // the set has "S" shapes (<= *) instead of "U" shapes; they are kept in U
 int main(int argc, char **argv) {
   ifstream f(argv[1]); string line;
-  while (getline(f, line)) { if (line.empty()) continue; (line[0] == 'U' ? U : N).insert(line.substr(1)); }
+  while (getline(f, line)) { if (line.empty()) continue; if (line[0] == 'S') STAR = true; (line[0] != 'N' ? U : N).insert(line.substr(1)); }
   B = atoi(argv[2]); int A0 = atoi(argv[3]), A1 = atoi(argv[4]);
   if (argc > 6) { K = atoi(argv[5]); M = atoi(argv[6]); }
   for (int a = A0; a <= A1; a++) {
@@ -85,7 +86,12 @@ int main(int argc, char **argv) {
           if (!ok) { if (fails++ < 5) printf("  N fail at %s after %s\n", p.c_str(), q.c_str()); } }
         continue;
       }
-      vector<Pos> qs = lm(p); qs.push_back(p);
+      if (STAR) {   // <= *: Left takes the *, Right moves to N; Left moves are N or answered into S
+        bool ok = false;
+        for (auto &r : rm(p)) if (N.count(norm(r))) { todo.push_back({r, 'N'}); ok = true; break; }
+        if (!ok) { if (fails++ < 5) printf("  S fail at %s (no Right move to N)\n", p.c_str()); }
+      }
+      vector<Pos> qs = lm(p); if (!STAR) qs.push_back(p);
       for (auto &q : qs) {
         if (N.count(norm(q))) { todo.push_back({q, 'N'}); continue; }
         bool ok = false;

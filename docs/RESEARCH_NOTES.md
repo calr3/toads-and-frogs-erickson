@@ -370,6 +370,9 @@ The `a = 2` row works because a few pieces are separated by long gaps. In a colu
     becomes `Tᵃ⁻¹ETᵇ⁺¹`);
   * dead runs kept one by one, so that real positions and witnesses have the same runs;
   * runs of empty squares kept exact.
+* **Exact values.** With "`≤ ∗`" in place of "Left stop `≤ 0`", the same search closes at once
+  (1,263 shapes) and proves `Tᵃ□³Fᵃ = ∗` for every `a ≥ 4` (`start_three_value`,
+  [docs/COLUMN_B3.md](COLUMN_B3.md) §9).
 * **Other columns.** The same framework applies to any fixed `b`; only the data changes. For
   `b = 4` the shape search closes once far gaps lose their parity, with 233,087 shapes (§14).
 

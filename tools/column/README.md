@@ -19,6 +19,7 @@ Build each tool with `g++ -O2 -std=c++17 -o NAME NAME.cpp`.
 | `col_realcheck.cpp` | Checks a shape set on the real game tree of `Tᵃ□ᵇFᵃ`. Every real position Right's strategy reaches must satisfy the closure conditions itself. For each `a` this is a complete proof, independent of the margin argument. |
 | `verify_shapes.py` | An independent re-implementation (moves, runs, dead regions, shapes, witnesses) that checks a shape set exactly as a kernel check would. |
 | `b3_shapes.txt` | The certificate for `b = 3`: 3,031 shapes (`U` = Left-stop phase, `N` = normal play), in the format of the Lean proof. |
+| `b3_star_shapes.txt` | The certificate for the exact values of `b = 3` (`Tᵃ□³Fᵃ = ∗`, `a ≥ 4`): 55 `S` (`≤ ∗`) and 1,208 `N` shapes. |
 | `b4_shapes.txt.gz` | The certificate for `b = 4`: 233,087 shapes, far gaps without parity (`M = 1`). Into Lean with `scripts/gen_b4.py`. |
 | `to_witness.py` | One witness position per shape, the input of `scripts/ColGen.lean`. |
 | `col_local.cpp` | Decides whether Right wins with a *component-local* strategy: dead regions split a position into independent components, and Right answers inside the component Left moved in. |
@@ -110,6 +111,7 @@ failure on the real game trees for `a = 2…24`. Into Lean:
 | `FAILFIRST=1` | Fast mode: a shape with an unanswerable challenge loses at once, the most constrained challenges go first, options whose small witnesses lose concretely are dropped, duplicate and subsumed challenges are removed, and lost shapes free their challenges. |
 | `PROGRESS=1`, `MAXEXPLORE=n` | Progress lines; give up after `n` explored shapes, printing the search stack and statistics of the explored shapes. |
 | `EB=n` | At most `n` long runs after Right's replies. |
+| `START=S`, `AMIN=a` | Prove the starts from `a` on `≤ ∗` (shapes `S`) instead of "Left stop `≤ 0`" (shapes `U`). `verify_shapes.py` and `col_realcheck` read `S` shapes too. |
 | `NOPARITY=1` | Far gaps keep only their sign, not their parity; each far gap then has `MARGIN + 1` witnesses. |
 | `REAL=amin-amax` | Play Right's concrete strategy on the real boards (at most 28 cells) and count the shapes it visits. `REALPREF` picks the reply heuristic, `REALOUT=file` writes the shapes, `COMPONENTS=1` also counts the components between dead regions. |
 
@@ -117,3 +119,17 @@ Without these options the search behaves as before and reproduces `b3_shapes.txt
 
     FAILFIRST=1 MAXEXPLORE=300000 MARGIN=4 DEADRUNS=1 col_shapes 4 13 2 2 28
     FAILFIRST=1 REAL=4-12 COMPONENTS=1 MARGIN=4 DEADRUNS=1 col_shapes 4 13 2 2 28
+
+## Exact values of `b = 3`
+
+    START=S AMIN=4 FAILFIRST=1 MARGIN=4 DEADRUNS=1 MINIMIZE=1 DUMP=out col_shapes 3 10 2 2 28
+    sort out > b3_star_shapes.txt
+    DEADRUNS=1 MARGIN=4 verify_shapes.py b3_star_shapes.txt 3 2 2 4 60     # no failure; starts a = 4..60
+    DEADRUNS=1 col_realcheck b3_star_shapes.txt 3 4 40 2 2                 # no failure for a = 4..40
+    python3 to_witness.py b3_star_shapes.txt 2 > witnesses.txt
+    lake env lean --run scripts/ColGen.lean witnesses.txt Cgt/Col/B3SData.lean colB3S work.txt
+    python3 scripts/gen_col_chunks.py work.txt B3S 5000 20
+
+The `≤ ∗` search closes at once (1,807 shapes explored) and minimises to 1,263 shapes, fewer than
+the infinitesimal certificate. Lean: `start_three_value` (`Cgt/Col/Value3.lean`).
+

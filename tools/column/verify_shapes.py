@@ -102,6 +102,7 @@ amin, amax = (int(sys.argv[5]), int(sys.argv[6])) if len(sys.argv) > 6 else (K, 
 L = [l.strip() for l in open(file) if l.strip()]
 U = {x[1:] for x in L if x[0] == 'U'}
 N = {x[1:] for x in L if x[0] == 'N'}
+S = {x[1:] for x in L if x[0] == 'S'}   # "<= *" shapes (col_shapes START=S)
 
 def lf(q):
     return shape(q) in N or any(shape(r) in U for r in rm(q))
@@ -117,12 +118,17 @@ def check(items):
             if mode == 'U':
                 nq += len(qs) + 1
                 if not (lf(w) and all(lf(q) for q in qs)): bad.append(('U', s, w))
+            elif mode == 'S':   # some Right move to N; every Left move is N or has a Right reply into S
+                nq += len(qs) + 1
+                if not (any(shape(r) in N for r in rm(w)) and
+                        all(shape(q) in N or any(shape(r) in S for r in rm(q)) for q in qs)):
+                    bad.append(('S', s, w))
             else:
                 nq += len(qs)
                 if not all(any(shape(r) in N for r in rm(q)) for q in qs): bad.append(('N', s, w))
     return bad, nwit, nq
 
-items = [('U', s) for s in sorted(U)] + [('N', s) for s in sorted(N)]
+items = [('U', s) for s in sorted(U)] + [('S', s) for s in sorted(S)] + [('N', s) for s in sorted(N)]
 jobs = int(os.environ.get('JOBS', '1'))   # JOBS=n: check in n processes
 if jobs > 1:
     import multiprocessing
@@ -131,7 +137,7 @@ if jobs > 1:
 else:
     res = [check(items)]
 bad = [b for r in res for b in r[0]]; nwit = sum(r[1] for r in res); nq = sum(r[2] for r in res)
-missing = [a for a in range(amin, amax + 1) if shape('T' * a + '.' * B + 'F' * a) not in U]
-print(f'{len(U)} U + {len(N)} N shapes, {nwit} witnesses, {nq} Left moves and passes: {len(bad)} failing witnesses; starts a = {amin}..{amax} missing: {missing}')
+missing = [a for a in range(amin, amax + 1) if shape('T' * a + '.' * B + 'F' * a) not in (S if S else U)]
+print(f'{len(U)} U + {len(S)} S + {len(N)} N shapes, {nwit} witnesses, {nq} Left moves and passes: {len(bad)} failing witnesses; starts a = {amin}..{amax} missing: {missing}')
 for b in bad[:5]: print('  ', b)
 sys.exit(1 if bad or missing else 0)

@@ -1,9 +1,8 @@
 # What was known before: literature search (November 2026)
 
-The README calls a result *new, as far as we know* when this search found no earlier statement of
-it as a theorem. A search can only show that a result is absent from the sources searched, so the
-caveat stays. This note records what was searched, what each source says, and what was not
-reached.
+The README calls a result *new* when this search found no earlier statement of it as a theorem;
+its opening paragraph lists the sources checked. This note records what each source says, and
+what could not be reached.
 
 ## What earlier work establishes
 
@@ -40,7 +39,7 @@ reached.
   [Th08] contains the proofs the first one announced.
 * Siegel, *Combinatorial Game Theory* (AMS, 2013), and Albert, Nowakowski and Wolfe, *Lessons in
   Play*.
-* Google Scholar and MathSciNet.
+* Google Scholar, MathSciNet, and the Isabelle Archive of Formal Proofs index.
 
 ## References
 

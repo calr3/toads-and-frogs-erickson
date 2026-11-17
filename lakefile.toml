@@ -1,0 +1,22 @@
+name = "cgt"
+version = "0.1.0"
+defaultTargets = ["Cgt"]
+
+[[lean_lib]]
+name = "Cgt"
+
+# Machine-generated strategy certificates for individual cases (slow to check; not built by default).
+# Build with `lake build CgtCerts`.
+[[lean_lib]]
+name = "CgtCerts"
+roots = ["Cgt.Cert.Case_3_4", "Cgt.Cert.Case_3_7", "Cgt.Cert.Case_3_8", "Cgt.Cert.Case_3_9",
+  "Cgt.Cert.Case_3_10", "Cgt.Cert.Case_3_11", "Cgt.Cert.Case_3_12", "Cgt.Cert.Case_4_5",
+  "Cgt.Cert.Case_5_3", "Cgt.Cert.Case_6_3"]
+
+# The column b = 4 (`Cgt.Col.Column4`) and its exact values (`Cgt.Col.Value4`). Their finite checks
+# (2.8 and 3.5 million witnesses) are evaluated by `native_decide`, which trusts the Lean compiler
+# (each use adds an axiom asserting the result of a compiled evaluation), so they are kept out of
+# the default build. Build with `lake build CgtNative`.
+[[lean_lib]]
+name = "CgtNative"
+roots = ["Cgt.Col.Column4", "Cgt.Col.Value4"]

@@ -1,0 +1,124 @@
+import Cgt.Basic
+import Cgt.FiniteCases
+import Cgt.SmallCases
+import Cgt.FamilyB1
+import Cgt.FamilyB2
+import Cgt.RowA2
+import Cgt.Col.Column3
+
+/-!
+# Erickson's Conjecture 5 for Toads and Frogs
+
+**Conjecture (Erickson, 1996).** `Tᵃ □ᵇ Fᵃ` is infinitesimal for all `a, b`, except
+`(a, b) = (3, 2)`.
+
+This file states the conjecture (`Conjecture5`) and collects what is proved so far:
+
+* the exceptional case `(3, 2)` is indeed *not* infinitesimal (`not_infinitesimal_3_2`);
+* `a = 0`, `a = 1`, `a = 2`, `b = 0` and `b = 1` hold for every value of the other parameter
+  (`a = 2` via a machine-checked strategy over finitely many shapes, `Cgt/RowA2.lean`);
+* `b = 2` holds for every `a ≠ 3` (Thanatipanonda's theorem for `a ≥ 4`, formalised here);
+* `b = 3` holds for every `a` (a machine-checked strategy over finitely many run shapes,
+  `Cgt/Col/Column3.lean`);
+* every case with `2a + b ≤ 12` (other than `(3, 2)`) is checked by the kernel.
+
+`b = 4` also holds for every `a` (`infinitesimal_start_b_four`, `Cgt/Col/Column4.lean`), but its
+finite check is evaluated by `native_decide`, which trusts Lean's compiler as well as the kernel.
+It is therefore not imported here; build it with `lake build CgtNative`.
+
+The general case is open.
+-/
+
+namespace Cgt
+open Game
+
+/-- Erickson's Conjecture 5: `Tᵃ □ᵇ Fᵃ` is infinitesimal unless `(a, b) = (3, 2)`. -/
+def Conjecture5 : Prop :=
+  ∀ a b : Nat, (a, b) ≠ (3, 2) → Infinitesimal (tf (start a b))
+
+/-- The exception really is an exception: `TTT□□FFF = ±1/8`. -/
+theorem not_infinitesimal_3_2 : ¬ Infinitesimal (tf (start 3 2)) := not_inf_3_2
+
+/-- All cases of the conjecture established so far. -/
+theorem conjecture5_partial (a b : Nat) (hab : (a, b) ≠ (3, 2))
+    (h : a ≤ 1 ∨ b ≤ 2 ∨ 2 * a + b ≤ 12) : Infinitesimal (tf (start a b)) := by
+  have hb2 : b = 2 → 4 ≤ a → Infinitesimal (tf (start a b)) := by
+    intro hb ha
+    subst hb
+    obtain ⟨c, rfl⟩ : ∃ c, a = c + 4 := ⟨a - 4, by omega⟩
+    exact infinitesimal_start_b_two c
+  rcases h with h | h | h
+  · rcases Nat.le_one_iff_eq_zero_or_eq_one.1 h with rfl | rfl
+    · exact infinitesimal_start_a_zero b
+    · exact infinitesimal_start_one b
+  · by_cases h1 : b ≤ 1
+    · rcases Nat.le_one_iff_eq_zero_or_eq_one.1 h1 with rfl | rfl
+      · exact infinitesimal_start_b_zero a
+      · exact infinitesimal_start_b_one a
+    have hb : b = 2 := by omega
+    by_cases ha : 4 ≤ a
+    · exact hb2 hb ha
+    subst hb
+    have ha' : a = 0 ∨ a = 1 ∨ a = 2 ∨ a = 3 := by omega
+    rcases ha' with rfl | rfl | rfl | rfl
+    · exact infinitesimal_start_a_zero 2
+    · exact infinitesimal_start_one 2
+    · exact infinitesimal_start_2_2
+    · exact absurd rfl hab
+  · by_cases ha : a ≤ 1
+    · rcases Nat.le_one_iff_eq_zero_or_eq_one.1 ha with rfl | rfl
+      · exact infinitesimal_start_a_zero b
+      · exact infinitesimal_start_one b
+    by_cases hb : b = 0
+    · subst hb; exact infinitesimal_start_b_zero a
+    have ha6 : a ≤ 5 := by omega
+    have hb10 : b ≤ 8 := by omega
+    have ha' : a = 2 ∨ a = 3 ∨ a = 4 ∨ a = 5 := by omega
+    rcases ha' with rfl | rfl | rfl | rfl
+    · have hb' : b = 1 ∨ b = 2 ∨ b = 3 ∨ b = 4 ∨ b = 5 ∨ b = 6 ∨ b = 7 ∨ b = 8 := by omega
+      rcases hb' with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
+      · exact infinitesimal_start_2_1
+      · exact infinitesimal_start_2_2
+      · exact infinitesimal_start_2_3
+      · exact infinitesimal_start_2_4
+      · exact infinitesimal_start_2_5
+      · exact infinitesimal_start_2_6
+      · exact infinitesimal_start_2_7
+      · exact infinitesimal_start_2_8
+    · have hb' : b = 1 ∨ b = 2 ∨ b = 3 ∨ b = 4 ∨ b = 5 ∨ b = 6 := by omega
+      rcases hb' with rfl | rfl | rfl | rfl | rfl | rfl
+      · exact infinitesimal_start_3_1
+      · exact absurd rfl hab
+      · exact infinitesimal_start_3_3
+      · exact infinitesimal_start_3_4
+      · exact infinitesimal_start_3_5
+      · exact infinitesimal_start_3_6
+    · have hb' : b = 1 ∨ b = 2 ∨ b = 3 ∨ b = 4 := by omega
+      rcases hb' with rfl | rfl | rfl | rfl
+      · exact infinitesimal_start_4_1
+      · exact infinitesimal_start_4_2
+      · exact infinitesimal_start_4_3
+      · exact infinitesimal_start_4_4
+    · have hb' : b = 1 ∨ b = 2 := by omega
+      rcases hb' with rfl | rfl
+      · exact infinitesimal_start_5_1
+      · exact infinitesimal_start_5_2
+
+/-- The region of `(a, b)` covered by the results proved in this repository. -/
+def ProvedRegion (a b : Nat) : Prop :=
+  a ≤ 2 ∨ b ≤ 3 ∨ 2 * a + b ≤ 12
+
+/-- Every case of the conjecture in `ProvedRegion` holds. -/
+theorem conjecture5_provedRegion (a b : Nat) (hab : (a, b) ≠ (3, 2)) (h : ProvedRegion a b) :
+    Infinitesimal (tf (start a b)) := by
+  rcases h with h | h | h
+  · by_cases h1 : a ≤ 1
+    · exact conjecture5_partial a b hab (Or.inl h1)
+    · obtain rfl : a = 2 := by omega
+      exact infinitesimal_start_two b
+  · by_cases h3 : b = 3
+    · subst h3; exact infinitesimal_start_b_three a
+    · exact conjecture5_partial a b hab (Or.inr (Or.inl (by omega)))
+  · exact conjecture5_partial a b hab (Or.inr (Or.inr h))
+
+end Cgt

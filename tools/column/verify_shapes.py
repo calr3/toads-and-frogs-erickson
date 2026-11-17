@@ -1,0 +1,143 @@
+#!/usr/bin/env python3
+"""Independent check of a closed set of run shapes (the DUMP output of col_shapes.cpp).
+
+Re-implements, separately from the C++ search: moves, maximal runs, dead regions, the shape (class)
+of a position and the witnesses of a shape. Then checks exactly what a kernel check would:
+
+* every witness w of a U shape: Left's pass and every Left move q from w can be answered, by
+  Right's pass (shape(q) is an N shape) or a reply r with shape(r) a U shape;
+* every witness w of an N shape: every Left move q from w has a reply r with shape(r) an N shape;
+* the start T^a .^B F^a has a U shape for every a from AMIN to AMAX (beyond a = K + M + 4 the
+  shape only depends on the parity of a).
+
+Usage: verify_shapes.py SHAPES B K M [AMIN AMAX]
+Environment: JOBS=n checks in n processes; NOPARITY=1 for shapes whose far gaps keep only their sign.
+Environment: DEADRUNS=1 (dead runs kept one by one, as in the Lean data) and MARGIN=4 (witness gaps
+c, c + 2, c + 4); runs of empty squares are always exact. Defaults: the older format (dead regions
+collapsed, margin 2).
+"""
+import os
+import sys
+
+DEADRUNS = bool(os.environ.get('DEADRUNS'))
+MARGIN = int(os.environ.get('MARGIN', '2'))
+NOPARITY = bool(os.environ.get('NOPARITY'))   # far gaps keep only their sign
+
+def lm(s):
+    out = []
+    for i, c in enumerate(s):
+        if c == 'T':
+            if i + 1 < len(s) and s[i + 1] == '.': out.append(s[:i] + '.T' + s[i + 2:])
+            elif i + 2 < len(s) and s[i + 1] == 'F' and s[i + 2] == '.': out.append(s[:i] + '.FT' + s[i + 3:])
+    return out
+
+def rm(s):
+    out = []
+    for i, c in enumerate(s):
+        if c == 'F':
+            if i >= 1 and s[i - 1] == '.': out.append(s[:i - 1] + 'F.' + s[i + 1:])
+            elif i >= 2 and s[i - 1] == 'T' and s[i - 2] == '.': out.append(s[:i - 2] + 'FT.' + s[i + 1:])
+    return out
+
+def runs(s):
+    r = []
+    for c in s:
+        if r and r[-1][0] == c: r[-1][1] += 1
+        else: r.append([c, 1])
+    return r
+
+def dead(rs):
+    """Runs in a dead region: in a block without empty squares, from the first TT to the last FF."""
+    d = [False] * len(rs)
+    i = 0
+    while i < len(rs):
+        if rs[i][0] == '.': i += 1; continue
+        j = i
+        while j < len(rs) and rs[j][0] != '.': j += 1
+        st = next((k for k in range(i, j) if rs[k][0] == 'T' and rs[k][1] >= 2), None)
+        en = None if st is None else next((k for k in range(j - 1, st, -1) if rs[k][0] == 'F' and rs[k][1] >= 2), None)
+        if st is not None and en is not None:
+            for k in range(st, en + 1): d[k] = True
+        i = j
+    return d
+
+def shape(p):
+    rs = runs(p); d = dead(rs)
+    lv = sorted((l, i) for i, (c, l) in enumerate(rs) if l >= K and not d[i] and (c != '.' or not DEADRUNS))
+    rank = {i: k for k, (l, i) in enumerate(lv)}
+    sk = ''
+    for i, (c, l) in enumerate(rs):
+        if d[i]:
+            if DEADRUNS:
+                sk += c + ('1' if l == 1 else 'D')
+            elif i == 0 or not d[i - 1]:
+                sk += 'XD'
+            continue
+        sk += c + (chr(97 + rank[i]) if i in rank else str(l))
+    gs, prev = '', K
+    for l, i in lv:
+        g = l - prev; prev = l
+        gs += str(g if g <= M else M + 1 if NOPARITY else M + 1 + (g - M - 1) % 2)
+    return sk + '|' + gs
+
+def wit(s):
+    sk, gs = s.split('|')
+    far = [k for k, c in enumerate(gs) if int(c) > M]
+    base, step = (MARGIN + 1, 1) if NOPARITY else (MARGIN // 2 + 1, 2)
+    for mask in range(base ** len(far)):
+        g = [int(c) for c in gs]
+        mm = mask
+        for k in far:
+            g[k] += step * (mm % base); mm //= base
+        lens, cur = [], K
+        for x in g: cur += x; lens.append(cur)
+        p = ''
+        for i in range(0, len(sk), 2):
+            c, v = sk[i], sk[i + 1]
+            p += 'TTFF' if c == 'X' else c * (2 if v == 'D' else lens[ord(v) - 97] if v >= 'a' else int(v))
+        yield p
+
+file, B, K, M = sys.argv[1], int(sys.argv[2]), int(sys.argv[3]), int(sys.argv[4])
+amin, amax = (int(sys.argv[5]), int(sys.argv[6])) if len(sys.argv) > 6 else (K, K + M + 12)
+L = [l.strip() for l in open(file) if l.strip()]
+U = {x[1:] for x in L if x[0] == 'U'}
+N = {x[1:] for x in L if x[0] == 'N'}
+S = {x[1:] for x in L if x[0] == 'S'}   # "<= *" shapes (col_shapes START=S)
+
+def lf(q):
+    return shape(q) in N or any(shape(r) in U for r in rm(q))
+
+def check(items):
+    """Check the witnesses of the given (mode, shape) pairs; returns (failures, witnesses, moves)."""
+    bad, nwit, nq = [], 0, 0
+    for mode, s in items:
+        for w in wit(s):
+            nwit += 1
+            assert shape(w) == s, (s, w, shape(w))
+            qs = lm(w)
+            if mode == 'U':
+                nq += len(qs) + 1
+                if not (lf(w) and all(lf(q) for q in qs)): bad.append(('U', s, w))
+            elif mode == 'S':   # some Right move to N; every Left move is N or has a Right reply into S
+                nq += len(qs) + 1
+                if not (any(shape(r) in N for r in rm(w)) and
+                        all(shape(q) in N or any(shape(r) in S for r in rm(q)) for q in qs)):
+                    bad.append(('S', s, w))
+            else:
+                nq += len(qs)
+                if not all(any(shape(r) in N for r in rm(q)) for q in qs): bad.append(('N', s, w))
+    return bad, nwit, nq
+
+items = [('U', s) for s in sorted(U)] + [('S', s) for s in sorted(S)] + [('N', s) for s in sorted(N)]
+jobs = int(os.environ.get('JOBS', '1'))   # JOBS=n: check in n processes
+if jobs > 1:
+    import multiprocessing
+    chunks = [items[i::jobs * 16] for i in range(jobs * 16)]
+    with multiprocessing.get_context('fork').Pool(jobs) as pool: res = pool.map(check, chunks)
+else:
+    res = [check(items)]
+bad = [b for r in res for b in r[0]]; nwit = sum(r[1] for r in res); nq = sum(r[2] for r in res)
+missing = [a for a in range(amin, amax + 1) if shape('T' * a + '.' * B + 'F' * a) not in (S if S else U)]
+print(f'{len(U)} U + {len(S)} S + {len(N)} N shapes, {nwit} witnesses, {nq} Left moves and passes: {len(bad)} failing witnesses; starts a = {amin}..{amax} missing: {missing}')
+for b in bad[:5]: print('  ', b)
+sys.exit(1 if bad or missing else 0)

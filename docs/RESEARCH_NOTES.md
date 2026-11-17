@@ -27,7 +27,7 @@ The conjecture holds in every case computed. That includes:
 * `a = 3` for `b ≤ 26`;
 * `a = 4` for `b ≤ 24`;
 * `a = 5` for `b ≤ 22`;
-* `a = 6` for `b ≤ 14`;
+* `a = 6` for `b ≤ 15`;
 * `a = 7` for `b ≤ 11`;
 * `a = 8` for `b ≤ 8`;
 * `a = 9` for `b ≤ 6`;

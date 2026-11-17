@@ -21,3 +21,11 @@ roots = ["Cgt.Cert.Case_3_4", "Cgt.Cert.Case_3_7", "Cgt.Cert.Case_3_8", "Cgt.Cer
 [[lean_lib]]
 name = "CgtNative"
 roots = ["Cgt.Col.Column4", "Cgt.Col.Value4", "Cgt.Value612"]
+
+# Comparator: `Challenge` states the main theorems (with `sorry`), `Solution` proves them. See
+# `comparator/README.md`.
+[[lean_lib]]
+name = "Challenge"
+
+[[lean_lib]]
+name = "Solution"

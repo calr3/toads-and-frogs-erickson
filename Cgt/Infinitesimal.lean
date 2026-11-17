@@ -18,11 +18,6 @@ with
 namespace Cgt
 namespace Game
 
-/-- The dyadic number `2⁻ⁿ`: `powHalf 0 = 1 = {0 | }` and `powHalf (n+1) = {0 | powHalf n}`. -/
-def powHalf : Nat → Game
-  | 0 => mk [zero] []
-  | n + 1 => mk [zero] [powHalf n]
-
 @[simp] theorem powHalf_left (n : Nat) : (powHalf n).left = [zero] := by cases n <;> rfl
 @[simp] theorem powHalf_right_zero : (powHalf 0).right = [] := rfl
 @[simp] theorem powHalf_right_succ (n : Nat) : (powHalf (n + 1)).right = [powHalf n] := rfl
@@ -154,10 +149,6 @@ theorem lfZero_iff (g : Game) : LfZero g ↔ le g zero ∨ ∃ y ∈ g.right, Up
     rcases h with hz | ⟨y, hy, hu⟩
     · exact Or.inl hz
     · exact Or.inr ⟨y, hy, hu n⟩
-
-/-- A game is *infinitesimal* if it lies strictly between `-2⁻ⁿ` and `2⁻ⁿ` for every `n`,
-equivalently strictly between `-x` and `x` for every positive (short) number `x`. -/
-def Infinitesimal (g : Game) : Prop := ∀ n, lt (neg (powHalf n)) g ∧ lt g (powHalf n)
 
 theorem lt_powHalf_of_upperZero {g : Game} (h : UpperZero g) (n : Nat) : lt g (powHalf n) :=
   lt_of_le_of_lt (h (n + 1)) (powHalf_succ_lt n)

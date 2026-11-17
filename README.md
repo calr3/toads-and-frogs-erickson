@@ -113,7 +113,7 @@ source says, and the few we could not reach, are in [docs/LITERATURE.md](docs/LI
 | One-sided Death Leap Principle, general | `le_zero_of_dlp` | Known: [[T11]](#references); the two-sided version is in [[E96]](#references) |
 | Every case with `2a + b ≤ 12`, kernel-checked | `Cgt/FiniteCases.lean` | Known numerically ([[E96]](#references), [[T11]](#references) tables) |
 | `(3,7)` to `(3,12)`, `(4,5)`, `(5,3)`, `(6,3)`: strategy certificates | `Cgt/Cert/` (`lake build CgtCerts`) | Known numerically ([[T11]](#references) table) |
-| Combined partial result | `conjecture5_partial`, `conjecture5_provedRegion` | Combines the rows above |
+| **Main theorem**: Conjecture 5 holds if it holds for `a ≥ 3`, `b ≥ 4`, `2a + b ≥ 13` (`OpenCases`); checked with Comparator | `conjecture5_of_openCases` (`Cgt/Conjecture5.lean`; statement in `Cgt/Statement.lean`) | Combines the kernel-checked rows above |
 | **`T⁶□¹²F⁶` is neither `0` nor `∗`**, so Conjecture T4 of [[T11]](#references) is false; strategy table of 21 million positions; 🟦 finite check by `native_decide` | `not_thanatipanonda_conjecture4`, `start_6_12_not_zero`, `start_6_12_not_star` (`Cgt/Value612.lean`; `lake build CgtNative`) | **New** |
 | `T⁷□¹⁰F⁷` is neither `0` nor `∗` (infinitesimal) | — (computed by `tools/values.cpp`, not formalised) | **New** |
 | **General case** | — | **Open** since 1996 |
@@ -121,6 +121,17 @@ source says, and the few we could not reach, are in [docs/LITERATURE.md](docs/LI
 The full conjecture is **not** proved here. It has been open since 1996 and is the only one of
 Erickson's conjectures still open. The main earlier partial results are Thanatipanonda's proofs
 of the columns `b = 2` [[T11]](#references) and `b = 3` [[Th08]](#references) for `a ≥ 4`.
+
+### Checking the main theorem with Comparator
+
+The main theorem, `conjecture5_of_openCases : OpenCases → Conjecture5`, and the exception
+`not_infinitesimal_3_2` can be checked with Comparator (`lake comparator`). `Challenge.lean` states
+them, with `sorry`, after a verbatim copy of `Cgt/Statement.lean`: the definitions of games,
+infinitesimals, the rules, the starting positions, `Conjecture5` and `OpenCases`, in Lean core
+only. Comparator checks that `Solution.lean` proves exactly these statements, with no axioms
+beyond `propext`, `Quot.sound` and `Classical.choice`, and that the kernel accepts it. To trust the
+result you need to read only `Challenge.lean`. The `native_decide` results are not covered. See
+[comparator/README.md](comparator/README.md).
 
 ## Grid of proved cases
 
@@ -217,7 +228,7 @@ are infinitesimal but neither `0` nor `∗` (below); and `∗2`, `∗3` below ar
 | **19** | ∗ | ∗ | 0 | 0 | 0 |  |  |  |  |  |  |  |  |  |  |
 | **20** | 0 | 0 | 0 | 0 | 0 |  |  |  |  |  |  |  |  |  |  |
 | **21** | ∗ | 0 | 0 | 0 | ∗ |  |  |  |  |  |  |  |  |  |  |
-| **22** | 0 | 0 | 0 | 0 |  |  |  |  |  |  |  |  |  |  |  |
+| **22** | 0 | 0 | 0 | 0 | 0 |  |  |  |  |  |  |  |  |  |  |
 | **23** | ∗ | 0 | 0 | 0 |  |  |  |  |  |  |  |  |  |  |  |
 | **24** | 0 | 0 | 0 | 0 |  |  |  |  |  |  |  |  |  |  |  |
 | **25** | ∗ | ∗ | 0 |  |  |  |  |  |  |  |  |  |  |  |  |
@@ -261,6 +272,9 @@ are infinitesimal but neither `0` nor `∗` (below); and `∗2`, `∗3` below ar
 
 ## Contents
 
+* `Cgt/Statement.lean`: the definitions needed to state the main theorems (games, Conway's order,
+  infinitesimals, the rules, `tf`, `start`, `Conjecture5`, `OpenCases`), copied into
+  `Challenge.lean` for Comparator (`scripts/gen_challenge.py`; `Solution.lean`, `comparator/`).
 * `Cgt/Game.lean`: short partizan games as finite option lists, Conway's order
   (reflexive, transitive), negation, equivalence.
 * `Cgt/Infinitesimal.lean`: the numbers `2⁻ⁿ`, and `Infinitesimal G := ∀ n, -2⁻ⁿ < G < 2⁻ⁿ`.
@@ -362,7 +376,7 @@ mode for the other cells (results in `tools/values.txt`). Together they cover:
 
 * `a = 3` with `b ≤ 26`;
 * `a = 4` with `b ≤ 24`;
-* `a = 5` with `b ≤ 21`;
+* `a = 5` with `b ≤ 22`;
 * `a = 6` with `b ≤ 14`;
 * `a = 7` with `b ≤ 11`;
 * `a = 8` with `b ≤ 8`;

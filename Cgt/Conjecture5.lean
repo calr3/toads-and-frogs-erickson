@@ -12,7 +12,9 @@ import Cgt.Col.Column3
 **Conjecture (Erickson, 1996).** `Tᵃ □ᵇ Fᵃ` is infinitesimal for all `a, b`, except
 `(a, b) = (3, 2)`.
 
-This file states the conjecture (`Conjecture5`) and collects what is proved so far:
+The conjecture (`Conjecture5`) and the cases left open (`OpenCases`) are defined in
+`Cgt/Statement.lean`. This file collects what is proved so far; the main theorem is
+`conjecture5_of_openCases : OpenCases → Conjecture5`:
 
 * the exceptional case `(3, 2)` is indeed *not* infinitesimal (`not_infinitesimal_3_2`);
 * `a = 0`, `a = 1`, `a = 2`, `b = 0` and `b = 1` hold for every value of the other parameter
@@ -31,10 +33,6 @@ The general case is open.
 
 namespace Cgt
 open Game
-
-/-- Erickson's Conjecture 5: `Tᵃ □ᵇ Fᵃ` is infinitesimal unless `(a, b) = (3, 2)`. -/
-def Conjecture5 : Prop :=
-  ∀ a b : Nat, (a, b) ≠ (3, 2) → Infinitesimal (tf (start a b))
 
 /-- The exception really is an exception: `TTT□□FFF = ±1/8`. -/
 theorem not_infinitesimal_3_2 : ¬ Infinitesimal (tf (start 3 2)) := not_inf_3_2
@@ -120,5 +118,15 @@ theorem conjecture5_provedRegion (a b : Nat) (hab : (a, b) ≠ (3, 2)) (h : Prov
     · subst h3; exact infinitesimal_start_b_three a
     · exact conjecture5_partial a b hab (Or.inr (Or.inl (by omega)))
   · exact conjecture5_partial a b hab (Or.inr (Or.inr h))
+
+/-- **Main theorem.** Erickson's Conjecture 5 holds if it holds in the cases left open here
+(`OpenCases`: `a ≥ 3`, `b ≥ 4`, `2a + b ≥ 13`). Every other case is proved, and checked by the
+kernel. -/
+theorem conjecture5_of_openCases (h : OpenCases) : Conjecture5 := by
+  intro a b hab
+  by_cases hr : ProvedRegion a b
+  · exact conjecture5_provedRegion a b hab hr
+  · simp only [ProvedRegion, not_or, Nat.not_le] at hr
+    exact h a b (by omega) (by omega) (by omega)
 
 end Cgt

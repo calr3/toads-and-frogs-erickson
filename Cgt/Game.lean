@@ -1,3 +1,5 @@
+import Cgt.Statement
+
 /-!
 # Short partizan games
 
@@ -17,10 +19,6 @@ Since every positive (short) number is at least `2⁻ⁿ` for some `n`, the pred
 
 namespace Cgt
 
-/-- A short game, given by its finite lists of Left and Right options. -/
-inductive Game where
-  | mk : List Game → List Game → Game
-
 namespace Game
 
 instance : Inhabited Game := ⟨mk [] []⟩
@@ -36,33 +34,6 @@ def right : Game → List Game
 @[simp] theorem left_mk (l r : List Game) : (mk l r).left = l := rfl
 @[simp] theorem right_mk (l r : List Game) : (mk l r).right = r := rfl
 
-theorem sizeOf_lt_of_mem_left {l r : List Game} {x : Game} (h : x ∈ l) :
-    sizeOf x < sizeOf (mk l r) := by
-  have := List.sizeOf_lt_of_mem h
-  simp only [mk.sizeOf_spec]
-  omega
-
-theorem sizeOf_lt_of_mem_right {l r : List Game} {x : Game} (h : x ∈ r) :
-    sizeOf x < sizeOf (mk l r) := by
-  have := List.sizeOf_lt_of_mem h
-  simp only [mk.sizeOf_spec]
-  omega
-
-/-- The game `0 = { | }`. -/
-def zero : Game := mk [] []
-
-/-- Conway's order: `le G H` means `G ≤ H`, i.e. no Left option `Gᴸ` satisfies `H ≤ Gᴸ`
-and no Right option `Hᴿ` satisfies `Hᴿ ≤ G`. -/
-def le : Game → Game → Prop
-  | mk gl gr, mk hl hr =>
-      (∀ x : {x // x ∈ gl}, ¬ le (mk hl hr) x.1) ∧ (∀ y : {y // y ∈ hr}, ¬ le y.1 (mk gl gr))
-termination_by g h => sizeOf g + sizeOf h
-decreasing_by
-  · have := sizeOf_lt_of_mem_left (r := gr) x.2
-    omega
-  · have := sizeOf_lt_of_mem_right (l := hl) y.2
-    omega
-
 theorem le_mk_iff {gl gr hl hr : List Game} :
     le (mk gl gr) (mk hl hr) ↔
       (∀ x ∈ gl, ¬ le (mk hl hr) x) ∧ (∀ y ∈ hr, ¬ le y (mk gl gr)) := by
@@ -76,9 +47,6 @@ theorem le_mk_iff {gl gr hl hr : List Game} :
 theorem le_iff {g h : Game} :
     le g h ↔ (∀ x ∈ g.left, ¬ le h x) ∧ (∀ y ∈ h.right, ¬ le y g) := by
   cases g; cases h; exact le_mk_iff
-
-/-- `lt G H` means `G < H`, i.e. `G ≤ H` and not `H ≤ G`. -/
-def lt (g h : Game) : Prop := le g h ∧ ¬ le h g
 
 /-- Game equivalence `G = H` in the sense of combinatorial game theory. -/
 def Equiv (g h : Game) : Prop := le g h ∧ le h g
@@ -162,14 +130,6 @@ theorem equiv_of_options {gl gr hl hr : List Game}
   exact ⟨key hl1 hr2, key hl2 hr1⟩
 
 /-! ### Negation -/
-
-/-- The negative of a game: swap the roles of Left and Right. -/
-def neg : Game → Game
-  | mk l r => mk (r.attach.map fun y => neg y.1) (l.attach.map fun x => neg x.1)
-termination_by g => sizeOf g
-decreasing_by
-  · exact sizeOf_lt_of_mem_right y.2
-  · exact sizeOf_lt_of_mem_left x.2
 
 theorem neg_mk (l r : List Game) :
     neg (mk l r) = mk (r.attach.map fun y => neg y.1) (l.attach.map fun x => neg x.1) := by

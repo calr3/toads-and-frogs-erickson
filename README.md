@@ -50,13 +50,15 @@ Lean's compiler. They are built separately, with `lake build CgtNative`.
   shapes. Together with kernel checks of each `b ≤ 30`, this gives the value predicted by the data
   (below) for every even `b` and every `b ≤ 30` (`start_two_value`). The values for `b ≤ 30` were
   already known numerically [[T11]](#references); only their formal proof is new.
+* **New, as far as we know: counterexamples to Thanatipanonda's Conjecture 4 (computed, not
+  proved in Lean).** [[T11]](#references) conjectures that `Tᵃ□ᵇFᵃ` is `0` or `∗` for every
+  `b ≥ a > 0`. Our exhaustive solver finds that `T⁶□¹²F⁶` and `T⁷□¹⁰F⁷` are neither. Both are
+  still infinitesimal, as Erickson's conjecture predicts, and `T⁶□¹²F⁶` is not `∗2` or `∗3`
+  either. This is Thanatipanonda's own Conjecture 4, not Erickson's Conjecture 4 (which
+  Thanatipanonda and Zeilberger disproved). Our literature and web searches found no earlier
+  report. See [Values of the starting positions](#values-of-the-starting-positions).
 * **Everything else is a formal proof of a known (or trivial) result.** The *Origin* column below
   gives the source of each.
-* **Computed, not proved: `T⁶□¹²F⁶` and `T⁷□¹⁰F⁷` are neither `0` nor `∗`.** Thanatipanonda
-  conjectured that `Tᵃ□ᵇFᵃ` is `0` or `∗` for every `b ≥ a > 0` ([[T11]](#references),
-  Conjecture 4); our exhaustive solver finds these two counterexamples. Both are still
-  infinitesimal, as Erickson's conjecture predicts. See
-  [Values of the starting positions](#values-of-the-starting-positions).
 * **Observations, not theorems.** `docs/RESEARCH_NOTES.md` and `tools/` record computational
   experiments and negative findings, for example why the `a = 2` method does not extend to
   `a = 3`.
@@ -89,6 +91,7 @@ Lean's compiler. They are built separately, with `lake build CgtNative`.
 | Every case with `2a + b ≤ 12`, kernel-checked | `Cgt/FiniteCases.lean` | Known numerically ([[E96]](#references), [[T11]](#references) tables) |
 | `(3,7)` to `(3,12)`, `(4,5)`, `(5,3)`, `(6,3)`: strategy certificates | `Cgt/Cert/` (`lake build CgtCerts`) | Known numerically ([[T11]](#references) table) |
 | Combined partial result | `conjecture5_partial`, `conjecture5_provedRegion` | Combines the rows above |
+| **`T⁶□¹²F⁶` and `T⁷□¹⁰F⁷` are neither `0` nor `∗`** (infinitesimal), against [[T11]](#references)'s Conjecture 4 | — (computed by `tools/values.cpp`, not formalised) | **New** as far as we know |
 | **General case** | — | **Open** since 1996 |
 
 The full conjecture is **not** proved here. It has been open since 1996 and is the only one of

@@ -147,7 +147,7 @@ the side. Generated from the Lean sources by `scripts/gen_grid.py`.
 | **4** | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟦 | 🟦 | 🟦 | 🟦 | 🟦 | 🟦 | 🟦 | 🟦 | 🟦 | 🟦 | 🟦 |
 | **5** | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | · | · | · | · | · | · |  |  |  |  |  |
 | **6** | 🟩 | 🟩 | 🟩 | 🟩 | · | · | · | · | · | · |  |  |  |  |  |  |
-| **7** | 🟩 | 🟩 | 🟩 | 🟩 | · | · | · | · | · |  |  |  |  |  |  |  |
+| **7** | 🟩 | 🟩 | 🟩 | 🟩 | · | · | · | · | · | · |  |  |  |  |  |  |
 | **8** | 🟩 | 🟩 | 🟩 | 🟩 | · | · | · | · | · |  |  |  |  |  |  |  |
 | **9** | 🟩 | 🟩 | 🟩 | 🟩 | · | · | · | · |  |  |  |  |  |  |  |  |
 | **10** | 🟩 | 🟩 | 🟩 | 🟩 | · | · | · | · |  |  |  |  |  |  |  |  |
@@ -213,7 +213,7 @@ are infinitesimal but neither `0` nor `∗` (below); and `∗2`, `∗3` below ar
 | **4** | 0 | ∗ | ∗ | 0 | ∗ | ∗ | ∗ | ∗ | ∗ | ∗ | ∗ |  |  |  |  |
 | **5** | ∗ | 0 | 0 | 0 | ∗ | ∗ | ∗ | ∗ | ∗ | ∗ |  |  |  |  |  |
 | **6** | 0 | 0 | ∗ | 0 | 0 | ∗ | ∗ | ∗ | ∗ |  |  |  |  |  |  |
-| **7** | ∗ | ∗ | 0 | 0 | ∗ | ∗ | ∗ | ∗ |  |  |  |  |  |  |  |
+| **7** | ∗ | ∗ | 0 | 0 | ∗ | ∗ | ∗ | ∗ | ∗ |  |  |  |  |  |  |
 | **8** | 0 | 0 | 0 | ∗ | 0 | ∗ | 0 | ∗ |  |  |  |  |  |  |  |
 | **9** | ∗ | 0 | 0 | ∗ | 0 | ∗ | ∗ |  |  |  |  |  |  |  |  |
 | **10** | 0 | 0 | 0 | 0 | 0 | 0 | ≠0,∗ |  |  |  |  |  |  |  |  |
@@ -380,13 +380,13 @@ mode for the other cells (results in `tools/values.txt`). Together they cover:
 * `a = 6` with `b ≤ 15`;
 * `a = 7` with `b ≤ 11`;
 * `a = 8` with `b ≤ 8`;
-* `a = 9` with `b ≤ 6`;
+* `a = 9` with `b ≤ 7`;
 * `a = 10` with `b ≤ 5`.
 
 With the proved row `a = 2` and columns `b ≤ 4`, this is every board of at most 24 squares
-(`2a + b ≤ 24`). The smallest board size not fully checked is 25: `(8, 9)` and `(9, 7)` are still
-running. The solvers also reached `a = 2` with `b ≤ 28` and `a ≤ 14` with
-`b = 3`, before those families were proved.
+(`2a + b ≤ 24`). The smallest board size not fully checked is 25: `(8, 9)` is still running. The
+solvers also reached `a = 2` with `b ≤ 28` and `a ≤ 14` with `b = 3`, before those families were
+proved.
 
 The column `b = 3` is now proved for every `a` (`infinitesimal_start_b_three`). Independently of
 that proof, `tools/column/col_realcheck.cpp` checks Right's strategy on the real boards for every

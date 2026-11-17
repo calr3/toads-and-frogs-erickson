@@ -30,7 +30,7 @@ The conjecture holds in every case computed. That includes:
 * `a = 6` for `b ≤ 15`;
 * `a = 7` for `b ≤ 11`;
 * `a = 8` for `b ≤ 8`;
-* `a = 9` for `b ≤ 6`;
+* `a = 9` for `b ≤ 7`;
 * `a = 10` for `b ≤ 5`;
 * `a ≤ 12` for `b ≤ 4`;
 * `a ≤ 14` for `b ≤ 3`.

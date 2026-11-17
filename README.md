@@ -157,9 +157,9 @@ the side. Generated from the Lean sources by `scripts/gen_grid.py`.
 | Mark | Meaning |
 | :-: | --- |
 | 🟩 | Proved infinitesimal in Lean, checked by the kernel. |
-| 🟦 | Proved infinitesimal in Lean with a finite check by `native_decide`, which trusts Lean's compiler as well as the kernel (the column `b = 4`; `lake build CgtNative`). |
-| 🔷 | `(3, 2)`: the exception in the conjecture, proved **not** infinitesimal (`TTT□□FFF = ±1/8`, `not_infinitesimal_3_2`). |
-| · | Not proved in Lean, but confirmed by an exact solver (see [below](#computational-evidence-beyond-the-formal-results)). |
+| 🟦 | Proved infinitesimal in Lean, with a finite check evaluated by `native_decide`, which trusts Lean's compiler as well as the kernel (`lake build CgtNative`). |
+| 🔷 | Proved **not** infinitesimal in Lean, checked by the kernel. |
+| · | Not proved in Lean; confirmed infinitesimal by an exact solver (see [below](#computational-evidence-beyond-the-formal-results)). |
 | *(blank)* | Not computed. |
 
 How a cell is proved:

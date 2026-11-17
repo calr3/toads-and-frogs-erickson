@@ -29,16 +29,17 @@ The conjecture holds in every case computed. That includes:
 * `a = 5` for `b ≤ 22`;
 * `a = 6` for `b ≤ 15`;
 * `a = 7` for `b ≤ 11`;
-* `a = 8` for `b ≤ 8`;
+* `a = 8` for `b ≤ 9`;
 * `a = 9` for `b ≤ 7`;
 * `a = 10` for `b ≤ 5`;
 * `a ≤ 12` for `b ≤ 4`;
 * `a ≤ 14` for `b ≤ 3`.
 
-That is every board of at most 24 squares. The limit is memory. `tools/stops.cpp` (a hash table)
+That is every board of at most 25 squares. The limit is memory. `tools/stops.cpp` (a hash table)
 reaches around 5·10⁸ states; `tools/values.cpp` with its table indexed by the rank of the
-arrangement (4 bits per arrangement for the value, a byte for `STOPS=1`) reaches about 2.4·10¹⁰
-arrangements in 12 GB.
+arrangement (4 bits per arrangement for the value, a byte for `STOPS=1`) reaches about 2.6·10¹⁰
+arrangements (`(8, 9)`) in 13 GB. The open cells of size 26, `(7, 12)`, `(8, 10)`, `(9, 8)` and
+`(10, 6)`, have 3.3·10¹⁰ to 7.6·10¹⁰.
 
 ## 3. The mirror strategy and why it is not enough
 

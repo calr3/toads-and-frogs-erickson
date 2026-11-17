@@ -121,7 +121,7 @@ the side. Generated from the Lean sources by `scripts/gen_grid.py`.
 | **8** | 🟩 | 🟩 | 🟩 | 🟩 | · | · | · | · | · |  |  |  |  |  |  |  |
 | **9** | 🟩 | 🟩 | 🟩 | 🟩 | · | · | · | · |  |  |  |  |  |  |  |  |
 | **10** | 🟩 | 🟩 | 🟩 | 🟩 | · | · | · | · |  |  |  |  |  |  |  |  |
-| **11** | 🟩 | 🟩 | 🟩 | 🟩 | · | · | · |  |  |  |  |  |  |  |  |  |
+| **11** | 🟩 | 🟩 | 🟩 | 🟩 | · | · | · | · |  |  |  |  |  |  |  |  |
 | **12** | 🟩 | 🟩 | 🟩 | 🟩 | · | · | · |  |  |  |  |  |  |  |  |  |
 | **13** | 🟩 | 🟩 | 🟩 | · | · | · | · |  |  |  |  |  |  |  |  |  |
 | **14** | 🟩 | 🟩 | 🟩 | · | · | · | · |  |  |  |  |  |  |  |  |  |
@@ -185,7 +185,7 @@ are the simplest infinitesimals, and `∗2`, `∗3` below are
 | **8** | 🔵 0 | 🔵 0 | 🔵 0 | 🔵 ∗ | 🔵 0 | 🟠 ∗ | 🟠 0 | 🟠 ∗ |  |  |  |  |  |  |  |
 | **9** | 🔵 ∗ | 🔵 0 | 🔵 0 | 🔵 ∗ | 🔵 0 | 🟠 ∗ | 🟠 ∗ |  |  |  |  |  |  |  |  |
 | **10** | 🔵 0 | 🔵 0 | 🔵 0 | 🔵 0 | 🔵 0 | 🟠 0 | 🟠 ≠0,∗ |  |  |  |  |  |  |  |  |
-| **11** | 🔵 ∗ | 🔵 0 | 🔵 0 | 🔵 0 | 🟠 ∗ | 🟠 ∗ |  |  |  |  |  |  |  |  |  |
+| **11** | 🔵 ∗ | 🔵 0 | 🔵 0 | 🔵 0 | 🟠 ∗ | 🟠 ∗ | 🟠 ∗ |  |  |  |  |  |  |  |  |
 | **12** | 🔵 0 | 🔵 0 | 🔵 0 | 🔵 0 | 🔵 0 | 🟠 ≠0,∗ |  |  |  |  |  |  |  |  |  |
 | **13** | 🔵 ∗ | 🔵 ∗ | 🔵 0 | 🔵 0 | 🟠 0 | 🟠 0 |  |  |  |  |  |  |  |  |  |
 | **14** | 🔵 0 | 🔵 0 | 🔵 ∗ | 🔵 0 | 🟠 0 | 🟠 0 |  |  |  |  |  |  |  |  |  |
@@ -343,14 +343,14 @@ mode for the other cells (results in `tools/values.txt`). Together they cover:
 * `a = 4` with `b ≤ 24`;
 * `a = 5` with `b ≤ 21`;
 * `a = 6` with `b ≤ 14`;
-* `a = 7` with `b ≤ 10`;
+* `a = 7` with `b ≤ 11`;
 * `a = 8` with `b ≤ 8`;
 * `a = 9` with `b ≤ 6`;
 * `a = 10` with `b ≤ 5`.
 
 With the proved row `a = 2` and columns `b ≤ 4`, this is every board of at most 24 squares
-(`2a + b ≤ 24`). The smallest board size not fully checked is 25: `(7, 11)`, `(8, 9)` and
-`(9, 7)` are still running. The solvers also reached `a = 2` with `b ≤ 28` and `a ≤ 14` with
+(`2a + b ≤ 24`). The smallest board size not fully checked is 25: `(8, 9)` and `(9, 7)` are still
+running. The solvers also reached `a = 2` with `b ≤ 28` and `a ≤ 14` with
 `b = 3`, before those families were proved.
 
 The column `b = 3` is now proved for every `a` (`infinitesimal_start_b_three`). Independently of

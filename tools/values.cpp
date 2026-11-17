@@ -63,7 +63,7 @@ int rmoves(u32 t, u32 f, u64 *out) {
 }
 // Indexed memo: the rank of a position among all arrangements with its counts (E < T < F).
 u64 MN[17][17][33];   // multinomial (t + f + e)! / (t! f! e!)
-bool useIdx = false; vector<unsigned char> nib; u64 idxCount = 0;
+bool useIdx = false, STOPS = false; vector<unsigned char> nib; u64 idxCount = 0;
 u64 rankOf(u64 s) {
   u32 t = s >> 32, f = (u32)s; int rt = __builtin_popcount(t), rf = __builtin_popcount(f), re = n - rt - rf; u64 r = 0;
   for (int i = 0; i < n; i++) {
@@ -74,13 +74,16 @@ u64 rankOf(u64 s) {
   }
   return r;
 }
+// value mode: 4 bits per arrangement; STOPS mode: 8 bits (also Lf and Up)
 static inline unsigned char mget(u64 s) {
   if (!useIdx) return memo.get(s);
-  u64 r = rankOf(s); return (nib[r >> 1] >> (4 * (r & 1))) & 15;
+  u64 r = rankOf(s); if (STOPS) return nib[r];
+  return (nib[r >> 1] >> (4 * (r & 1))) & 15;
 }
 static inline void mput(u64 s, unsigned char bits) {
   if (!useIdx) { memo.put(s, bits); return; }
-  u64 r = rankOf(s); nib[r >> 1] |= bits << (4 * (r & 1));
+  u64 r = rankOf(s); if (STOPS) { nib[r] |= bits; return; }
+  nib[r >> 1] |= bits << (4 * (r & 1));
 }
 bool le0(u64 s) {
   unsigned char m = mget(s); if (m & 1) return m & 2;
@@ -109,7 +112,41 @@ bool le0s(u64 s) {
   }
   mput(s, 4 | (r ? 8 : 0)); return r;
 }
+// STOPS=1: is the start infinitesimal? For a position equal to its own negative this is "Left stop
+// <= 0" (Up): Right, holding a pass, answers Left's pass and every Left move by passing (the position
+// is <= 0) or by a move to a position with Left stop <= 0 (the recursion of Cgt/Infinitesimal.lean).
+bool Up(u64 s);
+bool Lf(u64 s) {   // Right to move, may pass instead
+  unsigned char m = mget(s); if (m & 16) return m & 32;
+  bool r = le0(s); u64 ts[32];
+  if (!r) { int nt = rmoves(s >> 32, (u32)s, ts); for (int b = 0; b < nt; b++) if (Up(ts[b])) { r = true; break; } }
+  mput(s, 16 | (r ? 32 : 0)); return r;
+}
+bool Up(u64 s) {
+  unsigned char m = mget(s); if (m & 64) return m & 128;
+  bool r = Lf(s); u64 qs[32];
+  if (r) { int nq = lmoves(s >> 32, (u32)s, qs); for (int a = 0; a < nq; a++) if (!Lf(qs[a])) { r = false; break; } }
+  mput(s, 64 | (r ? 128 : 0)); return r;
+}
+// NIM=k: is the start equal to the nimber *k? For G = -G, G + *k <= 0 means G = *k. leN(s, m)
+// decides s + *m <= 0: every Left option (a move in s, or *m -> *j) has a Right reply <= 0.
+// Memo: 2 bits per (position, m), m = 0..NIMK, in a byte per arrangement (NIMK <= 3).
+int NIMK = 0;
+bool leN(u64 s, int m) {
+  unsigned char f = mget(s); if (f >> (2 * m) & 1) return f >> (2 * m + 1) & 1;
+  u64 qs[32], ts[32]; bool r = true;
+  auto rightAnswers = [&](u64 x, int mm) {   // some Right option of x + *mm is <= 0
+    int nt = rmoves(x >> 32, (u32)x, ts); for (int b = 0; b < nt; b++) if (leN(ts[b], mm)) return true;
+    for (int i = 0; i < mm; i++) if (leN(x, i)) return true;
+    return false; };
+  int nq = lmoves(s >> 32, (u32)s, qs);
+  for (int a = 0; a < nq && r; a++) if (!rightAnswers(qs[a], m)) r = false;
+  for (int j = 0; j < m && r; j++) if (!rightAnswers(s, j)) r = false;
+  mput(s, (1 | (r ? 2 : 0)) << (2 * m)); return r;
+}
 int main(int argc, char **argv) {
+  STOPS = getenv("STOPS") != nullptr || getenv("NIM") != nullptr;   // a byte per arrangement
+  NIMK = getenv("NIM") ? atoi(getenv("NIM")) : 0;
   double MEM = getenv("MEM") ? atof(getenv("MEM")) : 12e9;
   for (int t = 0; t <= 16; t++) for (int f = 0; f <= 16; f++) for (int e = 0; e <= 32; e++) {
     if (t + f + e > 32) continue;   // only boards of at most 32 cells are used
@@ -120,13 +157,14 @@ int main(int argc, char **argv) {
   for (int i = 1; i + 1 < argc; i += 2) {
     int a = atoi(argv[i]), b = atoi(argv[i + 1]); n = 2 * a + b;
     if (n > 32) { printf("%d %d skipped (more than 32 cells)\n", a, b); continue; }
-    idxCount = MN[a][a][b]; useIdx = idxCount / 2.0 + 1 <= MEM;
-    memo.clear(); vector<unsigned char>().swap(nib); if (useIdx) nib.assign(idxCount / 2 + 1, 0);
+    idxCount = MN[a][a][b]; u64 bytes = STOPS ? idxCount : idxCount / 2 + 1; useIdx = bytes <= MEM;
+    memo.clear(); vector<unsigned char>().swap(nib); if (useIdx) nib.assign(bytes, 0);
     clock_t c0 = clock();
     u32 t = (a ? (1u << a) - 1 : 0), f = 0;
     for (int j = a + b; j < n; j++) f |= 1u << j;
     u64 s = key(t, f);
-    const char *v = le0(s) ? "0" : le0s(s) ? "*" : "other";
+    string nimv; if (NIMK) { nimv = "not *0..*" + to_string(NIMK); for (int k = 0; k <= NIMK; k++) if (leN(s, k)) { nimv = "*" + to_string(k); break; } }
+    const char *v = NIMK ? nimv.c_str() : STOPS ? (Up(s) ? "infinitesimal" : "NOT-infinitesimal") : le0(s) ? "0" : le0s(s) ? "*" : "other";
     printf("%d %d %s %llu %.1f%s\n", a, b, v, useIdx ? (unsigned long long)idxCount : (unsigned long long)memo.cnt,
            (double)(clock() - c0) / CLOCKS_PER_SEC, useIdx ? " indexed" : "");
     fflush(stdout);

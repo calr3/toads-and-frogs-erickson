@@ -18,6 +18,10 @@ counterexample `T⁶□¹²F⁶`: their finite checks are too large for the kern
 
 ## What is new
 
+**Erickson's Conjecture 5 is not proved here, and remains a conjecture.** What follows is partial
+progress: it is proved for some infinite families of starting positions (the row `a = 2` and the
+columns `b ≤ 4`) and for finitely many other cases; every other case is open.
+
 **New** below means that the result is in none of the following sources, all checked in November
 2026: Erickson's paper [[E96]](#references) and his page for it; Thanatipanonda and Zeilberger
 [[TZ07]](#references); Thanatipanonda [[T11]](#references), both the journal version and the arXiv

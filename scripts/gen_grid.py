@@ -8,8 +8,10 @@ A case is marked proved (however it is proved) if it is covered by
 * a strategy certificate: the CgtCerts roots in lakefile.toml.
 The column b = 4 (Cgt/Col/Column4.lean) is proved with a finite check by `native_decide`, which
 trusts the Lean compiler; its cells get their own mark unless they are proved otherwise too.
-(3, 2) is proved not infinitesimal. Otherwise a case is confirmed by the exact solver (README
-"Computational evidence") or not computed.
+(3, 2) is proved not infinitesimal. Otherwise a case is confirmed by an exact solver (README
+"Computational evidence": tools/stops.cpp, or tools/values.cpp whose results are in
+tools/values.txt, where a value 0 or ∗, or `STOPS=1` output `infinitesimal`, confirms the case) or not
+computed.
 
 Usage: gen_grid.py   (run from the repository root)
 """
@@ -20,6 +22,11 @@ SOLVER = {2: 28, 3: 26, 4: 24, 5: 16, 6: 10, 7: 8, 8: 6, 9: 5, 10: 4, 11: 4, 12:
 
 kernel = {(int(a), int(b)) for a, b in re.findall(r'start (\d+) (\d+)', open('Cgt/FiniteCases.lean').read())}
 certs = {(int(a), int(b)) for a, b in re.findall(r'Case_(\d+)_(\d+)', open('lakefile.toml').read())}
+values = set()
+for line in open('tools/values.txt'):
+    p = line.split()
+    if len(p) >= 3 and p[2] in ('0', '*', 'infinitesimal'):
+        values.add((int(p[0]), int(p[1])))
 
 # Explicit columns and rows up to the last a and b where anything changes; beyond them every
 # column looks like the last one ("≥ AMAX + 1") and every row like the last one ("≥ BMAX + 1").
@@ -35,7 +42,7 @@ def mark(a, b):
         return '🟩'
     if b == 4:
         return '🟦'
-    if b <= SOLVER.get(a, -1):
+    if b <= SOLVER.get(a, -1) or (a, b) in values:
         return '·'
     return ''
 

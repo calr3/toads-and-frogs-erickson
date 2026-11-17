@@ -52,6 +52,11 @@ Lean's compiler. They are built separately, with `lake build CgtNative`.
   already known numerically [[T11]](#references); only their formal proof is new.
 * **Everything else is a formal proof of a known (or trivial) result.** The *Origin* column below
   gives the source of each.
+* **Computed, not proved: `T⁶□¹²F⁶` and `T⁷□¹⁰F⁷` are neither `0` nor `∗`.** Thanatipanonda
+  conjectured that `Tᵃ□ᵇFᵃ` is `0` or `∗` for every `b ≥ a > 0` ([[T11]](#references),
+  Conjecture 4); our exhaustive solver finds these two counterexamples. Both are still
+  infinitesimal, as Erickson's conjecture predicts. See
+  [Values of the starting positions](#values-of-the-starting-positions).
 * **Observations, not theorems.** `docs/RESEARCH_NOTES.md` and `tools/` record computational
   experiments and negative findings, for example why the `a = 2` method does not extend to
   `a = 3`.
@@ -102,23 +107,23 @@ the side. Generated from the Lean sources by `scripts/gen_grid.py`.
 | **2** | 🟩 | 🟩 | 🟩 | 🔷 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 |
 | **3** | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 |
 | **4** | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟦 | 🟦 | 🟦 | 🟦 | 🟦 | 🟦 | 🟦 | 🟦 | 🟦 | 🟦 | 🟦 |
-| **5** | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | · | · | · | · | · |  |  |  |  |  |  |
-| **6** | 🟩 | 🟩 | 🟩 | 🟩 | · | · | · | · | · |  |  |  |  |  |  |  |
-| **7** | 🟩 | 🟩 | 🟩 | 🟩 | · | · | · | · |  |  |  |  |  |  |  |  |
-| **8** | 🟩 | 🟩 | 🟩 | 🟩 | · | · | · | · |  |  |  |  |  |  |  |  |
-| **9** | 🟩 | 🟩 | 🟩 | 🟩 | · | · | · |  |  |  |  |  |  |  |  |  |
-| **10** | 🟩 | 🟩 | 🟩 | 🟩 | · | · | · |  |  |  |  |  |  |  |  |  |
-| **11** | 🟩 | 🟩 | 🟩 | 🟩 | · | · |  |  |  |  |  |  |  |  |  |  |
-| **12** | 🟩 | 🟩 | 🟩 | 🟩 | · | · |  |  |  |  |  |  |  |  |  |  |
-| **13** | 🟩 | 🟩 | 🟩 | · | · | · |  |  |  |  |  |  |  |  |  |  |
-| **14** | 🟩 | 🟩 | 🟩 | · | · | · |  |  |  |  |  |  |  |  |  |  |
+| **5** | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | · | · | · | · | · | · |  |  |  |  |  |
+| **6** | 🟩 | 🟩 | 🟩 | 🟩 | · | · | · | · | · | · |  |  |  |  |  |  |
+| **7** | 🟩 | 🟩 | 🟩 | 🟩 | · | · | · | · | · |  |  |  |  |  |  |  |
+| **8** | 🟩 | 🟩 | 🟩 | 🟩 | · | · | · | · | · |  |  |  |  |  |  |  |
+| **9** | 🟩 | 🟩 | 🟩 | 🟩 | · | · | · | · |  |  |  |  |  |  |  |  |
+| **10** | 🟩 | 🟩 | 🟩 | 🟩 | · | · | · | · |  |  |  |  |  |  |  |  |
+| **11** | 🟩 | 🟩 | 🟩 | 🟩 | · | · | · |  |  |  |  |  |  |  |  |  |
+| **12** | 🟩 | 🟩 | 🟩 | 🟩 | · | · | · |  |  |  |  |  |  |  |  |  |
+| **13** | 🟩 | 🟩 | 🟩 | · | · | · | · |  |  |  |  |  |  |  |  |  |
+| **14** | 🟩 | 🟩 | 🟩 | · | · | · | · |  |  |  |  |  |  |  |  |  |
 | **15** | 🟩 | 🟩 | 🟩 | · | · | · |  |  |  |  |  |  |  |  |  |  |
 | **16** | 🟩 | 🟩 | 🟩 | · | · | · |  |  |  |  |  |  |  |  |  |  |
-| **17** | 🟩 | 🟩 | 🟩 | · | · |  |  |  |  |  |  |  |  |  |  |  |
-| **18** | 🟩 | 🟩 | 🟩 | · | · |  |  |  |  |  |  |  |  |  |  |  |
-| **19** | 🟩 | 🟩 | 🟩 | · | · |  |  |  |  |  |  |  |  |  |  |  |
-| **20** | 🟩 | 🟩 | 🟩 | · | · |  |  |  |  |  |  |  |  |  |  |  |
-| **21** | 🟩 | 🟩 | 🟩 | · | · |  |  |  |  |  |  |  |  |  |  |  |
+| **17** | 🟩 | 🟩 | 🟩 | · | · | · |  |  |  |  |  |  |  |  |  |  |
+| **18** | 🟩 | 🟩 | 🟩 | · | · | · |  |  |  |  |  |  |  |  |  |  |
+| **19** | 🟩 | 🟩 | 🟩 | · | · | · |  |  |  |  |  |  |  |  |  |  |
+| **20** | 🟩 | 🟩 | 🟩 | · | · | · |  |  |  |  |  |  |  |  |  |  |
+| **21** | 🟩 | 🟩 | 🟩 | · | · | · |  |  |  |  |  |  |  |  |  |  |
 | **22** | 🟩 | 🟩 | 🟩 | · | · |  |  |  |  |  |  |  |  |  |  |  |
 | **23** | 🟩 | 🟩 | 🟩 | · | · |  |  |  |  |  |  |  |  |  |  |  |
 | **24** | 🟩 | 🟩 | 🟩 | · | · |  |  |  |  |  |  |  |  |  |  |  |
@@ -131,7 +136,7 @@ the side. Generated from the Lean sources by `scripts/gen_grid.py`.
 | 🟩 | Proved infinitesimal in Lean, checked by the kernel. |
 | 🟦 | Proved infinitesimal in Lean with a finite check by `native_decide`, which trusts Lean's compiler as well as the kernel (the column `b = 4`; `lake build CgtNative`). |
 | 🔷 | `(3, 2)`: the exception in the conjecture, proved **not** infinitesimal (`TTT□□FFF = ±1/8`, `not_infinitesimal_3_2`). |
-| · | Not proved in Lean, but confirmed by the exact solver (see below). |
+| · | Not proved in Lean, but confirmed by an exact solver (see [below](#computational-evidence-beyond-the-formal-results)). |
 | *(blank)* | Not computed. |
 
 How a cell is proved:
@@ -163,23 +168,23 @@ The exact value of `Tᵃ □ᵇ Fᵃ` where it is known, and where it comes from
 | **2** | 🔵 0 | 🔵 ∗ | 🔵 ±⅛ | 🔵 N | 🔵 N | 🔵 N | 🔵 N | 🔵 N | 🔵 N | 🔵 N | 🟠 N | 🟠 N | 🟠 N | 🟠 N |  |
 | **3** | 🔵 ∗ | 🔵 ∗ | 🔵 0 | 🔵 ∗ | 🔵 ∗ | 🔵 ∗ | 🔵 ∗ | 🔵 ∗ | 🔵 ∗ | 🔵 ∗ | 🟠 ∗ | 🟠 ∗ | 🟠 ∗ | 🟠 ∗ |  |
 | **4** | 🔵 0 | 🔵 ∗ | 🔵 ∗ | 🔵 0 | 🔵 ∗ | 🔵 ∗ | 🔵 ∗ | 🔵 ∗ | 🔵 ∗ | 🔵 ∗ | 🟠 ∗ |  |  |  |  |
-| **5** | 🔵 ∗ | 🔵 0 | 🔵 0 | 🔵 0 | 🔵 ∗ | 🔵 ∗ | 🔵 ∗ | 🔵 ∗ | 🟠 ∗ |  |  |  |  |  |  |
-| **6** | 🔵 0 | 🔵 0 | 🔵 ∗ | 🔵 0 | 🔵 0 | 🔵 ∗ | 🟠 ∗ | 🟠 ∗ |  |  |  |  |  |  |  |
-| **7** | 🔵 ∗ | 🔵 ∗ | 🔵 0 | 🔵 0 | 🔵 ∗ | 🔵 ∗ | 🟠 ∗ |  |  |  |  |  |  |  |  |
-| **8** | 🔵 0 | 🔵 0 | 🔵 0 | 🔵 ∗ | 🔵 0 | 🟠 ∗ | 🟠 0 |  |  |  |  |  |  |  |  |
-| **9** | 🔵 ∗ | 🔵 0 | 🔵 0 | 🔵 ∗ | 🔵 0 | 🟠 ∗ |  |  |  |  |  |  |  |  |  |
-| **10** | 🔵 0 | 🔵 0 | 🔵 0 | 🔵 0 | 🔵 0 | 🟠 0 |  |  |  |  |  |  |  |  |  |
-| **11** | 🔵 ∗ | 🔵 0 | 🔵 0 | 🔵 0 | 🟠 ∗ |  |  |  |  |  |  |  |  |  |  |
-| **12** | 🔵 0 | 🔵 0 | 🔵 0 | 🔵 0 | 🔵 0 |  |  |  |  |  |  |  |  |  |  |
-| **13** | 🔵 ∗ | 🔵 ∗ | 🔵 0 | 🔵 0 | 🟠 0 |  |  |  |  |  |  |  |  |  |  |
-| **14** | 🔵 0 | 🔵 0 | 🔵 ∗ | 🔵 0 | 🟠 0 |  |  |  |  |  |  |  |  |  |  |
+| **5** | 🔵 ∗ | 🔵 0 | 🔵 0 | 🔵 0 | 🔵 ∗ | 🔵 ∗ | 🔵 ∗ | 🔵 ∗ | 🟠 ∗ | 🟠 ∗ |  |  |  |  |  |
+| **6** | 🔵 0 | 🔵 0 | 🔵 ∗ | 🔵 0 | 🔵 0 | 🔵 ∗ | 🟠 ∗ | 🟠 ∗ | 🟠 ∗ |  |  |  |  |  |  |
+| **7** | 🔵 ∗ | 🔵 ∗ | 🔵 0 | 🔵 0 | 🔵 ∗ | 🔵 ∗ | 🟠 ∗ | 🟠 ∗ |  |  |  |  |  |  |  |
+| **8** | 🔵 0 | 🔵 0 | 🔵 0 | 🔵 ∗ | 🔵 0 | 🟠 ∗ | 🟠 0 | 🟠 ∗ |  |  |  |  |  |  |  |
+| **9** | 🔵 ∗ | 🔵 0 | 🔵 0 | 🔵 ∗ | 🔵 0 | 🟠 ∗ | 🟠 ∗ |  |  |  |  |  |  |  |  |
+| **10** | 🔵 0 | 🔵 0 | 🔵 0 | 🔵 0 | 🔵 0 | 🟠 0 | 🟠 ≠0,∗ |  |  |  |  |  |  |  |  |
+| **11** | 🔵 ∗ | 🔵 0 | 🔵 0 | 🔵 0 | 🟠 ∗ | 🟠 ∗ |  |  |  |  |  |  |  |  |  |
+| **12** | 🔵 0 | 🔵 0 | 🔵 0 | 🔵 0 | 🔵 0 | 🟠 ≠0,∗ |  |  |  |  |  |  |  |  |  |
+| **13** | 🔵 ∗ | 🔵 ∗ | 🔵 0 | 🔵 0 | 🟠 0 | 🟠 0 |  |  |  |  |  |  |  |  |  |
+| **14** | 🔵 0 | 🔵 0 | 🔵 ∗ | 🔵 0 | 🟠 0 | 🟠 0 |  |  |  |  |  |  |  |  |  |
 | **15** | 🔵 ∗ | 🔵 0 | 🔵 0 | 🔵 0 | 🟠 0 |  |  |  |  |  |  |  |  |  |  |
 | **16** | 🔵 0 | 🔵 0 | 🔵 0 | 🔵 0 | 🟠 0 |  |  |  |  |  |  |  |  |  |  |
-| **17** | 🔵 ∗ | 🔵 0 | 🔵 0 | 🔵 0 |  |  |  |  |  |  |  |  |  |  |  |
-| **18** | 🔵 0 | 🔵 0 | 🔵 0 | 🔵 0 |  |  |  |  |  |  |  |  |  |  |  |
-| **19** | 🔵 ∗ | 🔵 ∗ | 🔵 0 | 🔵 0 |  |  |  |  |  |  |  |  |  |  |  |
-| **20** | 🔵 0 | 🔵 0 | 🔵 0 | 🔵 0 |  |  |  |  |  |  |  |  |  |  |  |
-| **21** | 🔵 ∗ | 🔵 0 | 🔵 0 | 🟠 0 |  |  |  |  |  |  |  |  |  |  |  |
+| **17** | 🔵 ∗ | 🔵 0 | 🔵 0 | 🔵 0 | 🟠 ∗ |  |  |  |  |  |  |  |  |  |  |
+| **18** | 🔵 0 | 🔵 0 | 🔵 0 | 🔵 0 | 🟠 0 |  |  |  |  |  |  |  |  |  |  |
+| **19** | 🔵 ∗ | 🔵 ∗ | 🔵 0 | 🔵 0 | 🟠 0 |  |  |  |  |  |  |  |  |  |  |
+| **20** | 🔵 0 | 🔵 0 | 🔵 0 | 🔵 0 | 🟠 0 |  |  |  |  |  |  |  |  |  |  |
+| **21** | 🔵 ∗ | 🔵 0 | 🔵 0 | 🟠 0 | 🟠 ∗ |  |  |  |  |  |  |  |  |  |  |
 | **22** | 🔵 0 | 🔵 0 | 🔵 0 | 🟠 0 |  |  |  |  |  |  |  |  |  |  |  |
 | **23** | 🔵 ∗ | 🔵 0 | 🔵 0 | 🟠 0 |  |  |  |  |  |  |  |  |  |  |  |
 | **24** | 🔵 0 | 🔵 0 | 🔵 0 | 🟠 0 |  |  |  |  |  |  |  |  |  |  |  |
@@ -197,6 +202,7 @@ The exact value of `Tᵃ □ᵇ Fᵃ` where it is known, and where it comes from
 | 🟠 | Not in those tables: computed here by exhaustive search (not a Lean proof). This includes the four cells that [[T11]](#references) lists only as "≠ 0", `(5, 11)`, `(6, 8)`, `(7, 6)` and `(7, 7)`: all four are `∗`. |
 | `±⅛` | `(3, 2)`, the exception in the conjecture. |
 | `N` | An infinitesimal other than `0` and `∗`, with a long canonical form ([[E96]](#references) writes out `a = 4, 5, 6`). |
+| `≠0,∗` | Infinitesimal, but neither `0` nor `∗`: `(6, 12)` and `(7, 10)`, against [[T11]](#references)'s Conjecture 4 (see below). |
 | *(blank)* | Not known. |
 
 * **Beyond the table.** `a = 1` gives `∗` for odd `b` and `0` for even `b`, and `b = 1` gives `∗`,
@@ -210,7 +216,15 @@ The exact value of `Tᵃ □ᵇ Fᵃ` where it is known, and where it comes from
   toads and frogs), so its value `G` satisfies `G = −G`. Hence `G ≤ 0` already means `G = 0`, and
   `G + ∗ ≤ 0` means `G = ∗`. `tools/values.cpp` decides both by exhaustive search on boards of up
   to 32 cells; [[T11]](#references)'s program likewise decides comparisons, not values. Every
-  computed value is `0` or `∗`, except `(3, 2)` and the column `b = 2`.
+  computed value is `0` or `∗`, except `(3, 2)`, the column `b = 2`, `(6, 12)` and `(7, 10)`.
+* **`(6, 12)` and `(7, 10)` contradict a conjecture of Thanatipanonda.** [[T11]](#references)
+  conjectures that `Tᵃ□ᵇFᵃ` is `0` or `∗` whenever `b ≥ a > 0` (Conjecture 4); its table stops at
+  `b = 8` for `a = 6` and at `b = 7` for `a = 7`. Both cells are neither. Both are infinitesimal
+  (`STOPS=1`, which decides "Left stop `≤ 0`", equivalent to infinitesimal when `G = −G`), so
+  they agree with Erickson's conjecture. `T⁶□¹²F⁶` is not `∗2` or `∗3` either (`NIM=3`, a
+  separate recursion that also confirms it is not `0` or `∗`); for `T⁷□¹⁰F⁷` that test is still
+  running. The same solver reproduces all 114 published values in reach. These are computations,
+  not Lean proofs.
 * **"New" means "not in the tables above".** Our literature search covered those papers,
   [[TZ07]](#references) and web searches; it was not exhaustive.
 
@@ -310,20 +324,24 @@ parity), 361,981 shapes (`tools/column/b4_star_shapes.txt.gz`) and 9 `native_dec
 
 ## Computational evidence beyond the formal results
 
-An exact C++ solver for "Left stop `≤ 0`" (the same recursion as `Cgt/Infinitesimal.lean`)
-confirms the conjecture for all of the following:
+Two exact C++ solvers confirm the conjecture beyond the proved cases: `tools/stops.cpp`, which
+decides "Left stop `≤ 0`" (the same recursion as `Cgt/Infinitesimal.lean`), and
+`tools/values.cpp`, whose values `0` and `∗` are infinitesimal and which also has a `STOPS=1`
+mode for the other cells (results in `tools/values.txt`). Together they cover:
 
-* `a ≤ 14` with `b = 3`;
-* `a = 2` with `b ≤ 28`;
 * `a = 3` with `b ≤ 26`;
 * `a = 4` with `b ≤ 24`;
-* `a = 5` with `b ≤ 16`;
-* `a = 6` with `b ≤ 10`;
-* `a = 7` with `b ≤ 8`;
-* `a = 8` with `b ≤ 6`;
-* `a = 9` with `b ≤ 5`;
-* `a = 10` and `a = 11` with `b ≤ 4`;
-* `a = 12` with `b ≤ 4`, and `a = 13, 14` with `b ≤ 3`.
+* `a = 5` with `b ≤ 21`;
+* `a = 6` with `b ≤ 14`;
+* `a = 7` with `b ≤ 10`;
+* `a = 8` with `b ≤ 8`;
+* `a = 9` with `b ≤ 6`;
+* `a = 10` with `b ≤ 5`.
+
+With the proved row `a = 2` and columns `b ≤ 4`, this is every board of at most 24 squares
+(`2a + b ≤ 24`). The smallest board size not fully checked is 25: `(7, 11)`, `(8, 9)` and
+`(9, 7)` are still running. The solvers also reached `a = 2` with `b ≤ 28` and `a ≤ 14` with
+`b = 3`, before those families were proved.
 
 The column `b = 3` is now proved for every `a` (`infinitesimal_start_b_three`). Independently of
 that proof, `tools/column/col_realcheck.cpp` checks Right's strategy on the real boards for every

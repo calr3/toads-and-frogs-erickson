@@ -26,15 +26,19 @@ The conjecture holds in every case computed. That includes:
 * `a = 2` for `b ≤ 28`;
 * `a = 3` for `b ≤ 26`;
 * `a = 4` for `b ≤ 24`;
-* `a = 5` for `b ≤ 16`;
-* `a = 6` for `b ≤ 10`;
-* `a = 7` for `b ≤ 8`;
-* `a = 8` for `b ≤ 6`;
-* `a = 9` for `b ≤ 5`;
+* `a = 5` for `b ≤ 21`;
+* `a = 6` for `b ≤ 14`;
+* `a = 7` for `b ≤ 10`;
+* `a = 8` for `b ≤ 8`;
+* `a = 9` for `b ≤ 6`;
+* `a = 10` for `b ≤ 5`;
 * `a ≤ 12` for `b ≤ 4`;
 * `a ≤ 14` for `b ≤ 3`.
 
-The limit is memory: around 5·10⁸ states.
+That is every board of at most 24 squares. The limit is memory. `tools/stops.cpp` (a hash table)
+reaches around 5·10⁸ states; `tools/values.cpp` with its table indexed by the rank of the
+arrangement (4 bits per arrangement for the value, a byte for `STOPS=1`) reaches about 2.4·10¹⁰
+arrangements in 12 GB.
 
 ## 3. The mirror strategy and why it is not enough
 
@@ -136,7 +140,9 @@ A description of the hot symmetric positions (or of a richer invariant) that is
 
 Every finite-window or bounded-defect version of this tried here fails. The values
 `Tᵃ□ᵇFᵃ ∈ {0, *}` for `b ≥ 3` (Thanatipanonda's Conjectures 3 and 4) suggest that some
-parity-type invariant controls the exact value, but its form is unknown.
+parity-type invariant controls the exact value, but its form is unknown. (Later computation found
+that Conjecture 4, "`0` or `∗` for `b ≥ a > 0`", fails at `(6, 12)` and `(7, 10)`: both are
+infinitesimal but neither `0` nor `∗`. See the values section of `README.md`.)
 
 ## 8. Automaton invariants on the folded board (approach 1)
 

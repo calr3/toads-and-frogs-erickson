@@ -7,7 +7,8 @@
   [T11] Thanatipanonda, Figure 2 of arXiv:0804.0640v1 (a ≤ 10, b ≤ 20) and its notes
         (a = 2 up to b = 103, a = 3 up to b = 53). Its "≠ 0" cells are recorded as such.
 * Computed here: tools/values.txt, the output of tools/values.cpp (whether the value is 0, ∗ or
-  neither), for every cell it could finish.
+  neither), for every cell it could finish. For some cells that are neither, the file also holds
+  the output of `STOPS=1` (`infinitesimal`) and `NIM=3` (`not *0..*3`, or the nimber).
 A computed value that contradicts a published one is marked ⚠️ (none so far).
 
 Usage: gen_values.py [--readme]   (run from the repository root; with --readme the table in
@@ -64,11 +65,18 @@ for b in range(21, 54):
     add(3, b, STAR if b == 29 else ZERO, 'T11')
 
 # Computed here
-comp = {}
+comp, infin, nim = {}, {}, {}
 for line in open('tools/values.txt'):
     p = line.split()
-    if len(p) >= 3 and p[2] in ('0', '*', 'other'):
-        comp[(int(p[0]), int(p[1]))] = {'0': ZERO, '*': STAR, 'other': 'other'}[p[2]]
+    if len(p) < 3:
+        continue
+    ab = (int(p[0]), int(p[1]))
+    if p[2] in ('0', '*', 'other'):
+        comp[ab] = {'0': ZERO, '*': STAR, 'other': 'other'}[p[2]]
+    elif p[2] in ('infinitesimal', 'NOT-infinitesimal'):
+        infin[ab] = p[2] == 'infinitesimal'
+    elif p[2] == 'not' or p[2].startswith('*'):
+        nim[ab] = p[2] + (' ' + p[3] if p[2] == 'not' else '')
 
 
 def agrees(pv, cv):
@@ -99,6 +107,11 @@ for b in range(1, BMAX + 1):
     cells = [cell(a, b) for a in range(1, AMAX + 1)] + [cell(AMAX + 1, b) if b == 1 else '']
     lines.append(f'| **{b}** | ' + ' | '.join(cells) + ' |')
 table = '\n'.join(lines)
+
+# Cells that are neither 0 nor ∗, apart from (3, 2) and the column b = 2
+odd = sorted(k for k, v in comp.items() if v == 'other' and k[1] != 2 and k != (3, 2))
+for k in odd:
+    print(f'{k}: neither 0 nor ∗; infinitesimal: {infin.get(k, "not computed")}; nimbers: {nim.get(k, "not computed")}')
 
 new = sum(1 for k in comp if k not in pub or pub[k][0] == NONZERO)
 checked = sum(1 for k in comp if k in pub and pub[k][0] != NONZERO)

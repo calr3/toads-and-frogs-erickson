@@ -8,7 +8,7 @@
 //                         Left move q in s has a reply: Right's move in * (le0(q)) or a Right move
 //                         r in q with le0s(r).
 // A position that is neither 0 nor * is reported as "other" (for the starts: +-1/8 at (3, 2), and
-// longer infinitesimals; infinitesimality itself is decided by tools/stops.cpp).
+// longer infinitesimals; infinitesimality itself is decided by STOPS=1 below, or tools/stops.cpp).
 //
 // Boards of at most 32 cells: a position is a pair of 32-bit masks (toads, frogs). The memo is a
 // table indexed by the rank of the position among all arrangements of a toads, a frogs and b empty

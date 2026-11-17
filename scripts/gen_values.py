@@ -10,7 +10,8 @@
   neither), for every cell it could finish.
 A computed value that contradicts a published one is marked ⚠️ (none so far).
 
-Usage: gen_values.py   (run from the repository root)
+Usage: gen_values.py [--readme]   (run from the repository root; with --readme the table in
+README.md between the markers `<!-- values table: begin/end -->` is replaced)
 """
 import re
 import sys
@@ -93,13 +94,22 @@ def cell(a, b):
 
 
 cols = [str(a) for a in range(1, AMAX + 1)] + [f'≥ {AMAX + 1}']
-print('| **b** \\ **a** | ' + ' | '.join(cols) + ' |')
-print('|---:|' + ':-:|' * len(cols))
+lines = ['| **b** \\ **a** | ' + ' | '.join(cols) + ' |', '|---:|' + ':-:|' * len(cols)]
 for b in range(1, BMAX + 1):
     cells = [cell(a, b) for a in range(1, AMAX + 1)] + [cell(AMAX + 1, b) if b == 1 else '']
-    print(f'| **{b}** | ' + ' | '.join(cells) + ' |')
+    lines.append(f'| **{b}** | ' + ' | '.join(cells) + ' |')
+table = '\n'.join(lines)
 
 new = sum(1 for k in comp if k not in pub or pub[k][0] == NONZERO)
 checked = sum(1 for k in comp if k in pub and pub[k][0] != NONZERO)
 bad = sum(1 for k in comp if k in pub and not agrees(pub[k][0], comp[k]))
-print(f'\n<!-- {len(comp)} cells computed: {checked} re-check published values, {new} new; {bad} disagreements -->')
+summary = f'{len(comp)} cells computed: {checked} re-check published values, {new} new; {bad} disagreements'
+if '--readme' in sys.argv:
+    text = open('README.md').read()
+    begin, end = '<!-- values table: begin -->\n', '\n<!-- values table: end -->'
+    i, j = text.index(begin) + len(begin), text.index(end)
+    open('README.md', 'w').write(text[:i] + table + text[j:])
+    print(summary)
+else:
+    print(table)
+    print(f'\n<!-- {summary} -->')

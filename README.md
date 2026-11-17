@@ -53,7 +53,7 @@ Lean's compiler. They are built separately, with `lake build CgtNative`.
 * **New, as far as we know: counterexamples to Thanatipanonda's Conjecture 4 (computed, not
   proved in Lean).** [[T11]](#references) conjectures that `Tᵃ□ᵇFᵃ` is `0` or `∗` for every
   `b ≥ a > 0`. Our exhaustive solver finds that `T⁶□¹²F⁶` and `T⁷□¹⁰F⁷` are neither. Both are
-  still infinitesimal, as Erickson's conjecture predicts, and `T⁶□¹²F⁶` is not `∗2` or `∗3`
+  still infinitesimal, as Erickson's conjecture predicts, and neither is `∗2` or `∗3`
   either. This is Thanatipanonda's own Conjecture 4, not Erickson's Conjecture 4 (which
   Thanatipanonda and Zeilberger disproved). Our literature and web searches found no earlier
   report. See [Values of the starting positions](#values-of-the-starting-positions).
@@ -224,9 +224,8 @@ The exact value of `Tᵃ □ᵇ Fᵃ` where it is known, and where it comes from
   conjectures that `Tᵃ□ᵇFᵃ` is `0` or `∗` whenever `b ≥ a > 0` (Conjecture 4); its table stops at
   `b = 8` for `a = 6` and at `b = 7` for `a = 7`. Both cells are neither. Both are infinitesimal
   (`STOPS=1`, which decides "Left stop `≤ 0`", equivalent to infinitesimal when `G = −G`), so
-  they agree with Erickson's conjecture. `T⁶□¹²F⁶` is not `∗2` or `∗3` either (`NIM=3`, a
-  separate recursion that also confirms it is not `0` or `∗`); for `T⁷□¹⁰F⁷` that test is still
-  running. The same solver reproduces all 114 published values in reach. These are computations,
+  they agree with Erickson's conjecture. Neither is `∗2` or `∗3` either (`NIM=3`, a separate
+  recursion that also confirms they are not `0` or `∗`). The same solver reproduces all 114 published values in reach. These are computations,
   not Lean proofs.
 * **"New" means "not in the tables above".** Our literature search covered those papers,
   [[TZ07]](#references) and web searches; it was not exhaustive.

@@ -385,8 +385,8 @@ mode for the other cells (results in `tools/values.txt`). Together they cover:
 
 With the proved row `a = 2` and columns `b ≤ 4`, this is every board of at most 25 squares
 (`2a + b ≤ 25`). Boards of 26 squares are out of reach on a 15 GB machine: the open cells
-`(7, 12)`, `(8, 10)`, `(9, 8)` and `(10, 6)` need tables of 17 to 38 GB. The solvers also reached `a = 2` with
-`b ≤ 28` and `a ≤ 14` with `b = 3`, before those families were proved.
+`(7, 12)`, `(8, 10)`, `(9, 8)` and `(10, 6)` need tables of 17 to 38 GB. The solvers also
+reached `a = 2` with `b ≤ 28` and `a ≤ 14` with `b = 3`, before those families were proved.
 
 The column `b = 3` is now proved for every `a` (`infinitesimal_start_b_three`). Independently of
 that proof, `tools/column/col_realcheck.cpp` checks Right's strategy on the real boards for every

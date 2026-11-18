@@ -533,6 +533,13 @@ The method of §15 applied to `TT□T□ᵐFFF ≤ 0` (`m ≥ 5`), which gives t
     position up to 34 empty squares (`fam`).
 * **Contrast with §10.** §10.1–10.2 tried to describe *every* approach position and found no
   simple rule. Fixing Right's approach move avoids that, as it did for `a = 2`.
-* **Next:** the loss sets after contact (19 piece orders, seven gaps), then Z3 and `omega` as in §15,
-  with a six-piece analogue of `Cgt/Four.lean`.
+* **After contact: much harder than for `a = 2`.** All 19 later orders occur, the race count ranges
+  over −10 to 6, and the positions reached fill all six dimensions in every order (`hull`).
+  * Trees learned on boards of at most 18 empty squares have 100 to 1,200 leaves and fail on
+    24 squares. For `a = 2`, trees that generalised needed 30 to 38 squares, which is beyond the
+    present learner with seven gaps.
+  * A single runner's gap matters only through the race count, so such orders reduce to a core of
+    five or four pieces (`core`). With two or more runners this fails as stated.
+  * The hard orders are those without runners (`TTFTFF`, `TFTTFF`, `TTFFTF`, `TFTFTF`, `TFFTTF`),
+    whose cores have all six pieces.
 

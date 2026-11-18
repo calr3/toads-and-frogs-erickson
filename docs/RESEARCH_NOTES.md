@@ -536,3 +536,67 @@ The method of §15 applied to `TT□T□ᵐFFF ≤ 0` (`m ≥ 5`), which gives t
 * **Next:** the loss sets after contact (19 piece orders, seven gaps), then Z3 and `omega` as in §15,
   with a six-piece analogue of `Cgt/Four.lean`.
 
+## 17. The row `a = 3` after contact: exact loss sets are too large (`tools/presburger/a3/`)
+
+An attempt to finish §16 by the method of §15. It did not succeed; the row `a = 3` is still open
+beyond the cases checked one by one. All numbers are exact play with three toads and three frogs.
+
+* **A windowed exact invariant exists on the data.** Take the approach family of §16, the
+  `TTTFFF` losses with centre gap at most 1 and race count −1 or 0, and for every other order the
+  losses with race count in `[−p − 1, p + 1]` (`p` = toad–frog pairs already passed). On every
+  board with at most 22 empty squares this set is closed (`close6`). The window `[−p, p + 1]` of
+  the row `a = 2` is not enough: the first jump from `TTTFFF` needs race count `−2` in `TTFTFF`.
+* **But the loss sets have no small description at these sizes.** The tree learner of §15
+  (forms with coefficients in `{−1, 0, 1}`, residues mod 2 and 3, the race count), learned on at
+  most 18 empty squares and validated on at most 24 (`learn6`):
+
+  | Orders | Leaves | Errors on validation |
+  | --- | --- | --- |
+  | `FFFTTT`, `FFTFTT` | 2, 6 | none |
+  | `FFTTFT`, `FTFFTT`, `FTFTFT`, `FTTFFT` | 127 to 253 | 0.5% to 0.6% |
+  | `TTTFFF` (contact region) | 211 | 9% |
+  | the other 13 orders | 476 to 1,345 | 1.5% to 7% |
+
+  For the row `a = 2` the largest tree had 49 leaves and no errors. Forms with coefficients up to
+  2 or 3 do not help (`TTTFFF`: 219 and 223 leaves). This is the irregularity of §10.2 again, now
+  after contact as well as before it.
+* **The reachable set is no simpler.** With Right taking the first winning reply in a fixed order
+  of his frogs (`reach6`), the positions reached have full affine dimension in 18 of the 20 orders
+  and grow like the fourth or fifth power of the board size. Learning that set exactly gives 27
+  leaves for `TTTFFF` but 353 for `TTFTFF` and 205 to 690 for the last two orders, again with
+  errors on larger boards: the choice "first winning reply" inherits the irregular loss sets.
+* **No fixed rule wins.** Five rules without look-ahead (leftmost movable frog; leftmost frog
+  that is not yet a runner; variants preferring jumps or the rightmost frog) all lose
+  `TT□T□ᵐFFF` for every `m` from 5 to 20 (`rule6`).
+* **A search for a small closed subset of the losses** (`cegar6`). One tree per (order, race
+  count), learned from the positions that must be in the set against the Left wins of the slice,
+  with all other losses left free; whenever a position of the set has a Left move with no reply
+  in the set, the first losing reply is added and the trees are learned again. This always closes
+  on the data, in 20 to 35 rounds, over 94 or 95 slices, but the set does not stay small:
+
+  | Boards (empty squares) | In-leaves | Positions in the set |
+  | --- | --- | --- |
+  | at most 14 | 929 | 203,840 |
+  | at most 18 | 1,763 | 738,687 |
+  | at most 22 | about 2,900 (stopped at round 20) | 2.1 million |
+  | 20 to 24 only | 2,081 | 2,423,009 |
+
+  That is about a sixth of the exact trees, but it grows with the board, and it is spread evenly:
+  at 18 squares no slice has more than 96 leaves and dozens have 60 or more. Restricting each
+  leaf to the box hull of its positions, or adding forms with coefficients 2 and 3, changes the
+  totals by less than 20%.
+* **Reading.** For `a = 2` the positions after the first jump were cold and the exact loss sets
+  were small, so "approach family + exact losses" was a short certificate. For `a = 3` the
+  position after the first jump is a second approach (two toads against a frog on one side, a
+  toad against two frogs on the other), and neither the exact losses nor a greedily grown subset
+  are small on boards of up to 24 empty squares. A proof along these lines needs a strategy for
+  Right chosen for its regularity after contact too, as the front frog was before it. Right has
+  room for one: he starts a tempo ahead (race count −1, and the whole family is lost with no
+  congruence condition), and typically has several winning replies.
+* **Untried.**
+  * Cells that are lattice cones (a base position plus multiples of the net effect of a Left move
+    and its fixed reply), which is what the approach family is; grow them by accelerating such
+    loops instead of by trees.
+  * Learning on boards of 35 to 45 empty squares (the table fits in memory up to about 48), in
+    case the sets become regular only when several gaps are large.
+

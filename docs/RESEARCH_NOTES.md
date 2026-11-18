@@ -517,3 +517,22 @@ Goal: `T□T□ᵏF□F ≤ 0` for `k ≡ 1, 3 (mod 6)` and `TT□ᵏF□F ≤ 0
   bounded gap, or on the parity of one gap, fixed all of them (`fix_leaves.py`,
   `try_leaves.py`). The new files build in about a minute, with no `native_decide`.
 
+## 16. The row `a = 3` with the front-frog policy (`tools/presburger/a3/`)
+
+The method of §15 applied to `TT□T□ᵐFFF ≤ 0` (`m ≥ 5`), which gives the row `a = 3` for `b ≥ 6`.
+
+* **The approach phase passes.** Right always moves the front frog (piece 4) while the centre gap is
+  at least 2. The race count, with coefficients `(−3, −2, −1, 0, 1, 2, 3)` on the seven gaps,
+  stays at its start value `−1`, and the two rear frogs never move. So the approach positions are
+  the three-parameter family `□^g₀ T □^g₁ T □^g₂ T □^g₃ F □^(3g₀+2g₁+g₂−1) F F`.
+  * Exact play: every position of the family is a loss for Left moving first for every number of
+    empty squares from 6 to 34, with no congruence condition. At 5, all eight are wins, which
+    matches the failure of the claim at `m = 4`.
+  * The front-frog reply wins from every family position with centre gap at least 2, so the
+    policy never has to deviate before contact. Checked for every `m ≤ 21` (`ff`) and every family
+    position up to 34 empty squares (`fam`).
+* **Contrast with §10.** §10.1–10.2 tried to describe *every* approach position and found no
+  simple rule. Fixing Right's approach move avoids that, as it did for `a = 2`.
+* **Next:** the loss sets after contact (19 piece orders, seven gaps), then Z3 and `omega` as in §15,
+  with a six-piece analogue of `Cgt/Four.lean`.
+

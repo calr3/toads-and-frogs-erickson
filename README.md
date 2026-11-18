@@ -62,11 +62,13 @@ source says, and the few we could not reach, are in [docs/LITERATURE.md](docs/LI
   `b ≤ 103` [[T11]](#references). The method is in the spirit of Thanatipanonda and Zeilberger's
   symbolic finite-state approach [[TZ07]](#references). See
   [docs/ROW_A2.md §10](docs/ROW_A2.md#10-related-work).
-* **New: the exact values of that row for every even `b`.** `TT□ᵇFF = 0` for
-  every even `b ≥ 6` (`start_two_equiv_zero`), by the same method with 1,038 shapes: the even half
-  of Thanatipanonda's Conjecture T2 [[T11]](#references), which says `TT□ᵇFF = ∗` when
-  `b ≡ 1 (mod 6)` and `0` otherwise, for `b ≥ 7`. With kernel checks of each `b ≤ 30`, this gives
-  every even `b` and every `b ≤ 30` (`start_two_value`). The odd half is still open (below).
+* **New: the exact values of that row for every `b`** (`exactValuesA2`, `Cgt/RowA2Odd.lean`):
+  `TT□ᵇFF = ∗` when `2 ≤ b ≤ 4` or `b ≡ 1 (mod 6)`, and `0` otherwise. This is Thanatipanonda's
+  Conjecture T2 [[T11]](#references), which had been computed for `b ≤ 103`. Even `b` use the
+  shape method with 1,038 shapes (`start_two_equiv_zero`), `b ≤ 30` are kernel checks, and odd
+  `b ≥ 31` use an invariant of 67 linear cases (inequalities and congruences in the gaps). The
+  closure of that invariant under play is proved case by case by `omega`, with no
+  `native_decide`. See [docs/ROW_A2.md §8](docs/ROW_A2.md#8-exact-values).
 * **Known, now machine-checked: the column `b = 3` and its exact values.** `Tᵃ□³Fᵃ` is
   infinitesimal for every `a` (`infinitesimal_start_b_three`), and `Tᵃ□³Fᵃ = ∗` for every `a ≥ 4`
   (`start_three_equiv_star`; `0` for `a = 0, 3` and `∗` otherwise, `start_three_value`).
@@ -87,11 +89,7 @@ source says, and the few we could not reach, are in [docs/LITERATURE.md](docs/LI
   `a = 3`.
 * **Still open:**
   * the full conjecture;
-  * the exact values of the `a = 2` row for odd `b ≥ 31` (`ExactValuesA2`). The values computed
-    so far are `∗` when `1 ≤ b ≤ 4` or `b ≡ 1 (mod 6)` and `0` otherwise: up to `b = 103` in
-    [[T11]](#references), and up to `b = 80` by our solver here. For odd `b`, Right has to let
-    the position drift from symmetry by an amount that grows with `b`, so the shape method does
-    not apply as it stands ([docs/ROW_A2.md §8](docs/ROW_A2.md#8-exact-values)).
+  * the exact values of the other rows and columns, for instance the row `a = 3`.
 
 ## Status
 
@@ -102,7 +100,7 @@ source says, and the few we could not reach, are in [docs/LITERATURE.md](docs/LI
 | `a = 0`, all `b` | `infinitesimal_start_a_zero` | Trivial (no pieces) |
 | `a = 1`, all `b` (`T □ᵇ F`) | `infinitesimal_start_one` | Known: `T□ᵇF = b·∗` ([[WW]](#references); [[E96]](#references) Lemma 5.1) |
 | **`a = 2`, all `b` (`TT □ᵇ FF`)**: machine-checked strategy over 1,543 shapes | `infinitesimal_start_two` (`Cgt/RowA2.lean`) | **New**; predicted by Conjecture T2 of [[T11]](#references), values computed for `b ≤ 103` |
-| **Exact values of `TT □ᵇ FF`**: `0` for every even `b ≥ 6` (1,038 shapes); `0` or `∗` as the data predict for every even `b` and every `b ≤ 30` | `start_two_equiv_zero`, `start_two_value` (`Cgt/RowA2Values.lean`) | **New** for all even `b`: the even half of Conjecture T2 of [[T11]](#references); `b ≤ 30` known numerically ([[T11]](#references)), `b ≤ 6` in [[E96]](#references) |
+| **Exact values of `TT □ᵇ FF` for every `b`**: `∗` if `2 ≤ b ≤ 4` or `b ≡ 1 (mod 6)`, else `0` (shapes for even `b`, kernel checks for `b ≤ 30`, a 67-case linear invariant closed by `omega` for odd `b`) | `exactValuesA2` (`Cgt/RowA2Odd.lean`); `start_two_equiv_zero`, `start_two_value` (`Cgt/RowA2Values.lean`) | **New**: Conjecture T2 of [[T11]](#references); computed for `b ≤ 103` [[T11]](#references), `b ≤ 6` in [[E96]](#references) |
 | `b = 0`, all `a` | `infinitesimal_start_b_zero` | Trivial (no moves) |
 | `b = 1`, all `a` (`Tᵃ □ Fᵃ`) | `infinitesimal_start_b_one` | Known ([[WW]](#references), as cited in [[E96]](#references) §7) |
 | `b = 2`, all `a ≥ 4` (incl. Lemma C.1) | `infinitesimal_start_b_two`, `upperZero_c1` | Known: Thanatipanonda's theorem [[T11]](#references) |
@@ -242,8 +240,7 @@ are infinitesimal but neither `0` nor `∗` (below); and `∗2`, `∗3` below ar
 * **Beyond the table.** `a = 1` gives `∗` for odd `b` and `0` for even `b`, and `b = 1` gives `∗`,
   for every `a` and `b` [[WW]](#references). For `a = 2` and `31 ≤ b ≤ 103` the value is `0`,
   except `∗` when `b ≡ 1 (mod 6)`; for `a = 3` and `31 ≤ b ≤ 53` it is `0` [[T11]](#references).
-* **What is proved in Lean.** The row `a = 2`: every `b ≤ 30` and every even `b`
-  (`start_two_value`, `start_two_equiv_zero`). The row `b = 3`: every `a` (`start_three_value`).
+* **What is proved in Lean.** The row `a = 2`: every `b` (`exactValuesA2`). The row `b = 3`: every `a` (`start_three_value`).
   The row `b = 4`: every `a` (`start_four_value`, with `native_decide`). The other values are not
   formalised; the grid above shows which cells are proved infinitesimal.
 * **How the values are computed.** `Tᵃ □ᵇ Fᵃ` is its own mirror image (reverse the board, swap
@@ -325,8 +322,13 @@ Build with `lake build` (Lean `v4.36.0-rc2`). `lake build CgtNative` builds the 
 **Exact values.** `TT□ᵇFF` is symmetric, and each player has one move. So `TT□ᵇFF = 0` follows
 from `T□T□ᵇ⁻²F□F ≤ 0`, and `TT□ᵇFF = ∗` from `TT□ᵇ⁻¹F□F ≤ 0`. For even `b`, the first claim
 yields to the same method: Right keeps the mirrored differences within 4, over 1,038 shapes
-(`scripts/search_row2.py`). For odd `b`, Right needs differences that grow with `b`, so that case
-is open beyond `b = 30`. The cases `b ≤ 30` are checked one by one by the kernel.
+(`scripts/search_row2.py`). The cases `b ≤ 30` are checked one by one by the kernel. For odd `b`,
+Right needs differences that grow with `b`, so shapes cannot work. Instead, Right always moves the
+front frog while the pieces approach, which keeps the race count constant. After contact, Right
+moves into the exact set of Left's losses, which for each order of the pieces is a small union of
+linear cases. The resulting invariant, 67 cases of linear inequalities and congruences in the
+five gaps, is closed under play. A Z3 check splits that claim into 379 regions, and Lean proves
+each one with `omega` (`Cgt/RowA2Odd.lean`, `tools/presburger/`).
 
 **[docs/ROW_A2.md](docs/ROW_A2.md)** has the full account: background, the strategy with an
 example line, the margin lemma and soundness proof, the data, the exact values (§8), and a map of

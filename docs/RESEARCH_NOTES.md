@@ -295,7 +295,7 @@ paper [TZ07]. Several observations above have precedents there:
   `1 ≤ b ≤ 4` or `b ≡ 1 (mod 6)`, otherwise `0`". See §12: this turned out to need no sum with
   `T□F`, only one more `≤ 0` claim per value.
 
-## 12. Exact values of the row `a = 2` (`Cgt/RowA2Zero.lean`, `Cgt/RowA2Values.lean`)
+## 12. Exact values of the row `a = 2` (`Cgt/RowA2Zero.lean`, `Cgt/RowA2Values.lean`, `Cgt/RowA2Odd.lean`)
 
 * **Reduction.** `G = TT□ᵇFF` is symmetric, and for `b ≥ 2` each side has one move. Left's
   leads to `T□T□ᵇ⁻¹FF ≤ 0` (§9). So `G = 0` ⟸ `T□T□ᵇ⁻²F□F ≤ 0` (Right's only answer), and
@@ -316,10 +316,7 @@ paper [TZ07]. Several observations above have precedents there:
 * **Small cases.** Kernel `decide` on `leZeroB` grows roughly like `k³` here (24 s for 23 cells),
   so every `b ≤ 30` is checked individually. `TT□FF` (`b = 1`) needs one more level, because
   Left's option `T□TFF` is not `≤ 0`.
-* **Ideas for odd `b`, untried:**
-  * shapes that cap the mirrored differences too; this needs a new margin argument;
-  * a strategy for Right that is symmetric about a moving centre instead of the board's
-    centre.
+* **Odd `b`: proved for all `b`** with a linear invariant instead of shapes; see §15.
 
 ## 13. The column `b = 3`: runs of pieces instead of gaps (`tools/column/`)
 
@@ -480,3 +477,43 @@ closes with 361,981 shapes (692 `≤ ∗`), 3,457,633 witnesses
 `a = 5…60` present; the strategy passes the real game trees for `a = 5…22`. In Lean,
 `start_four_value` (`Cgt/Col/Value4.lean`, `native_decide`, 9 check files of 2 to 24 minutes):
 `Tᵃ□⁴Fᵃ = ∗` for every `a ≥ 5`.
+
+## 15. Odd `b` of the row `a = 2`: a linear invariant (`tools/linear/`, `tools/presburger/`, `Cgt/RowA2Odd.lean`)
+
+Goal: `T□T□ᵏF□F ≤ 0` for `k ≡ 1, 3 (mod 6)` and `TT□ᵏF□F ≤ 0` for `k ≡ 0 (mod 6)` (§12).
+
+* **First attempt: shapes with a race counter (`tools/linear/`).** Shapes kept the piece order,
+  gaps capped at `C` with their residue mod 6, the exact race count `A − B`, and linear forms of
+  the gaps clamped to `±M`; an abstract game on such shapes is sound for every board size. With
+  `C = 14` and six forms found from conflicts in exact data, no two positions with at most 68 empty
+  squares share a shape and differ in outcome, and the abstract game keeps every true start. But
+  it ran out of memory after 25 million shapes. The part under Right's chosen replies had about 11
+  million shapes, far too many to check in Lean.
+* **The approach phase is simple once Right's move is fixed.** In `TTFF`, if Right always moves the
+  front frog, then `A − B` stays at its start value (0 for `T□T□ᵏF□F`, 1 after
+  `TT□ᵏF□F → T□T□ᵏ⁻¹F□F → T□T□ᵏ⁻²F□□F`). The rear frog never moves, so the positions form the
+  two-parameter family `(g₀, g₁, N − 3g₀ − 2g₁ − c, 2g₀ + g₁ + c, 0)`. Exact play: every position
+  of the family is a loss for Left moving first when `N ≡ 3, 5 (mod 6)` (`c = 0`) or
+  `N ≡ 1 (mod 6)` (`c = 1`), up to `N = 50`. This explains the period 6. By contrast, the general
+  `TTFF` loss set needs comparisons such as `g₂ ≥ g₀ − 2g₃ + 3g₄ + 4`, which is where the six
+  forms came from.
+* **After the first jump the positions are cold.** Canonical values (a small CGT calculator) are
+  numbers or numbers plus `∗` except at a few contact points. Accordingly, for each later order the
+  outcome is a threshold in `A − B` once a few features are fixed. A decision-tree learner over
+  linear forms with coefficients in `{−2, …, 2}`, residues mod 2 and 3, and `A − B`
+  (`tools/presburger/learn.cpp`) finds exact descriptions: 2, 6, 16, 32 and 49 leaves for `FFTT`,
+  `FTFT`, `FTTF`, `TFFT` and `TFTF`, and 19 for the contact region of `TTFF`. They were validated
+  on 40 to 46 empty squares. For example, `FTFT` (a runner at each end) is a loss for Left moving
+  first (for `|A − B| ≤ 6`) exactly when `A − B < 0`, or `A − B ∈ {0, 1}` and either `g₁ ≤ g₃ − 2` or
+  (`g₁ − g₃ ∈ {−1, 0}` and `g₂` is even).
+* **Closure, for every board size.** Z3 checks that the union of these sets (with
+  `−p ≤ A − B ≤ p + 1`, where `p` counts toad–frog pairs already passed) is closed: every Left move
+  from it has a Right reply back into it (`tools/presburger/verify.py`, one second). Exact play
+  agrees on all 574,840 such positions with at most 44 empty squares (`goodcheck.cpp`).
+* **Lean.** The invariant becomes 67 linear cases (`Cgt/RowA2Odd/Inv.lean`). Z3 splits each
+  (order, Left move, case) into regions with one Right reply and one target case, 379 in all, and
+  each region is a short `omega` proof. `omega` does not do the dark shadow of the Omega test, so
+  about twenty regions failed at first with "possible counterexample". Splitting on the values of a
+  bounded gap, or on the parity of one gap, fixed all of them (`fix_leaves.py`,
+  `try_leaves.py`). The new files build in about a minute, with no `native_decide`.
+

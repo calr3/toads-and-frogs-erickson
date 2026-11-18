@@ -1,4 +1,8 @@
-# Odd `b` of the row `a = 2`: shapes with a race counter (work in progress)
+# Odd `b` of the row `a = 2`: shapes with a race counter (superseded)
+
+**Superseded by `tools/presburger/`**, which proves the result (`Cgt/RowA2Odd.lean`). This
+directory records the first attempt: an abstract game on shapes with clamped linear forms, which
+nearly closed but was far too large to check in Lean (`docs/RESEARCH_NOTES.md` §15).
 
 Goal: prove `TT□ᵇFF = 0` for odd `b ≡ 3, 5 (mod 6)` and `= ∗` for `b ≡ 1 (mod 6)`, the half of
 Thanatipanonda's Conjecture T2 not yet proved (`docs/RESEARCH_NOTES.md` §12, §15). By the

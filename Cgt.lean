@@ -33,3 +33,4 @@ import Cgt.Col.Column3
 import Cgt.Col.SoundStar
 import Cgt.Table
 import Cgt.Col.Value3
+import Cgt.RowA2Odd

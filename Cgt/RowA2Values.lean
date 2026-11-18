@@ -9,7 +9,8 @@ Thanatipanonda's computations [T11] (for `b ≤ 103`) fit the pattern
   `TT□ᵇFF = ∗` if `2 ≤ b ≤ 4` or `b ≡ 1 (mod 6)`, and `TT□ᵇFF = 0` otherwise
 
 (`valueA2 b`). This file proves the pattern for every even `b` and for every `b ≤ 30`
-(`start_two_value`). The general statement `ExactValuesA2` stays open.
+(`start_two_value`). The general statement `ExactValuesA2` is proved in `Cgt/RowA2Odd.lean`
+(`exactValuesA2`), which handles the odd `b ≥ 31` with a linear invariant.
 
 Both values reduce to a single normal-play claim, because `TT□ᵇFF` is symmetric and Left's
 only move leads to `T□T□ᵇ⁻¹FF ≤ 0` (`q2_le_zero`):
@@ -111,7 +112,8 @@ theorem start_two_equiv_zero_of (k : Nat) (h : le (tf (p0 k).toList) zero) :
 /-- The value of `TT□ᵇFF` suggested by the data: `∗` if `2 ≤ b ≤ 4` or `b ≡ 1 (mod 6)`, else `0`. -/
 def valueA2 (b : Nat) : Game := if b = 2 ∨ b = 3 ∨ b = 4 ∨ b % 6 = 1 then star else zero
 
-/-- **Open:** the exact values of the row `a = 2`. -/
+/-- The exact values of the row `a = 2` (Thanatipanonda's Conjecture T2); proved as `exactValuesA2`
+in `Cgt/RowA2Odd.lean`. -/
 def ExactValuesA2 : Prop := ∀ b : Nat, Equiv (tf (start 2 b)) (valueA2 b)
 
 theorem start_two_value_of_even (b : Nat) (hb : 6 ≤ b) (he : b % 2 = 0) :

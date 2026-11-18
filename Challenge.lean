@@ -1,8 +1,8 @@
 /-!
 # Challenge for Comparator
 
-The statements of the main theorems, proved in `Cgt/Conjecture5.lean` (imported by
-`Solution.lean`). Everything before the theorems is a verbatim copy of `Cgt/Statement.lean`, made
+The statements of the main theorems, proved in `Cgt/Conjecture5.lean` and `Cgt/RowA2Odd.lean`
+(imported by `Solution.lean`). Everything before the theorems is a verbatim copy of `Cgt/Statement.lean`, made
 by `scripts/gen_challenge.py`; it uses Lean core only. See `comparator/README.md`.
 -/
 
@@ -44,6 +44,9 @@ decreasing_by
 /-- `lt G H` means `G < H`, i.e. `G ≤ H` and not `H ≤ G`. -/
 def lt (g h : Game) : Prop := le g h ∧ ¬ le h g
 
+/-- Game equivalence `G = H` in the sense of combinatorial game theory. -/
+def Equiv (g h : Game) : Prop := le g h ∧ le h g
+
 /-- The negative of a game: swap the roles of Left and Right. -/
 def neg : Game → Game
   | mk l r => mk (r.attach.map fun y => neg y.1) (l.attach.map fun x => neg x.1)
@@ -56,6 +59,9 @@ decreasing_by
 def powHalf : Nat → Game
   | 0 => mk [zero] []
   | n + 1 => mk [zero] [powHalf n]
+
+/-- `∗ = {0 | 0}`. -/
+def star : Game := mk [zero] [zero]
 
 /-- A game is *infinitesimal* if it lies strictly between `-2⁻ⁿ` and `2⁻ⁿ` for every `n`,
 equivalently strictly between `-x` and `x` for every positive (short) number `x`. -/
@@ -246,6 +252,13 @@ def Conjecture5 : Prop :=
 def OpenCases : Prop :=
   ∀ a b : Nat, 3 ≤ a → 4 ≤ b → 13 ≤ 2 * a + b → Infinitesimal (tf (start a b))
 
+/-- The values of `TT□ᵇFF` predicted by Thanatipanonda's Conjecture T2: `∗` if `2 ≤ b ≤ 4` or
+`b ≡ 1 (mod 6)`, and `0` otherwise. -/
+def valueA2 (b : Nat) : Game := if b = 2 ∨ b = 3 ∨ b = 4 ∨ b % 6 = 1 then star else zero
+
+/-- Thanatipanonda's Conjecture T2: `TT□ᵇFF` equals `valueA2 b` for every `b`. -/
+def ExactValuesA2 : Prop := ∀ b : Nat, Equiv (tf (start 2 b)) (valueA2 b)
+
 end Cgt
 
 /-! ## Main theorems -/
@@ -260,6 +273,11 @@ theorem not_infinitesimal_3_2 : ¬ Infinitesimal (tf (start 3 2)) := by
 /-- **Main theorem.** Erickson's Conjecture 5 holds if it holds in the cases left open
 (`OpenCases`: `a ≥ 3`, `b ≥ 4`, `2a + b ≥ 13`). -/
 theorem conjecture5_of_openCases (h : OpenCases) : Conjecture5 := by
+  sorry
+
+/-- **Thanatipanonda's Conjecture T2.** `TT□ᵇFF = ∗` if `2 ≤ b ≤ 4` or `b ≡ 1 (mod 6)`, and
+`TT□ᵇFF = 0` otherwise. -/
+theorem exactValuesA2 : ExactValuesA2 := by
   sorry
 
 end Cgt

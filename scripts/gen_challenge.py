@@ -13,8 +13,8 @@ import re
 HEADER = '''/-!
 # Challenge for Comparator
 
-The statements of the main theorems, proved in `Cgt/Conjecture5.lean` (imported by
-`Solution.lean`). Everything before the theorems is a verbatim copy of `Cgt/Statement.lean`, made
+The statements of the main theorems, proved in `Cgt/Conjecture5.lean` and `Cgt/RowA2Odd.lean`
+(imported by `Solution.lean`). Everything before the theorems is a verbatim copy of `Cgt/Statement.lean`, made
 by `scripts/gen_challenge.py`; it uses Lean core only. See `comparator/README.md`.
 -/
 
@@ -34,6 +34,11 @@ theorem not_infinitesimal_3_2 : ¬ Infinitesimal (tf (start 3 2)) := by
 /-- **Main theorem.** Erickson's Conjecture 5 holds if it holds in the cases left open
 (`OpenCases`: `a ≥ 3`, `b ≥ 4`, `2a + b ≥ 13`). -/
 theorem conjecture5_of_openCases (h : OpenCases) : Conjecture5 := by
+  sorry
+
+/-- **Thanatipanonda's Conjecture T2.** `TT□ᵇFF = ∗` if `2 ≤ b ≤ 4` or `b ≡ 1 (mod 6)`, and
+`TT□ᵇFF = 0` otherwise. -/
+theorem exactValuesA2 : ExactValuesA2 := by
   sorry
 
 end Cgt

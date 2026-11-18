@@ -122,10 +122,11 @@ of the columns `b = 2` [[T11]](#references) and `b = 3` [[Th08]](#references) fo
 
 ### Checking the main theorem with Comparator
 
-The main theorem, `conjecture5_of_openCases : OpenCases → Conjecture5`, and the exception
-`not_infinitesimal_3_2` can be checked with Comparator (`lake comparator`). `Challenge.lean` states
-them, with `sorry`, after a verbatim copy of `Cgt/Statement.lean`: the definitions of games,
-infinitesimals, the rules, the starting positions, `Conjecture5` and `OpenCases`, in Lean core
+The main theorem, `conjecture5_of_openCases : OpenCases → Conjecture5`, the exception
+`not_infinitesimal_3_2`, and Thanatipanonda's Conjecture T2, `exactValuesA2 : ExactValuesA2`, can
+be checked with Comparator (`lake comparator`). `Challenge.lean` states them, with `sorry`, after
+a verbatim copy of `Cgt/Statement.lean`: the definitions of games, infinitesimals, `∗`, the rules,
+the starting positions, `Conjecture5`, `OpenCases`, `valueA2` and `ExactValuesA2`, in Lean core
 only. Comparator checks that `Solution.lean` proves exactly these statements, with no axioms
 beyond `propext`, `Quot.sound` and `Classical.choice`, and that the kernel accepts it. To trust the
 result you need to read only `Challenge.lean`. The `native_decide` results are not covered. See

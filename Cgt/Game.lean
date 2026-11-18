@@ -48,9 +48,6 @@ theorem le_iff {g h : Game} :
     le g h ↔ (∀ x ∈ g.left, ¬ le h x) ∧ (∀ y ∈ h.right, ¬ le y g) := by
   cases g; cases h; exact le_mk_iff
 
-/-- Game equivalence `G = H` in the sense of combinatorial game theory. -/
-def Equiv (g h : Game) : Prop := le g h ∧ le h g
-
 theorem not_le_of_mem_left {g x : Game} (hx : x ∈ g.left) (h : le g x) : ¬ le x x := by
   rw [le_iff] at h
   exact h.1 x hx

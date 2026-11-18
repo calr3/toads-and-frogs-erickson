@@ -28,9 +28,6 @@ open Cell TF Game
 
 namespace Game
 
-/-- `∗ = {0 | 0}`. -/
-def star : Game := mk [zero] [zero]
-
 theorem neg_star : neg star = star := by
   rw [star, neg_mk]; simp [neg_zero]
 
@@ -107,14 +104,10 @@ theorem start_two_equiv_zero_of (k : Nat) (h : le (tf (p0 k).toList) zero) :
   subst hq
   exact ⟨_, toList_mem_rightMoves (p0_mem_rms_q2 k), h⟩
 
-/-! ### The conjectured values -/
+/-! ### The conjectured values
 
-/-- The value of `TT□ᵇFF` suggested by the data: `∗` if `2 ≤ b ≤ 4` or `b ≡ 1 (mod 6)`, else `0`. -/
-def valueA2 (b : Nat) : Game := if b = 2 ∨ b = 3 ∨ b = 4 ∨ b % 6 = 1 then star else zero
-
-/-- The exact values of the row `a = 2` (Thanatipanonda's Conjecture T2); proved as `exactValuesA2`
-in `Cgt/RowA2Odd.lean`. -/
-def ExactValuesA2 : Prop := ∀ b : Nat, Equiv (tf (start 2 b)) (valueA2 b)
+`valueA2` and `ExactValuesA2` (Thanatipanonda's Conjecture T2) are defined in `Cgt/Statement.lean`;
+`ExactValuesA2` is proved as `exactValuesA2` in `Cgt/RowA2Odd.lean`. -/
 
 theorem start_two_value_of_even (b : Nat) (hb : 6 ≤ b) (he : b % 2 = 0) :
     Equiv (tf (start 2 b)) (valueA2 b) := by

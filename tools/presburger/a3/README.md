@@ -14,6 +14,26 @@ the family with race count `−1` is a loss for Left moving first for every numb
 from 6 to 34 (at 5 empty squares, i.e. `m = 4`, all are wins, matching the known failure of the
 claim there).
 
+## After contact (in progress)
+
+| File | What it does |
+| --- | --- |
+| `post.cpp` | `post S`: positions reached after contact under the policy, per piece order, with the range of the race count. |
+| `hull.cpp` | `hull S m`: per order, gap maxima and the dimension of the affine hull of the reached positions. |
+| `learn6.cpp` | Decision-tree learner for seven gaps (2,017 linear forms with coefficients in `{−2, …, 2}`, thresholds, residues mod 2 and 3, race count). |
+| `core.cpp` | `core S T`: does the outcome depend on the runners' gaps only through the race count, once each is at least `T`? |
+
+Findings so far:
+
+* All 19 later orders occur, with race counts from −10 to 6, and the positions reached are
+  full-dimensional in every order (`hull 30 28`). No thin families appear after contact.
+* Learning on boards of at most 18 empty squares gives trees of 100 to 1,200 leaves, with errors
+  on boards of 24 squares. For `a = 2`, generalising trees needed training on 30 to 38 squares, and
+  the seven-gap learner cannot handle that many rows as it stands.
+* With a single runner (a frog left of every toad, or a toad right of every frog), its gap matters
+  only through the race count (`core 22 2`: no conflicts). With two or more runners there are
+  conflicts, so the reduction to a smaller core needs more care.
+
 ## After contact: the method of §15 does not carry over as it stands
 
 See `docs/RESEARCH_NOTES.md` §17. The tools below were used for that section; all work on exact

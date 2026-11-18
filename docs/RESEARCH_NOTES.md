@@ -497,7 +497,7 @@ Goal: `T□T□ᵏF□F ≤ 0` for `k ≡ 1, 3 (mod 6)` and `TT□ᵏF□F ≤ 0
   `N ≡ 1 (mod 6)` (`c = 1`), up to `N = 50`. This explains the period 6. By contrast, the general
   `TTFF` loss set needs comparisons such as `g₂ ≥ g₀ − 2g₃ + 3g₄ + 4`, which is where the six
   forms came from.
-* **After the first jump the positions are cold.** Canonical values (a small CGT calculator) are
+* **After the first jump the positions are cold.** Canonical values (`tools/presburger/cgt.py`) are
   numbers or numbers plus `∗` except at a few contact points. Accordingly, for each later order the
   outcome is a threshold in `A − B` once a few features are fixed. A decision-tree learner over
   linear forms with coefficients in `{−2, …, 2}`, residues mod 2 and 3, and `A − B`

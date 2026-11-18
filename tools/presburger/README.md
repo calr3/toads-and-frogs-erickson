@@ -24,6 +24,7 @@ Goal (Thanatipanonda's Conjecture T2, odd half): `T□T□ᵏF□F ≤ 0` for `k
 | `ex.h` | Exact solver for two toads and two frogs (every position with at most `S` empty squares). |
 | `learn.cpp` | Learns a decision tree for "Left moving first wins" on exact data and validates it on larger boards. `EXPORT=file` writes the tree. |
 | `z3check.py`, `verify.py` | Z3 check that the invariant `good` is closed: from every `good` position, every Left move has a Right reply into `good`. The gaps are unbounded integers, so this covers every board size. |
+| `cgt.py` | Canonical values of Toads and Frogs positions. `--kinds` shows that after the first jump almost every four-piece position is a number or a number plus `∗`, which is why outcomes are thresholds in the race count; `--one` tabulates one toad against one frog. |
 | `goodcheck.cpp` | Brute-force sanity check: every `good` position with at most `S` empty squares is an exact loss for Left moving first (`S = 44`: 574,840 positions, no exception). |
 | `gen_lean.py` | Turns the trees into cases (conjunctions of linear literals, simplified by Z3), and splits every (order, Left move, case) into regions with one Right reply and one target case. Writes `plan.pkl` (about 4 minutes). |
 | `emit_lean.py` | Writes `Cgt/RowA2Odd/Inv.lean` and `Cgt/RowA2Odd/Close*.lean` from `plan.pkl` and `strategies.json`. |

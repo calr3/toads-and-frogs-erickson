@@ -4,7 +4,7 @@
 // usage: conflict S C form:M ...      (env MAXOUT: pairs to print per kind)
 #include <bits/stdc++.h>
 using namespace std;
-int S, C, NF; vector<array<int,5>> FO; vector<int> FM;
+int S, C, NF; int CI[5], PI[5]; vector<array<int,5>> FO; vector<int> FM;
 static inline bool toad(int c, int i) { return (c >> i) & 1; }
 int coef(int c, int k) { int tl = 0, fr = 0; for (int i = 0; i < k; i++) if (toad(c, i)) tl++; for (int i = k; i < 4; i++) if (!toad(c, i)) fr++; return tl - fr; }
 // dense index: order id (0..5) and gaps with sum <= S
@@ -32,6 +32,8 @@ bool xRF(int c, const array<int,5>& g) { long e = idx(c, g); if (st[e] & 4) retu
 int main(int argc, char** argv) {
   S = atoi(argv[1]); C = atoi(argv[2]);
   for (int a = 3; a < argc; a++) { array<int,5> f; int M; sscanf(argv[a], "%d,%d,%d,%d,%d:%d", &f[0], &f[1], &f[2], &f[3], &f[4], &M); FO.push_back(f); FM.push_back(M); }
+  for (int i = 0; i < 5; i++) { CI[i] = C; PI[i] = 6; }
+  if (getenv("CAPS")) sscanf(getenv("CAPS"), "%d/%d,%d/%d,%d/%d,%d/%d,%d/%d", CI, PI, CI+1, PI+1, CI+2, PI+2, CI+3, PI+3, CI+4, PI+4);
   NF = FO.size(); int MAXOUT = getenv("MAXOUT") ? atoi(getenv("MAXOUT")) : 400;
   int n = 0; for (int c = 0; c < 16; c++) if (__builtin_popcount(c) == 2) { ordOf[c] = n; ords[n++] = c; }
   base.assign(S + 2, 0); for (int s = 0; s <= S; s++) base[s + 1] = base[s] + binom(s + 4, 4); blockSize = base[S + 1];
@@ -42,7 +44,7 @@ int main(int argc, char** argv) {
   unordered_map<uint64_t, G> groups; groups.reserve(1 << 24);
   vector<array<int,6>> posOf;   // not stored; decode on the fly
   auto shapeKey = [&](int c, const array<int,5>& g) { string k; k += char(c);
-    long ab = 0; for (int i = 0; i < 5; i++) { k += char(g[i] < C ? g[i] : C + (g[i] - C) % 6); ab += coef(c, i) * g[i]; }
+    long ab = 0; for (int i = 0; i < 5; i++) { k += char(g[i] < CI[i] ? g[i] : CI[i] + (g[i] - CI[i]) % PI[i]); ab += coef(c, i) * g[i]; }
     k += char(ab + 128); for (int j = 0; j < NF; j++) { long x = 0; for (int i = 0; i < 5; i++) x += (long)FO[j][i] * g[i]; k += char(max((long)-FM[j], min((long)FM[j], x)) + 64); }
     return k; };
   vector<pair<array<int,6>, array<int,6>>> conf[2];

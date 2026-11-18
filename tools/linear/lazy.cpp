@@ -148,10 +148,15 @@ int main(int argc, char** argv) {
   NF = FO.size();
   int KMAX = getenv("KMAX") ? atoi(getenv("KMAX")) : 60;
   vector<pair<int,int>> starts;
-  for (int k = 1; k <= KMAX; k++) { starts.push_back({k, getL(shapeOf(3, {0, 1, k, 1, 0}))}); starts.push_back({-k, getL(shapeOf(3, {0, 0, k, 1, 0}))}); }
+  bool TRUEONLY = getenv("TRUESTARTS") != nullptr;
+  for (int k = 1; k <= KMAX; k++) {
+    bool ta = (k == 3 || k == 4 || (k >= 6 && k % 6 != 5)), tb = (k <= 3 || k % 6 == 0);
+    if (!TRUEONLY || ta) starts.push_back({k, getL(shapeOf(3, {0, 1, k, 1, 0}))});
+    if (!TRUEONLY || tb) starts.push_back({-k, getL(shapeOf(3, {0, 0, k, 1, 0}))}); }
   long it = 0;
   while (!toExpand.empty()) { int l = toExpand.front(); toExpand.pop_front(); expand(l);
-    if (++it % 200000 == 0) fprintf(stderr, "  %ld expanded, %zu Left, %zu Right shapes, %ld realizability checks\n", it, L.size(), R.size(), nreal);
+    if (++it % 200000 == 0) { int nl = 0; string ls; for (auto [k, l2] : starts) if (lostL[l2]) { nl++; if (ls.size() < 80) ls += " " + to_string(k); }
+      fprintf(stderr, "  %ld expanded, %zu Left, %zu Right shapes, %ld realizability checks; starts lost: %d%s\n", it, L.size(), R.size(), nreal, nl, ls.c_str()); }
     if (L.size() > 40000000) { fprintf(stderr, "too many shapes\n"); break; }
     if (it % 1000000 == 0) { FILE* f = fopen("/proc/self/statm", "r"); long a, b; fscanf(f, "%ld %ld", &a, &b); fclose(f); fprintf(stderr, "  rss %.1f GB, rmemo %zu\n", b * 4096.0 / 1e9, rmemo.size()); if (b * 4096.0 / 1e9 > 12.5) { fprintf(stderr, "memory limit\n"); break; } } }
   propagate();

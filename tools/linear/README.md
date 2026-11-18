@@ -68,4 +68,15 @@ game from these starts it stays within `±4` of its start value: there are at mo
 
   no two positions with the same shape have different outcomes, for every position with at most 68
   empty squares (90 million positions, 84 million shapes; `conflict.cpp`).
-* Next: run the abstract game (`lazy.cpp`) with this key; then the Lean side.
+* **The abstract game with this key nearly closes.** `lazy.cpp 14 14` with the six forms and only
+  the true starts (`TRUESTARTS=1`): no start is ever lost; the run stopped at the memory limit
+  (12.5 GB) after 25 million Left-to-move shapes with 70,000 still unexpanded. The part reached under
+  Right's chosen replies has 5.1 million Left-to-move and 6.5 million Right-to-move shapes, with
+  9,160 shapes not yet expanded. On the explored part, exactly the true starts survive:
+  `T□T□ᵏF□F` for every `k ≢ 5 (mod 6)` up to 50 and `TT□ᵏF□F` for every `k ≡ 0 (mod 6)`.
+* **Too large as it stands.** 93% of the shapes come after a jump (34% `FTFT`, with a runner at each
+  end); most have three or more capped gaps, each with its residue mod 6. A runner's gap matters only
+  through `A − B` and through the gap it shares with the next piece (Erickson), so keys per piece
+  order, merging each runner's gap with the gap next to it, should shrink the certificate a lot.
+* Next: keys per order with merged runner gaps; then decide how Lean treats shapes that no position
+  realizes (include them in the certificate, or certify that they are infeasible).

@@ -34,6 +34,11 @@ game from these starts it stays within `±4` of its start value: there are at mo
 | `absplain.cpp` | The exact abstract game, independent of data: shapes are (order, gaps capped at `C` with residue mod 6, exact `A − B`); moves act on shapes, with both outcomes kept when a capped gap at the cap goes down, and shapes that no position realizes dropped. Sound for every board size. |
 | `absform.cpp` | The same with one more component, a linear form `F` of the gaps clamped to `[−M, M]`; each case of a move is checked for realizability together with the shape it comes from. `MIXED=t` lists lost shapes whose realizations (capped gaps up to `C + 5 + 6t`) disagree in exact play: comparisons the shape still lacks. |
 | `forms.py` | Greedy search, on exact data, for linear forms that make the outcome a function of the shape. |
+| `conflict.cpp` | Solves every position with at most `S` empty squares exactly, groups them by shape, and prints pairs of positions with the same shape and different outcomes. |
+| `adjconf.cpp` | The same for "adjacent" pairs `g`, `g + 6d` (`d` a small direction that keeps `A − B`), whose boundary lies between them. |
+| `adjloop.py`, `cluster.py`, `sep.py` | Choose forms that separate conflicting pairs; fit a boundary form to each group of switching points. |
+| `predir.cpp`, `mixed.cpp` | Where the outcome becomes periodic along a direction; positions of shapes the abstract game loses, solved exactly. |
+| `lazy.cpp` | The abstract game with several forms, explored lazily (one reply per Right shape, switched when refuted), cases of a move pruned form by form. |
 
 ## Status
 
@@ -54,6 +59,13 @@ game from these starts it stays within `±4` of its start value: there are at mo
   positions `□⁵T□ᵍT□F□ᵍF□⁵` with `g = 9` and `g = 21` (same shape, `A − B = 0`) are a Left win and
   a Right win; this needs a comparison such as `g₁` against `2g₀`. In `TFTF`, the order of the
   centre gap and a waiting gap matters when all are large.
-* Next: add these forms, and search lazily (only Right's chosen replies) to keep the number of
-  shapes manageable. For Lean, the realizability filter must never reject a real shape: either an
-  exact decision with a proof, or certificates of infeasibility (Farkas multipliers, divisibility).
+* **An exact key.** The period of the centre gap starts at a point that is exactly linear in the other
+  gaps, one formula per value of `A − B` (for `TTFF`, Left first, `A − B = 0`: at
+  `g₂ = g₀ − 2g₃ + 3g₄ + 4`). With gaps capped at 14 (residue mod 6 above) and six forms, each clamped
+  to `±8`,
+
+  `g₂ − g₀ + 2g₃ − 3g₄`, `g₂ − 3g₀ + 2g₁ − g₄`, `g₂ − g₃ − g₄`, `g₂ − g₀ − g₁`, `g₀ − g₂`, `g₄ − g₂`,
+
+  no two positions with the same shape have different outcomes, for every position with at most 68
+  empty squares (90 million positions, 84 million shapes; `conflict.cpp`).
+* Next: run the abstract game (`lazy.cpp`) with this key; then the Lean side.

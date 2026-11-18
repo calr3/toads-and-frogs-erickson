@@ -22,7 +22,7 @@ play (`ex6.h`). Build with `g++ -O2 -fopenmp -std=c++17`.
 | File | What it does |
 | --- | --- |
 | `close6.cpp` | `close6 S K A0 A1 DL DH`: brute-force closure of "exact losses in a race-count window" on at most `S` empty squares. `close6 22 1 -1 0 -1 1` (window `[−p − 1, p + 1]`; `TTTFFF`: centre gap at most 1, race count −1 or 0) finds no unanswered Left move. |
-| `learn6.cpp` | `learn6 SL SV ORDER`: decision tree for the exact loss set of one order on that window, learned on at most `SL` empty squares and validated on `SV`. `RFILE=dump` learns membership in a dumped reachable set instead. |
+| `learn6w.cpp` | `learn6w SL SV ORDER`: decision tree for the exact loss set of one order on that window, learned on at most `SL` empty squares and validated on `SV`. `RFILE=dump` learns membership in a dumped reachable set instead. |
 | `reach6.cpp` | `reach6 S POL`: the positions reached when Right takes the first winning reply in a fixed order of his frogs; per order, the count, race-count range and gap ranges. `DUMP=file` writes them. |
 | `cegar6.cpp` | `cegar6 S [OUT]`: counterexample-guided search for a small closed set inside the losses. One tree per (order, race count), learned from the positions that must be in against the Left wins of that slice; other losses are "don't care". `NMIN`, `WCAP`, `WB`, `FR`, `NZ2`, `PRIO` as in the source. |
 | `rule6.cpp` | `rule6 M`: whether a fixed rule for Right with no look-ahead (five rules) wins `TT□T□ᵐFFF`. None does, for any `m` from 5 to 20. |

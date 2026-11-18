@@ -548,7 +548,7 @@ beyond the cases checked one by one. All numbers are exact play with three toads
   the row `a = 2` is not enough: the first jump from `TTTFFF` needs race count `−2` in `TTFTFF`.
 * **But the loss sets have no small description at these sizes.** The tree learner of §15
   (forms with coefficients in `{−1, 0, 1}`, residues mod 2 and 3, the race count), learned on at
-  most 18 empty squares and validated on at most 24 (`learn6`):
+  most 18 empty squares and validated on at most 24 (`learn6w`):
 
   | Orders | Leaves | Errors on validation |
   | --- | --- | --- |

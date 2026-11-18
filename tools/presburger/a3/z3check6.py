@@ -38,11 +38,25 @@ def lit(l, g):
     if l[1] == '<=': return F <= l[2]
     return (F % l[2] == l[3]) if l[4] else (F % l[2] != l[3])
 def ab(c, g): return sum(coef(c, k) * g[k] for k in range(7))
+RAW = {}
 def member(SL, c, a, g):
-    """g in the invariant, for piece order c and race count a (a constant)"""
-    cs = SL.get((c, a))
-    if not cs: return z3.BoolVal(False)
-    return z3.Or([z3.And([lit(l, g) for l in case]) for case in cs])
+    """g in the invariant, for piece order c and race count a (a constant): the slice's tree as nested If"""
+    nodes = RAW.get((c, a))
+    if not nodes: return z3.BoolVal(False)
+    def rec(i):
+        nd = nodes[i]
+        if nd[0] == 'leaf':
+            if nd[1] != 0: return z3.BoolVal(False)
+            box = []
+            for k in range(7):
+                lo, hi = nd[2][2 * k], nd[2][2 * k + 1]
+                if lo > 0: box.append(g[k] >= lo)
+                if hi < 127: box.append(g[k] <= hi)
+            return z3.And(box) if box else z3.BoolVal(True)
+        _, kind, f, m, v, y, n = nd
+        F = sum(f[k] * g[k] for k in range(7) if f[k])
+        return z3.If(F >= v if kind == 0 else F % m == v, rec(y), rec(n))
+    return rec(0)
 def lmoves(c, g):
     out = []
     for i in range(6):
@@ -60,15 +74,15 @@ def rmoves(c, g):
             h = list(g); h[i - 1] = h[i - 1] - 1; h[i + 1] = h[i + 1] + 1; out.append((z3.And(g[i] == 0, g[i - 1] > 0), c ^ (3 << (i - 1)), h, i, 'jump'))
     return out
 if __name__ == '__main__':
-    raw = load(sys.argv[1]); SL = {k: cases(v) for k, v in raw.items()}
+    raw = load(sys.argv[1]); RAW.update(raw); SL = {k: cases(v) for k, v in raw.items()}
     nmin = int(sys.argv[2]) if len(sys.argv) > 2 else 0; nmax = int(sys.argv[3]) if len(sys.argv) > 3 else None
     print(len(SL), 'slices,', sum(len(v) for v in SL.values()), 'cases')
-    g = [z3.Int('g%d' % k) for k in range(7)]; N = sum(g); bad = 0; t0 = time.time()
+    g = [z3.Int('g%d' % k) for k in range(7)]; N = sum(g); bad = 0; t0 = time.time(); ns = collections.Counter(); nq = 0
     for (c, a), cs in sorted(SL.items()):
         for ci, case in enumerate(cs):
             pre = [x >= 0 for x in g] + [ab(c, g) == a, N >= nmin] + ([N <= nmax] if nmax else []) + [lit(l, g) for l in case]
             for (cond, c2, h, i, kind) in lmoves(c, g):
-                s = z3.Solver(); s.add(pre); s.add(cond)
+                s = z3.Solver(); s.add(pre); s.add(cond); nq += 1
                 da = -1 if kind == 'slide' else -2
                 s.add(z3.Not(z3.Or([z3.And(cr, member(SL, c3, a + da + (1 if k2 == 'slide' else 2), r)) for (cr, c3, r, j, k2) in rmoves(c2, h)])))
                 res = s.check()
@@ -76,6 +90,7 @@ if __name__ == '__main__':
                     bad += 1
                     if res == z3.sat:
                         m = s.model(); gv = [m.eval(x, model_completion=True).as_long() for x in g]
-                        if bad <= 30: print('FAIL %s ab %d case %d, Left %s of piece %d: %s  N=%d' % (name(c), a, ci, kind, i, gv, sum(gv)))
+                        ns[sum(gv)] += 1
+                        if bad <= 12: print('FAIL %s ab %d case %d, Left %s of piece %d: %s  N=%d' % (name(c), a, ci, kind, i, gv, sum(gv)))
                     else: print('UNKNOWN', name(c), a, ci)
-    print('failures', bad, 'time %.0fs' % (time.time() - t0))
+    print('failures', bad, 'of', nq, 'queries; time %.0fs' % (time.time() - t0)); print('N of counterexamples:', sorted(ns.items()))

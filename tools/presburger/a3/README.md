@@ -46,3 +46,20 @@ play (`ex6.h`). Build with `g++ -O2 -fopenmp -std=c++17`.
 | `reach6.cpp` | `reach6 S POL`: the positions reached when Right takes the first winning reply in a fixed order of his frogs; per order, the count, race-count range and gap ranges. `DUMP=file` writes them. |
 | `cegar6.cpp` | `cegar6 S [OUT]`: counterexample-guided search for a small closed set inside the losses. One tree per (order, race count), learned from the positions that must be in against the Left wins of that slice; other losses are "don't care". `NMIN`, `WCAP`, `WB`, `FR`, `NZ2`, `PRIO` as in the source. |
 | `rule6.cpp` | `rule6 M`: whether a fixed rule for Right with no look-ahead (five rules) wins `TT□T□ᵐFFF`. None does, for any `m` from 5 to 20. |
+
+## Later searches (`docs/RESEARCH_NOTES.md` §18)
+
+None of these led to a proof. Build the C++ tools with `g++ -O2 -fopenmp -std=c++17`.
+
+| File | What it does |
+| --- | --- |
+| `gen7.cpp` | Exact play one board size at a time (the number of empty squares never changes); writes samples of the race-count window for `N0 ≤ N ≤ N1`. |
+| `learnf.cpp` | Best-first tree learner on those samples; trains on one range of sizes and tests on another. `PFR`/`PNZ`: forms in piece positions; `HC`: oblique splits by hill climbing; `DIAG=1`: where the errors are. |
+| `cegar6.cpp` | Now also: `NMIN` (smallest board), `WCAP` (sample of wins per slice), `PFR`/`PNZ`, `HC`, `LR`, `SHORT` (form pools and oblique splits), `ROBUST`, `SLIDE`, `EXCL` (reply choice and exclusion). |
+| `check6.cpp` | Exact check of a `cegar6` set on other board sizes: Left wins inside it, Left moves without a reply. |
+| `itp6.cpp` | Search by separation: keep the reached positions, exclude what cannot be defended, the rest free. |
+| `pol6.cpp` | Learns a policy (one tree per order choosing the frog to move) instead of a set. |
+| `rj6.cpp`, `passlate.cpp` | Right with a bounded number of jumps; Right's pass allowed only after `P0` crossings. |
+| `z3check6.py` | Z3 closure check of a `cegar6` set for unbounded gaps (`NMIN`, `NMAX` optional). |
+| `gen_lean6.py`, `emit_lean6.py` | Plan and Lean files (invariant, closure lemmas) from a `cegar6` set, on top of `Cgt/RowA3/Moves.lean`. Tested only on a bounded set; see §18 for cost. |
+

@@ -17,6 +17,25 @@ what could not be reached.
 | Exact values beyond the published tables | **Not reported anywhere.** The largest published table is Figure 2 of the arXiv preprint of [T11] (= Figure 4.1 of [Th08]): `a ≤ 4` to `b = 20`, `a = 5` to `b = 12`, `a = 6` to `b = 8`, `a = 7` to `b = 7`, `a = 8` to `b = 5`, `a = 9, 10` to `b = 4`, and `a = 2` to `b = 103`, `a = 3` to `b = 53` in its notes. Its four "≠ 0" cells, `(5, 11)`, `(6, 8)`, `(7, 6)` and `(7, 7)`, are blank in the journal version; all four are `∗`. The table's entries come from a program that compares with `0` and `∗`, not from computed values. |
 | A Lean formalisation of Toads and Frogs | **None found.** The only other formalisation is an unmerged Rocq pull request (bloomberg/game-trees #17, July 2026) for boards of at most four squares, including `T□F = ∗`. Nothing on Toads and Frogs in Mathlib, vihdzp/combinatorial-games, the Isabelle and Coq libraries we could search, or formal-conjectures. |
 
+## Erickson's other conjectures
+
+[E96] ends with six conjectures, 7.1 to 7.6; the README's "Conjecture 5" is 7.5. The arXiv preprint
+of [T11] (Section 4 and Appendix D) reports on the others:
+
+* 7.1 (`Tᵃ□□Fᵇ = {{a−3 | a−b} | {∗ | 3−b}}`, `a > b ≥ 2`) and 7.3 (`Tᵃ□³F³ = a − 7/2`, `a ≥ 5`)
+  are Theorems D.2 and D.1 there, with proofs deferred to the supplement *Three (More) Results of
+  Combinatorial Game Toads and Frogs*, whose contents are in [Th08].
+* 7.2 (`Tᵃ□³FF = (a−2)∗`, `a ≥ 2`) was proved by Thanatipanonda and Zeilberger [TZ07].
+* 7.4 (`Tᵃ□ᵃFᵃ⁻¹ = 1` or `1∗`) is false: `T⁷□⁷F⁶ > 2`.
+* 7.6 (Toads and Frogs is NP-hard) was proved by Jesse Hull in 2000, as reported there (we did not
+  find Hull's own write-up).
+* 7.5 is open.
+
+[T11]'s own conjectures, 1 to 5 in the preprint and T1 to T5 in the journal version, are: values
+of every position with one frog, `□ᴸ Tᵃ □ᵇ F □ᴿ` (T1); the values of `TT□ᵇFF` (T2); `Tᵃ□ᵇFᵃ = ∗`
+for `a > b > 0`, `b ≠ 2` (T3); `Tᵃ□ᵇFᵃ ∈ {0, ∗}` for `b ≥ a > 0` (T4); and, for each `c ≥ 3`,
+`Tᶜ□ᵇFᶜ = 0` for all large `b` (T5). The README's table of conjectures lists their status.
+
 ## Sources searched
 
 * [E96] (paper, and Erickson's page for it, last updated 2000), [TZ07], [T11] (the arXiv preprint

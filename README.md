@@ -91,6 +91,28 @@ source says, and the few we could not reach, are in [docs/LITERATURE.md](docs/LI
   * the full conjecture;
   * the exact values of the other rows and columns, for instance the row `a = 3`.
 
+## Conjectures about Toads and Frogs
+
+Every conjecture about the game that we found in the literature, oldest first. Erickson numbers
+his 7.1 to 7.6 [[E96]](#references); [[T11]](#references) calls them Erickson's conjectures 1 to
+6, which is why this README says "Conjecture 5" for 7.5. Thanatipanonda's own conjectures are
+numbered 1 to 5 in the arXiv preprint of [[T11]](#references) (2008) and in
+[[Th08]](#references), and T1 to T5 in the journal version (2011).
+
+| Conjecture | Statement | Status | This repository |
+| --- | --- | --- | --- |
+| Erickson 7.1 (1996) | `Tᵃ□□Fᵇ = {{a−3 \| a−b} \| {∗ \| 3−b}}` for `a > b ≥ 2` | Proved by Thanatipanonda: Theorem D.2 of the preprint of [[T11]](#references), proof in a supplement contained in [[Th08]](#references) | — |
+| Erickson 7.2 (1996) | `Tᵃ□³FF = (a−2)∗` for `a ≥ 2` | Proved by Thanatipanonda and Zeilberger [[TZ07]](#references) | — |
+| Erickson 7.3 (1996) | `Tᵃ□³F³ = a − 7/2` for `a ≥ 5` | Proved by Thanatipanonda: Theorem D.1 of the preprint of [[T11]](#references), proof as for 7.1 | — |
+| Erickson 7.4 (1996) | `Tᵃ□ᵃFᵃ⁻¹ = 1` or `1∗` for `a ≥ 1` | **False**: `T⁷□⁷F⁶ > 2` [[T11]](#references) | — |
+| **Erickson 7.5 (1996)**, "Conjecture 5" | `Tᵃ□ᵇFᵃ` is infinitesimal for every `(a, b) ≠ (3, 2)` | **Open** | The subject of this repository. Proved in Lean for `a ≤ 2` (every `b`), `b ≤ 3` (every `a`) and every case with `2a + b ≤ 12`, so `conjecture5_of_openCases` reduces the conjecture to `a ≥ 3`, `b ≥ 4`, `2a + b ≥ 13` (checked with Comparator). Also proved: `b = 4` for every `a` (with `native_decide`), and `(3, 7)` to `(3, 12)` and `(4, 5)` by certificates. `(3, 2)` really is the exception (`TTT□□FFF = ±1/8`). Confirmed by exact search on every board of at most 25 squares. See [Status](#status) and [Grid of proved cases](#grid-of-proved-cases). |
+| Erickson 7.6 (1996) | Toads and Frogs is NP-hard | Proved by Jesse Hull (2000), as reported in [[T11]](#references) | — |
+| Thanatipanonda T1 (2008) | Values of every position with one frog, `□ᴸ Tᵃ □ᵇ F □ᴿ`: three formulas, for `L = R`, `L = R − 1` and `R − L ≥ 2` | Open, as far as we know | — |
+| **Thanatipanonda T2 (2008)** | `TT□ᵇFF = ∗` when `b ≡ 1 (mod 6)` and `0` otherwise, for `b ≥ 7` | **Proved here** | `exactValuesA2`, with the values for `b ≤ 6` too: `∗` for `2 ≤ b ≤ 4`, else `0` (`Cgt/RowA2Odd.lean`; checked with Comparator). Even `b` by shapes, odd `b` by a linear invariant closed under play and proved by `omega`. |
+| Thanatipanonda T3 (2008) | `Tᵃ□ᵇFᵃ = ∗` whenever `a > b > 0`, `b ≠ 2` | Open in general. `b = 1` is in [[WW]](#references); `b = 3` is Theorem 5.6.1 of [[Th08]](#references) | `b = 3`: `start_three_equiv_star`, an independent proof. **New:** `b = 4`, `start_four_equiv_star` (with `native_decide`). All computed values with `b ≥ 5` agree. |
+| Thanatipanonda T4 (2008) | `Tᵃ□ᵇFᵃ = 0` or `∗` whenever `b ≥ a > 0` | **False (found here)** | `T⁶□¹²F⁶` is neither (`not_thanatipanonda_conjecture4`, with `native_decide`); `T⁷□¹⁰F⁷` is neither (computed). Both are infinitesimal. |
+| Thanatipanonda T5 (2008) | For each `c ≥ 3` there is `b₀` with `Tᶜ□ᵇFᶜ = 0` for all `b ≥ b₀` | Open | For `c = 3` the computed values are `0` for every `b` from 30 to 53; the last `∗` is `T³□²⁹F³` [[T11]](#references). See [Values of the starting positions](#values-of-the-starting-positions). The row `a = 3` is the current target (`tools/presburger/a3/`). |
+
 ## Status
 
 | What | Lean | Origin |

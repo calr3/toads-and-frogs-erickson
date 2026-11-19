@@ -607,3 +607,67 @@ beyond the cases checked one by one. All numbers are exact play with three toads
   * Learning on boards of 35 to 45 empty squares (the table fits in memory up to about 48), in
     case the sets become regular only when several gaps are large.
 
+## 18. The row `a = 3`: further searches for an invariant, all too large (`tools/presburger/a3/`)
+
+A second, longer attempt at `TT□T□ᵐFFF ≤ 0` for every `m ≥ 5`. It did not produce a proof, and the
+measurements below say why the approach of §15 (a closed set described by linear cases, checked by
+`omega`) is out of reach for six pieces as far as we can compute. The row `a = 3` stays open.
+
+**What the position is.**
+
+* `TT□T□ᵐFFF` is a number: `0, −⅛, −⅛, −⅛, −¼, −¼, −¼, −¼, 0, −¼, −½, −¼, −¼, −½` for
+  `m = 5, …, 18` (`tools/cgt_values.py`). So Left's first move costs him a fraction of a move, but
+  not uniformly: at `m = 13` (where `T³□¹⁴F³ = ∗`) the value is exactly `0` again, and Right cannot
+  do better there by delaying his pass. There is no spare tempo to build a robust strategy on.
+* Right has to jump. With at most four jumps of his own he loses most `m` up to 22 (`rj6`): when
+  Left refuses to jump, Right wins by blocking toads, not by the race count.
+* In "Left stop `≤ 0`" Right must use his pass before the first crossing (`passlate`).
+* On a board of 45 to 50 empty squares the loss sets look regular in two-dimensional sections:
+  polygons with edges of slope 1, 2 and ½, plus thin stripes of period 6.
+
+**Learning the exact loss sets on large boards fails.** The number of empty squares never changes,
+so each board size can be solved on its own (`gen7`). For the contact region of `TTTFFF`, trees
+learned on 28–33 and 40–46 empty squares and tested on 34–39 (`learnf`) keep 7% to 8% errors at
+every size up to 2,240 leaves (zero training errors); `TTFTFF`: 4%. Forms in the positions of the
+pieces, hill-climbed oblique splits, and hand-made features (waiting moves of the rear toads and
+frogs) do not change this. The errors are spread over generic positions, not small gaps.
+
+**Searching for a smaller closed set.** `cegar6` grows a set from the starts (one tree per piece
+order and race count; when a position of the set has a Left move with no reply in the set, a
+losing reply is added). It always closes on the data. Sizes (in-leaves, i.e. linear cases):
+
+| Boards (empty squares) | Plain forms | + position forms | + oblique splits |
+| --- | --- | --- | --- |
+| at most 14 | 929 | 797 | 767 |
+| at most 18 | 1,763 | 1,547 | |
+| 26 to 28 | 1,646 | 1,352 | 1,272 |
+| 32 to 34 | more than 2,485 (stopped) | more than 1,796 (stopped) | |
+| 22 to 30 | | | 3,589 |
+
+* **It does not level off.** Three sizes around 27 need about 1,300 cases, three around 33 clearly
+  more, and the nine sizes 22–30 need 3,589.
+* **It does not extrapolate.** The 26–28 set, checked by exact play on 24, 25 and 29–31 empty
+  squares (`check6`), contains 2.4% to 3.9% Left wins. The 22–30 set still contains 1.0% to 2.5% on
+  19–21 and 31–33, and the starts of 31 and 33 are not even in it.
+* **Where the cases are.** Slices in which Left did the jumping are trivial (one to four cases).
+  The cases sit where Right had to jump, and where frogs still have to pass packed toads
+  (`FTTTFF`: 319 of 1,352).
+* **Variants, all worse or no better.** Preferring replies deep inside the losses, or slides to
+  jumps: within 5%. Excluding generalised positions that cannot be answered instead of growing:
+  5,361 cases at 14 squares. Separating the reached positions from everything that cannot be
+  defended (`itp6`): 2,027 at 14. A policy instead of a set, one tree per order choosing the frog
+  to move (`pol6`): 840 leaves up to 16 squares, 1,470 on 22–24.
+
+**The Lean side at this size.** `Cgt/Six.lean` and `Cgt/RowA3/Moves.lean` formalise six-piece
+positions, their moves and the closure induction (`le_zero_of_closed6`); they build. `z3check6.py`
+checks closure for unbounded gaps (it agrees with the brute-force check on the 929-case set, bounded
+to 14 squares). `gen_lean6.py` and `emit_lean6.py` turn a set into closure lemmas. On that 929-case
+set the plan has about 17,700 regions; `omega` needed about 3 seconds per region and failed on
+several of the first 169 ("possible counterexample"), which for `a = 2` needed case splits by hand.
+
+**Conclusion.** Every description we could learn grows with the board and breaks just outside the
+sizes it was learned on, and already the smallest one is two orders of magnitude beyond what the
+`omega` route handled for `a = 2`. A proof of the row `a = 3` needs a different idea: an explicit
+strategy with a structural reason, or an invariant language in which the thin period-6 stripes
+and the blocking of toads are primitive.
+

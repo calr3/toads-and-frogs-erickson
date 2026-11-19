@@ -111,7 +111,7 @@ numbered 1 to 5 in the arXiv preprint of [[T11]](#references) (2008) and in
 | **Thanatipanonda T2 (2008)** | `TT□ᵇFF = ∗` when `b ≡ 1 (mod 6)` and `0` otherwise, for `b ≥ 7` | **Proved here** | `exactValuesA2`, with the values for `b ≤ 6` too: `∗` for `2 ≤ b ≤ 4`, else `0` (`Cgt/RowA2Odd.lean`; checked with Comparator). Even `b` by shapes, odd `b` by a linear invariant closed under play and proved by `omega`. |
 | Thanatipanonda T3 (2008) | `Tᵃ□ᵇFᵃ = ∗` whenever `a > b > 0`, `b ≠ 2` | Open in general. `b = 1` is in [[WW]](#references); `b = 3` is Theorem 5.6.1 of [[Th08]](#references) | `b = 3`: `start_three_equiv_star`, an independent proof. **New:** `b = 4`, `start_four_equiv_star` (with `native_decide`). All computed values with `b ≥ 5` agree. |
 | Thanatipanonda T4 (2008) | `Tᵃ□ᵇFᵃ = 0` or `∗` whenever `b ≥ a > 0` | **False (found here)** | `T⁶□¹²F⁶` is neither (`not_thanatipanonda_conjecture4`, with `native_decide`); `T⁷□¹⁰F⁷` is neither (computed). Both are infinitesimal. |
-| Thanatipanonda T5 (2008) | For each `c ≥ 3` there is `b₀` with `Tᶜ□ᵇFᶜ = 0` for all `b ≥ b₀` | Open | For `c = 3` the computed values are `0` for every `b` from 30 to 53; the last `∗` is `T³□²⁹F³` [[T11]](#references). See [Values of the starting positions](#values-of-the-starting-positions). The row `a = 3` is the current target (`tools/presburger/a3/`). |
+| Thanatipanonda T5 (2008) | For each `c ≥ 3` there is `b₀` with `Tᶜ□ᵇFᶜ = 0` for all `b ≥ b₀` | Open | For `c = 3` the computed values are `0` for every `b` from 30 to 53; the last `∗` is `T³□²⁹F³` [[T11]](#references). See [Values of the starting positions](#values-of-the-starting-positions). Proving the row `a = 3` with the method of T2 failed: every description we could learn grows with the board (`docs/RESEARCH_NOTES.md` §16–18). |
 
 ## Status
 
@@ -473,8 +473,12 @@ exact solvers are in `tools/` (`stops.cpp` decides "Left stop `≤ 0`" for `Tᵃ
     each proved by `omega`. A few regions need a case split, because `omega` omits the dark-shadow
     step of the Omega test.
 
-  The same approach is the natural candidate for the row `a = 3`. There the earlier shape methods
-  failed in the approach phase (`docs/RESEARCH_NOTES.md` §10).
+  For the row `a = 3` the first step works: the front-frog policy settles the approach phase, which
+  defeated the shape methods (`docs/RESEARCH_NOTES.md` §10, §16). After contact it does not. The
+  exact loss sets, and every smaller closed set found, need well over a thousand linear cases,
+  grow with the board, and fail just outside the sizes they were learned on (§17–18,
+  `tools/presburger/a3/`). A Lean framework for six-piece positions is in place (`Cgt/Six.lean`,
+  `Cgt/RowA3/Moves.lean`), but the row needs a different idea.
 * An invariant recognised by finite automata, on the board folded at its centre, would prove
   every case at once. `tools/regular/` can check such a candidate exactly for every board
   size, but none was found. Learned invariants need more than 10 states already for boards of

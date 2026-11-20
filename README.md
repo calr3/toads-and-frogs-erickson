@@ -12,14 +12,15 @@ theorems in Toads and Frogs. We generally aim to use the kernel only, while allo
 - [What is new](#what-is-new)
 - [Conjectures about Toads and Frogs](#conjectures-about-toads-and-frogs)
 - [Status](#status)
-  - [Checking the main theorem with Comparator](#checking-the-main-theorem-with-comparator)
+  - [Checking with Comparator](#checking-with-comparator)
 - [Grid of proved cases](#grid-of-proved-cases)
 - [Values of the starting positions](#values-of-the-starting-positions)
 - [Contents](#contents) (the files in this repository)
-- [The row a = 2](#the-row-a--2)
-- [The column b = 3](#the-column-b--3)
-- [Computational evidence beyond the formal results](#computational-evidence-beyond-the-formal-results)
-- [What we learned about a general proof](#what-we-learned-about-a-general-proof)
+- [Observations](#observations)
+  - [The row a = 2](#the-row-a--2)
+  - [The column b = 3](#the-column-b--3)
+  - [Computational evidence beyond the formal results](#computational-evidence-beyond-the-formal-results)
+  - [What we learned about a general proof](#what-we-learned-about-a-general-proof)
 - [References](#references)
 
 ## What is new
@@ -147,7 +148,7 @@ The full conjecture is **not** proved here. It has been open since 1996 and is t
 Erickson's conjectures still open. The main earlier partial results are Thanatipanonda's proofs
 of the columns `b = 2` [[T11]](#references) and `b = 3` [[Th08]](#references) for `a ≥ 4`.
 
-### Checking the main theorem with Comparator
+### Checking with Comparator
 
 The main theorem, `conjecture5_of_openCases : OpenCases → Conjecture5`, the exception
 `not_infinitesimal_3_2`, and Thanatipanonda's Conjecture T2, `exactValuesA2 : ExactValuesA2`, can
@@ -338,7 +339,9 @@ Build with `lake build` (Lean `v4.36.0-rc2`). `lake build CgtNative` builds the 
   within memory. The larger ones take 10 to 50 minutes each and run to tens of thousands of
   lemmas.
 
-## The row a = 2
+## Observations
+
+### The row a = 2
 
 `infinitesimal_start_two : ∀ b, Infinitesimal (tf (start 2 b))`, in `Cgt/RowA2.lean`. In short:
 
@@ -367,7 +370,7 @@ each one with `omega` (`Cgt/RowA2Odd.lean`, `tools/presburger/`).
 example line, the margin lemma and soundness proof, the data, the exact values (§8), and a map of
 the files.
 
-## The column b = 3
+### The column b = 3
 
 `infinitesimal_start_b_three : ∀ a, Infinitesimal (tf (start a 3))`, in `Cgt/Col/Column3.lean`. In
 short:
@@ -402,7 +405,7 @@ as the kernel (`docs/RESEARCH_NOTES.md` §14). The exact values of `b = 4` (`sta
 `Cgt/Col/Value4.lean`) follow the `b = 3` pattern with the gap rule `ruleF2` (exact up to 2, no
 parity), 361,981 shapes (`tools/column/b4_star_shapes.txt.gz`) and 9 `native_decide` files.
 
-## Computational evidence beyond the formal results
+### Computational evidence beyond the formal results
 
 Two exact C++ solvers confirm the conjecture beyond the proved cases: `tools/stops.cpp`, which
 decides "Left stop `≤ 0`" (the same recursion as `Cgt/Infinitesimal.lean`), and
@@ -431,7 +434,7 @@ that proof, `tools/column/col_realcheck.cpp` checks Right's strategy on the real
 `0` or `∗`. The results, compared with the published tables, are in
 [Values of the starting positions](#values-of-the-starting-positions).
 
-## What we learned about a general proof
+### What we learned about a general proof
 
 See `docs/RESEARCH_NOTES.md` for the full record (strategies tried, data, obstructions). The
 exact solvers are in `tools/` (`stops.cpp` decides "Left stop `≤ 0`" for `Tᵃ□ᵇFᵃ`).

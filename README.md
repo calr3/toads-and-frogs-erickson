@@ -16,6 +16,21 @@ counterexample `T⁶□¹²F⁶`: their finite checks are too large for the kern
 `native_decide`, which also trusts Lean's compiler. They are built separately, with
 `lake build CgtNative`.
 
+**On this page**
+
+- [What is new](#what-is-new)
+- [Conjectures about Toads and Frogs](#conjectures-about-toads-and-frogs)
+- [Status](#status)
+  - [Checking the main theorem with Comparator](#checking-the-main-theorem-with-comparator)
+- [Grid of proved cases](#grid-of-proved-cases)
+- [Values of the starting positions](#values-of-the-starting-positions)
+- [Contents](#contents) (the files in this repository)
+- [The row a = 2](#the-row-a--2)
+- [The column b = 3](#the-column-b--3)
+- [Computational evidence beyond the formal results](#computational-evidence-beyond-the-formal-results)
+- [What we learned about a general proof](#what-we-learned-about-a-general-proof)
+- [References](#references)
+
 ## What is new
 
 **Erickson's Conjecture 5 is not proved here, and remains a conjecture.** What follows is partial

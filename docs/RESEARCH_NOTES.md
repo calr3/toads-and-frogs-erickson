@@ -703,3 +703,38 @@ and the blocking of toads are primitive.
   that cannot occur.
 * **The statement.** For `TᵃF` the conjecture's formula is negative; the truth is `0`.
 
+## 20. The column `b = 5`: the `b = 4` shapes do not close (`tools/column/`)
+
+A first attempt at `Tᵃ□⁵Fᵃ` with the method of §13–14 (the next open column of Erickson's
+conjecture and of Conjecture T3). No certificate was found. All runs used `NOPARITY=1 FAILFIRST=1
+MARGIN=4 DEADRUNS=1`, short-run cap `K = 2` unless noted, and `col_shapes 5 RB K M 28 FB`.
+
+* **Real play looks only twice as rich as `b = 4`.** Right's concrete strategy (`REAL=4-11`, 13
+  runs) visits 183,235 shapes over `a = 4…11`, 16,000 to 40,000 new ones per step of `a`. For
+  `b = 4` the count was 126,203 over `a = 4…12` (§14.1).
+* **Right's run bound is 13** for every `a` from 4 to 11 (`col_bound 5 4 11 1`), with no step up.
+* **The abstract search does not follow.**
+
+  | Runs `RB` | Gap threshold `M` | Far gaps `FB` | Outcome |
+  | --- | --- | --- | --- |
+  | 13 | 1 | 3 | start lost after 311,368 shapes (39 s) |
+  | 13 | 1 | 4 | start lost after 395,032 |
+  | 13 | 1 | 99 | start lost after 452,010 |
+  | 13 | 2 | 4 | start lost after 1,337,504 |
+  | 13 | 1, `K = 3` | 4 | start lost after 660,159 |
+  | 14 | 1 | 3 | start lost after 3,669,179 (11 min) |
+  | 14 | 1 | 4 | start lost after 7,277,289 (44 min) |
+  | 14 | 2 | 4 | no verdict: 29.4 million shapes explored in 100 minutes, under 20 GB |
+  | 15 | 1 | 4 | no verdict: out of an 8 GB limit after 2 million shapes |
+
+* **Reading.** With threshold 1 and no parity, the setting that proved `b = 4`, the start is lost
+  with 13 and with 14 runs, whatever the number of far gaps. Since real play needs only 13 runs,
+  the shapes are too coarse, not the run bound too low. The losing line starts with Left's first
+  slide and Right's mirror reply, each with a single option that does not lose concretely, and
+  runs through positions whose long runs have 4 or 5 pieces: with `K = 2`, `M = 1` a run is "far"
+  from the anchor from length 4 on, so small and large `a` share shapes. Threshold 2 at 14 runs
+  neither closes nor loses within 29 million shapes, over 50 times the 557,015 explored for
+  `b = 4`; a certificate of that size would be far beyond the `native_decide` check of §14.4.
+* **Not tried.** A finer rule designed from the losing lines; a larger margin or anchor so that
+  small `a` are separated from the far class and proved one by one.
+

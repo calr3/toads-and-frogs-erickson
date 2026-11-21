@@ -63,6 +63,16 @@ source says, and the few we could not reach, are in [docs/LITERATURE.md](docs/LI
   [[T11]](#references): `Tᵃ□ᵇFᵃ = ∗` whenever `a > b > 0`, `b ≠ 2`. The method is the `≤ ∗` one of
   `b = 3`, with gaps exact up to 2 and no parity; Right's strategy uses 361,981 run shapes, and the
   finite check (3.5 million witnesses) is evaluated by `native_decide`.
+* **New: Thanatipanonda's Conjecture T1, the positions with one frog.** For a one-frog position
+  with the toads anywhere, let `phi` be Left's moves minus Right's if every toad left of the frog
+  jumps it, `room` the empty squares right of the frog minus those left of the nearest toad, and
+  `gap` the empty squares between that toad and the frog. The value is `phi` if `room ≥ 2`; `phi`
+  or `phi + ½` if `room = 1` (even or odd gap); `phi + 1` or `(phi + 1)∗` if `room = 0`
+  (`value_room_*`, `Cgt/OneFrog/T1.lean`). For `□ᴸ Tᵃ □ᵇ F □ᴿ` this is Conjecture T1 of
+  [[T11]](#references) (`t1_*`), including its exception `Tᵃ□F = {{a−2|1}|0}`
+  (`t1_exception`). Checked by the kernel, with no `native_decide`. The frog never has a choice
+  of move, so every bound is an induction on the position; `tools/onefrog/check_rules.py` checks
+  each step of that induction on all boards of up to 15 squares.
 * **New: the row `a = 2`.** `TT□ᵇFF` is infinitesimal for every `b`
   (`infinitesimal_start_two`), the case `a = 2` of Erickson's conjecture, also predicted by
   Thanatipanonda's Conjecture T2. It had been computed for `b ≤ 6` [[E96]](#references) and
@@ -113,7 +123,7 @@ his 7.1 to 7.6 [[E96]](#references); [[T11]](#references) calls them Erickson's 
 | Erickson 7.4 (1996) | `Tᵃ□ᵃFᵃ⁻¹ = 1` or `1∗` for `a ≥ 1` | **False** | Known counterexample: `T⁷□⁷F⁶ > 2` from [[T11]](#references). |
 | **Erickson 7.5 (1996)**, "Conjecture 5" | `Tᵃ□ᵇFᵃ` is infinitesimal for every `(a, b) ≠ (3, 2)` | **Open** | The subject of this repository. Proved in Lean for `a ≤ 2` (every `b`), `b ≤ 3` (every `a`) and every case with `2a + b ≤ 12`, so `conjecture5_of_openCases` reduces the conjecture to `a ≥ 3`, `b ≥ 4`, `2a + b ≥ 13` (checked with Comparator). Also proved: `b = 4` for every `a` (with `native_decide`), and `(3, 7)` to `(3, 12)` and `(4, 5)` by certificates. `(3, 2)` really is the exception (`TTT□□FFF = ±1/8`). Confirmed by exact search on every board of at most 25 squares. See [Status](#status) and [Grid of proved cases](#grid-of-proved-cases). |
 | Erickson 7.6 (1996) | Toads and Frogs is NP-hard | **True** | Proved by Jesse Hull (2000), as reported in [[T11]](#references) | — |
-| Thanatipanonda T1 (2008) | Values of every position with one frog, `□ᴸ Tᵃ □ᵇ F □ᴿ`: three formulas, for `L = R`, `L = R − 1` and `R − L ≥ 2` | **Open** | — |
+| **Thanatipanonda T1 (2008)** | Values of every position with one frog, `□ᴸ Tᵃ □ᵇ F □ᴿ`: three formulas, for `L = R`, `L = R − 1` and `R − L ≥ 2` | **True** | Proven here (`Cgt/OneFrog/T1.lean`: `t1_far`, `t1_near_even`, `t1_near_odd`, `t1_equal_even`, `t1_equal_odd`; the exception `Tᵃ□F` in `Cgt/OneFrog/Exception.lean`), kernel only. It follows from a more general theorem for one-frog positions with the toads anywhere (`value_room_*`). As printed in the preprint the conjecture also covers `Tᵃ F` (`L = R = b = 0`, `a ≥ 2`), where its formula is negative and the value is `0`. |
 | **Thanatipanonda T2 (2008)** | `TT□ᵇFF = ∗` when `b ≡ 1 (mod 6)` and `0` otherwise, for `b ≥ 7` | **True** | Proven here in `exactValuesA2`, with the values for `b ≤ 6` too: `∗` for `2 ≤ b ≤ 4`, else `0` (`Cgt/RowA2Odd.lean`; checked with Comparator). Even `b` by shapes, odd `b` by a linear invariant closed under play and proved by `omega`. |
 | Thanatipanonda T3 (2008) | `Tᵃ□ᵇFᵃ = ∗` whenever `a > b > 0`, `b ≠ 2` | **Open** | `b = 1` is in [[WW]](#references); `b = 3` is Theorem 5.6.1 of [[Th08]](#references) | `b = 3`: `start_three_equiv_star`, an independent proof. **New:** `b = 4`, `start_four_equiv_star` (with `native_decide`). All computed values with `b ≥ 5` agree. |
 | Thanatipanonda T4 (2008) | `Tᵃ□ᵇFᵃ = 0` or `∗` whenever `b ≥ a > 0` | **False** | New counterexamples such as `a=6, b=12` and `a=7, b=10`. |

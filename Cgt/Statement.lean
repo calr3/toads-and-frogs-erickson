@@ -72,6 +72,17 @@ def powHalf : Nat → Game
 /-- `∗ = {0 | 0}`. -/
 def star : Game := mk [zero] [zero]
 
+/-- The integer `n ≥ 0` as a game: `0 = { | }`, `n + 1 = {n | }`. -/
+def int : Nat → Game
+  | 0 => zero
+  | n + 1 => mk [int n] []
+
+/-- `n + 1/2 = {n | n + 1}`. -/
+def half (n : Nat) : Game := mk [int n] [int (n + 1)]
+
+/-- `n∗ = {n | n}`. -/
+def starN (n : Nat) : Game := mk [int n] [int n]
+
 /-- A game is *infinitesimal* if it lies strictly between `-2⁻ⁿ` and `2⁻ⁿ` for every `n`,
 equivalently strictly between `-x` and `x` for every positive (short) number `x`. -/
 def Infinitesimal (g : Game) : Prop := ∀ n, lt (neg (powHalf n)) g ∧ lt g (powHalf n)
@@ -267,5 +278,32 @@ def valueA2 (b : Nat) : Game := if b = 2 ∨ b = 3 ∨ b = 4 ∨ b % 6 = 1 then 
 
 /-- Thanatipanonda's Conjecture T2: `TT□ᵇFF` equals `valueA2 b` for every `b`. -/
 def ExactValuesA2 : Prop := ∀ b : Nat, Equiv (tf (start 2 b)) (valueA2 b)
+
+/-- The position `□ˡ Tᵃ □ᵇ F □ʳ`, with one frog. -/
+def oneFrog (l a b r : Nat) : List Cell :=
+  List.replicate l E ++ List.replicate a T ++ List.replicate b E ++ F :: List.replicate r E
+
+/-- The values of `□ˡ Tᵃ □ᵇ F □ʳ` (`a ≥ 1`, `l ≤ r`) predicted by Thanatipanonda's Conjecture T1.
+With `n = (a - 1)(b - 1 + r)`:
+
+* `r - l ≥ 2`: the integer `(r - l - 1) + n`;
+* `l = r - 1`: `n` if `b` is even, `n + 1/2` if `b` is odd;
+* `l = r`: `n` if `b` is even, `n∗` if `b` is odd, except `Tᵃ □ F = {{a - 2 | 1} | 0}`
+  (`r = 0`, `b = 1`) for `a ≥ 2`.
+
+Subtraction is that of natural numbers, so for `b = r = 0` (the position `Tᵃ F`, where `b - 1 + r`
+would be `-1`) the value is `0`. -/
+def valueT1 (l a b r : Nat) : Game :=
+  if l + 2 ≤ r then int (r - l - 1 + (a - 1) * (b + r - 1))
+  else if l + 1 = r then
+    if b % 2 = 0 then int ((a - 1) * (b + r - 1)) else half ((a - 1) * (b + r - 1))
+  else if b % 2 = 0 then int ((a - 1) * (b + r - 1))
+  else if r = 0 ∧ b = 1 ∧ 2 ≤ a then mk [mk [int (a - 2)] [int 1]] [int 0]
+  else starN ((a - 1) * (b + r - 1))
+
+/-- Thanatipanonda's Conjecture T1: `□ˡ Tᵃ □ᵇ F □ʳ` equals `valueT1 l a b r` whenever `a ≥ 1` and
+`l ≤ r`. -/
+def ConjectureT1 : Prop :=
+  ∀ l a b r : Nat, 1 ≤ a → l ≤ r → Equiv (tf (oneFrog l a b r)) (valueT1 l a b r)
 
 end Cgt

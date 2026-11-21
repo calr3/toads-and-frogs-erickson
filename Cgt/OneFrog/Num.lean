@@ -11,17 +11,6 @@ namespace Cgt
 
 namespace Game
 
-/-- The integer `n ≥ 0` as a game: `0 = { | }`, `n + 1 = {n | }`. -/
-def int : Nat → Game
-  | 0 => zero
-  | n + 1 => mk [int n] []
-
-/-- `n + 1/2 = {n | n + 1}`. -/
-def half (n : Nat) : Game := mk [int n] [int (n + 1)]
-
-/-- `n∗ = {n | n}`. -/
-def starN (n : Nat) : Game := mk [int n] [int n]
-
 private theorem int_zero_left : (int 0).left = [] := rfl
 private theorem int_succ_left (n : Nat) : (int (n + 1)).left = [int n] := rfl
 private theorem int_right : ∀ n : Nat, (int n).right = []

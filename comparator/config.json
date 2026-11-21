@@ -4,7 +4,8 @@
   "theorem_names": [
     "Cgt.not_infinitesimal_3_2",
     "Cgt.conjecture5_of_openCases",
-    "Cgt.exactValuesA2"
+    "Cgt.exactValuesA2",
+    "Cgt.conjectureT1"
   ],
   "permitted_axioms": [
     "propext",

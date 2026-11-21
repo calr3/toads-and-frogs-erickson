@@ -57,10 +57,6 @@ theorem value_one_toad_odd {L B : List Bool} (hT : cT L = 1) (h : room L B = 0)
 
 /-! ### The positions `□ˡ Tᵃ □ᵇ F □ʳ` -/
 
-/-- The position `□ˡ Tᵃ □ᵇ F □ʳ`. -/
-def oneFrog (l a b r : Nat) : List Cell :=
-  List.replicate l E ++ List.replicate a T ++ List.replicate b E ++ F :: List.replicate r E
-
 /-- The left side of `□ˡ Tᵃ □ᵇ F □ʳ`, read from the frog. -/
 def side (l a b : Nat) : List Bool :=
   List.replicate b false ++ (List.replicate a true ++ List.replicate l false)

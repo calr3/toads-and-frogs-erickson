@@ -671,3 +671,35 @@ sizes it was learned on, and already the smallest one is two orders of magnitude
 strategy with a structural reason, or an invariant language in which the thin period-6 stripes
 and the blocking of toads are primitive.
 
+## 19. Positions with one frog: Conjecture T1 (`Cgt/OneFrog/`, `tools/onefrog/`)
+
+**Result (proved in Lean, kernel only).** `conjectureT1`: the values of `□ˡTᵃ□ᵇF□ʳ` for `a ≥ 1`,
+`l ≤ r`, from a theorem on one-frog positions with the toads anywhere. Full account in
+`docs/ONE_FROG.md`; this section records how it went.
+
+* **Why T1 was tried first.** Of the conjectures still open (T1, T3, T5), T5 starts with the row
+  `a = 3` of §16–18, and T3 needs an argument uniform in `b`. For T1, of the one-frog positions
+  with at most 4 toads on at most 13 squares, 95% are numbers and 4.5% numbers plus `∗`.
+* **Bounds instead of values.** The frog has at most one move, so `G ≤ n` and `G ≥ n` are one-step
+  recursions (`tools/onefrog/bounds.py`). They agree with canonical forms on all 20,480 positions
+  of at most 11 squares and are cheap up to 15.
+* **The potential.** `phi` (every toad left of the frog jumps, the frog walks home) changes by
+  −1, +1, +3 under a Left move, a frog slide, a frog jump. On all positions of at most 14 squares
+  with `phi ≥ 0`: the value is never below `phi`; and the excess of the integer upper bound over
+  `phi` is 0 exactly when `room ≥ 2`, 0 or 1 when `room = 1`, 1 or 2 when `room = 0`, and grows as
+  `room` falls.
+* **Exact values for `room = 1, 0`** depend only on the parity of the gap (2,036 + 1,013 + 652 +
+  316 positions with `room = 1`, and as many with `room = 0`, on at most 12 squares, no exception
+  with `phi ≥ 0`). For `room = −1` with an odd gap they do not: `3/2`, `7/4`, `{2|2}` and hotter
+  games occur.
+* **The induction was checked before it was formalised.** `check_rules.py` verifies each claim from
+  the claims one or two moves later. The first version failed at 69 claims on boards of at most 12
+  squares, all with `phi = −1`: `T□³F`-like single toads and packed blocks such as `□□TTF□`. Two
+  extra families fixed it (1,094,386 claims on at most 15 squares, no failure).
+* **In Lean.** A position is two lists around the frog (`pos L B`, the left one read from the
+  frog), so the frog's moves and the nearest toad's moves act on list heads. The lower bounds
+  compiled as first written. The degenerate families are stated with `phi = −2` and `phi = −1`
+  instead of shapes, and three inequalities (`phi ≥ room − 1` and variants) rule out the cases
+  that cannot occur.
+* **The statement.** For `TᵃF` the conjecture's formula is negative; the truth is `0`.
+

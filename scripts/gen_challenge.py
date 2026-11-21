@@ -13,8 +13,8 @@ import re
 HEADER = '''/-!
 # Challenge for Comparator
 
-The statements of the main theorems, proved in `Cgt/Conjecture5.lean` and `Cgt/RowA2Odd.lean`
-(imported by `Solution.lean`). Everything before the theorems is a verbatim copy of `Cgt/Statement.lean`, made
+The statements of the main theorems, proved in `Cgt/Conjecture5.lean`, `Cgt/RowA2Odd.lean` and
+`Cgt/OneFrog/Main.lean` (imported by `Solution.lean`). Everything before the theorems is a verbatim copy of `Cgt/Statement.lean`, made
 by `scripts/gen_challenge.py`; it uses Lean core only. See `comparator/README.md`.
 -/
 
@@ -39,6 +39,11 @@ theorem conjecture5_of_openCases (h : OpenCases) : Conjecture5 := by
 /-- **Thanatipanonda's Conjecture T2.** `TT□ᵇFF = ∗` if `2 ≤ b ≤ 4` or `b ≡ 1 (mod 6)`, and
 `TT□ᵇFF = 0` otherwise. -/
 theorem exactValuesA2 : ExactValuesA2 := by
+  sorry
+
+/-- **Thanatipanonda's Conjecture T1.** The value of `□ˡ Tᵃ □ᵇ F □ʳ` for every `a ≥ 1` and
+`l ≤ r` is `valueT1 l a b r`. -/
+theorem conjectureT1 : ConjectureT1 := by
   sorry
 
 end Cgt

@@ -19,6 +19,7 @@ theorems in Toads and Frogs. We generally aim to use the kernel only, while allo
 - [Observations](#observations)
   - [The row a = 2](#the-row-a--2)
   - [The column b = 3](#the-column-b--3)
+  - [Positions with one frog](#positions-with-one-frog)
   - [Computational evidence beyond the formal results](#computational-evidence-beyond-the-formal-results)
   - [What we learned about a general proof](#what-we-learned-about-a-general-proof)
 - [References](#references)
@@ -27,7 +28,8 @@ theorems in Toads and Frogs. We generally aim to use the kernel only, while allo
 
 **Erickson's Conjecture 5 is not proved here, and remains a conjecture.** What follows is partial
 progress: it is proved for some infinite families of starting positions (the row `a = 2` and the
-columns `b ≤ 4`) and for finitely many other cases; every other case is open.
+columns `b ≤ 4`) and for finitely many other cases; every other case is open. Two of
+Thanatipanonda's conjectures are proved (T1 and T2) and one is refuted (T4).
 
 **New** below means that the result is in none of the following sources, all checked in November
 2026: Erickson's paper [[E96]](#references) and his page for it; Thanatipanonda and Zeilberger
@@ -70,9 +72,12 @@ source says, and the few we could not reach, are in [docs/LITERATURE.md](docs/LI
   or `phi + ½` if `room = 1` (even or odd gap); `phi + 1` or `(phi + 1)∗` if `room = 0`
   (`value_room_*`, `Cgt/OneFrog/T1.lean`). For `□ᴸ Tᵃ □ᵇ F □ᴿ` this is Conjecture T1 of
   [[T11]](#references) (`t1_*`), including its exception `Tᵃ□F = {{a−2|1}|0}`
-  (`t1_exception`). Checked by the kernel, with no `native_decide`. The frog never has a choice
-  of move, so every bound is an induction on the position; `tools/onefrog/check_rules.py` checks
-  each step of that induction on all boards of up to 15 squares.
+  (`t1_exception`), all in one statement `conjectureT1`. Erickson [[E96]](#references) proved the
+  cases `L = R = 0` (his Theorem 5.2, with the exception) and `b = 0` (his Lemmas 4.3 and 4.4);
+  a gap together with empty squares at the ends is new. Checked by the kernel, with no
+  `native_decide`, and with Comparator. The frog never has a choice of move, so every bound is an
+  induction on the position; `tools/onefrog/check_rules.py` checks each step of that induction on
+  all boards of up to 15 squares. See [docs/ONE_FROG.md](docs/ONE_FROG.md).
 * **New: the row `a = 2`.** `TT□ᵇFF` is infinitesimal for every `b`
   (`infinitesimal_start_two`), the case `a = 2` of Erickson's conjecture, also predicted by
   Thanatipanonda's Conjecture T2. It had been computed for `b ≤ 6` [[E96]](#references) and
@@ -106,7 +111,7 @@ source says, and the few we could not reach, are in [docs/LITERATURE.md](docs/LI
   `a = 3`.
 * **Still open:**
   * the full conjecture;
-  * the exact values of other rows and columns.
+  * the exact values of other rows and columns (Conjectures T3 and T5).
 
 ## Conjectures about Toads and Frogs
 
@@ -123,7 +128,7 @@ his 7.1 to 7.6 [[E96]](#references); [[T11]](#references) calls them Erickson's 
 | Erickson 7.4 (1996) | `Tᵃ□ᵃFᵃ⁻¹ = 1` or `1∗` for `a ≥ 1` | **False** | Known counterexample: `T⁷□⁷F⁶ > 2` from [[T11]](#references). |
 | **Erickson 7.5 (1996)**, "Conjecture 5" | `Tᵃ□ᵇFᵃ` is infinitesimal for every `(a, b) ≠ (3, 2)` | **Open** | The subject of this repository. Proved in Lean for `a ≤ 2` (every `b`), `b ≤ 3` (every `a`) and every case with `2a + b ≤ 12`, so `conjecture5_of_openCases` reduces the conjecture to `a ≥ 3`, `b ≥ 4`, `2a + b ≥ 13` (checked with Comparator). Also proved: `b = 4` for every `a` (with `native_decide`), and `(3, 7)` to `(3, 12)` and `(4, 5)` by certificates. `(3, 2)` really is the exception (`TTT□□FFF = ±1/8`). Confirmed by exact search on every board of at most 25 squares. See [Status](#status) and [Grid of proved cases](#grid-of-proved-cases). |
 | Erickson 7.6 (1996) | Toads and Frogs is NP-hard | **True** | Proved by Jesse Hull (2000), as reported in [[T11]](#references) | — |
-| **Thanatipanonda T1 (2008)** | Values of every position with one frog, `□ᴸ Tᵃ □ᵇ F □ᴿ`: three formulas, for `L = R`, `L = R − 1` and `R − L ≥ 2` | **True** | Proven here (`Cgt/OneFrog/T1.lean`: `t1_far`, `t1_near_even`, `t1_near_odd`, `t1_equal_even`, `t1_equal_odd`; the exception `Tᵃ□F` in `Cgt/OneFrog/Exception.lean`), kernel only. It follows from a more general theorem for one-frog positions with the toads anywhere (`value_room_*`). As printed in the preprint the conjecture also covers `Tᵃ F` (`L = R = b = 0`, `a ≥ 2`), where its formula is negative and the value is `0`. |
+| **Thanatipanonda T1 (2008)** | Values of every position with one frog, `□ᴸ Tᵃ □ᵇ F □ᴿ` (`L ≤ R`): three formulas, for `L = R`, `L = R − 1` and `R − L ≥ 2` | **True** | Proven here in `conjectureT1` (`Cgt/OneFrog/Main.lean`; kernel only, checked with Comparator), as a case of a theorem on one-frog positions with the toads anywhere (`value_room_*`). The cases `L = R = 0` and `b = 0` were proved by Erickson [[E96]](#references). As printed in the preprint the conjecture also covers `Tᵃ F` (`L = R = b = 0`, `a ≥ 2`), where its formula is negative and the value is `0`. See [docs/ONE_FROG.md](docs/ONE_FROG.md). |
 | **Thanatipanonda T2 (2008)** | `TT□ᵇFF = ∗` when `b ≡ 1 (mod 6)` and `0` otherwise, for `b ≥ 7` | **True** | Proven here in `exactValuesA2`, with the values for `b ≤ 6` too: `∗` for `2 ≤ b ≤ 4`, else `0` (`Cgt/RowA2Odd.lean`; checked with Comparator). Even `b` by shapes, odd `b` by a linear invariant closed under play and proved by `omega`. |
 | Thanatipanonda T3 (2008) | `Tᵃ□ᵇFᵃ = ∗` whenever `a > b > 0`, `b ≠ 2` | **Open** | `b = 1` is in [[WW]](#references); `b = 3` is Theorem 5.6.1 of [[Th08]](#references) | `b = 3`: `start_three_equiv_star`, an independent proof. **New:** `b = 4`, `start_four_equiv_star` (with `native_decide`). All computed values with `b ≥ 5` agree. |
 | Thanatipanonda T4 (2008) | `Tᵃ□ᵇFᵃ = 0` or `∗` whenever `b ≥ a > 0` | **False** | New counterexamples such as `a=6, b=12` and `a=7, b=10`. |
@@ -146,6 +151,7 @@ his 7.1 to 7.6 [[E96]](#references); [[T11]](#references) calls them Erickson's 
 | **Exact values of `Tᵃ □³ Fᵃ`**: `∗` for every `a ≥ 4` (and `0` for `a = 0, 3`, `∗` for `a = 1, 2`); machine-checked strategy over 1,263 run shapes | `start_three_value`, `start_three_equiv_star` (`Cgt/Col/Value3.lean`) | Known: the case `a = b` of Theorem 5.6.1 of [[Th08]](#references), `Tᵃ□³Fᵇ = {a − b \| a − b}` (`a, b ≥ 4`); our proof is independent |
 | **Exact values of `Tᵃ □⁴ Fᵃ`**: `∗` for every `a ≥ 5` (and `0` for `a = 0, 1, 4`, `∗` for `a = 2, 3`); strategy over 361,981 run shapes; 🟦 finite check by `native_decide` | `start_four_value`, `start_four_equiv_star` (`Cgt/Col/Value4.lean`; `lake build CgtNative`) | **New**: Conjecture T3 of [[T11]](#references) for `b = 4`; values known for `a ≤ 10` |
 | **`b = 4`, all `a` (`Tᵃ □⁴ Fᵃ`)**: strategy over 233,087 run shapes; 🟦 finite check by `native_decide` (trusts the compiler) | `infinitesimal_start_b_four` (`Cgt/Col/Column4.lean`; `lake build CgtNative`) | **New**; listed as open in [[Th08]](#references) (p. 89), values known for `a ≤ 10` |
+| **Conjecture T1: the value of `□ˡ Tᵃ □ᵇ F □ʳ`** for every `a ≥ 1`, `l ≤ r`; from a general theorem on one-frog positions (value `phi`, `phi + ½`, `phi + 1` or `(phi + 1)∗` according to `room` and the parity of the gap); checked with Comparator | `conjectureT1` (`Cgt/OneFrog/Main.lean`); `value_room_*`, `t1_*` (`Cgt/OneFrog/T1.lean`) | **New**: Conjecture T1 of [[T11]](#references). Known before: `l = r = 0` ([[E96]](#references), Theorem 5.2) and `b = 0` ([[E96]](#references), Lemmas 4.3, 4.4) |
 | One-sided Death Leap Principle, general | `le_zero_of_dlp` | Known: [[T11]](#references); the two-sided version is in [[E96]](#references) |
 | Every case with `2a + b ≤ 12`, kernel-checked | `Cgt/FiniteCases.lean` | Known numerically ([[E96]](#references), [[T11]](#references) tables) |
 | `(3,7)` to `(3,12)`, `(4,5)`, `(5,3)`, `(6,3)`: strategy certificates | `Cgt/Cert/` (`lake build CgtCerts`) | Known numerically ([[T11]](#references) table) |
@@ -161,11 +167,11 @@ of the columns `b = 2` [[T11]](#references) and `b = 3` [[Th08]](#references) fo
 ### Checking with Comparator
 
 The main theorem, `conjecture5_of_openCases : OpenCases → Conjecture5`, the exception
-`not_infinitesimal_3_2`, and Thanatipanonda's Conjecture T2, `exactValuesA2 : ExactValuesA2`, can
-be checked with Comparator (`lake comparator`). `Challenge.lean` states them, with `sorry`, after
+`not_infinitesimal_3_2`, and Thanatipanonda's Conjectures T2, `exactValuesA2 : ExactValuesA2`, and
+T1, `conjectureT1 : ConjectureT1`, can be checked with Comparator (`lake comparator`). `Challenge.lean` states them, with `sorry`, after
 a verbatim copy of `Cgt/Statement.lean`: the definitions of games, infinitesimals, `∗`, the rules,
-the starting positions, `Conjecture5`, `OpenCases`, `valueA2` and `ExactValuesA2`, in Lean core
-only. Comparator checks that `Solution.lean` proves exactly these statements, with no axioms
+the starting positions, `Conjecture5`, `OpenCases`, `valueA2`, `ExactValuesA2`, the one-frog
+positions, `valueT1` and `ConjectureT1`, in Lean core only. Comparator checks that `Solution.lean` proves exactly these statements, with no axioms
 beyond `propext`, `Quot.sound` and `Classical.choice`, and that the kernel accepts it. To trust the
 result you need to read only `Challenge.lean`. The `native_decide` results are not covered. See
 [comparator/README.md](comparator/README.md).
@@ -308,7 +314,7 @@ are infinitesimal but neither `0` nor `∗` (below); and `∗2`, `∗3` below ar
 
 ## Contents
 
-* `paper/new_results.tex` and `paper/new_results.pdf`: a short write-up of the new results for
+* `paper/new_results.tex` and `paper/new_results.pdf`: a write-up of the new results for
   readers of [[T11]](#references) (table generated by `scripts/gen_values_tex.py`).
 * `Cgt/Statement.lean`: the definitions needed to state the main theorems (games, Conway's order,
   infinitesimals, the rules, `tf`, `start`, `Conjecture5`, `OpenCases`), copied into
@@ -337,6 +343,10 @@ are infinitesimal but neither `0` nor `∗` (below); and `∗2`, `∗3` below ar
 * `Cgt/RowA2Zero.lean`, `Cgt/RowA2Values.lean`, `Cgt/RowA2Odd.lean`, `Cgt/RowA2Odd/`: exact values
   in the row `a = 2` (even `b` by shapes, `b ≤ 30` by the kernel, odd `b` by the linear invariant
   `inv2` and the generated `omega` lemmas `Cgt/RowA2Odd/Close*.lean`).
+* `Cgt/OneFrog/`: the positions with one frog and Conjecture T1 (`Num.lean`: comparing with `n`,
+  `n + ½`, `n∗`; `Pos.lean`, `Rules.lean`: positions and moves; `Lower.lean`, `Upper.lean`: the
+  bounds; `T1.lean`, `Exception.lean`, `Main.lean`: the theorems). `tools/onefrog/` has the
+  programs that found and checked the argument. See [docs/ONE_FROG.md](docs/ONE_FROG.md).
 * `tools/presburger/`: how `inv2` was found and checked (exact solver, decision-tree learner, Z3
   closure check, canonical-value calculator, Lean generator). `tools/linear/` is the first,
   superseded attempt (shapes with clamped linear forms).
@@ -416,6 +426,23 @@ one. It is evaluated by `native_decide` in 8 files, so this theorem trusts Lean'
 as the kernel (`docs/RESEARCH_NOTES.md` §14). The exact values of `b = 4` (`start_four_value`,
 `Cgt/Col/Value4.lean`) follow the `b = 3` pattern with the gap rule `ruleF2` (exact up to 2, no
 parity), 361,981 shapes (`tools/column/b4_star_shapes.txt.gz`) and 9 `native_decide` files.
+
+### Positions with one frog
+
+`conjectureT1 : ConjectureT1`, in `Cgt/OneFrog/Main.lean`. In short:
+
+1. **The frog never has a choice.** It slides or jumps, whichever is possible, so Right only
+   decides whether to move. Comparing a position with `n`, `n + ½` or `n∗` is then a one-step
+   recursion, with no sums of games.
+2. **A potential.** `phi` is Left's moves minus Right's if every toad left of the frog jumps it. A
+   Left move lowers it by 1, a slide of the frog raises it by 1, and a jump of the frog raises it
+   by 3. Left is never stuck while `phi > 0`, so the value is at least `phi`.
+3. **Room.** `room` is the number of empty squares right of the frog minus those left of the
+   nearest toad. With `room ≥ 2` Right keeps the value at `phi` by answering with slides. With
+   `room = 1` or `0` the value is `phi`, `phi + ½`, `phi + 1` or `(phi + 1)∗`, by the parity of the
+   gap between the nearest toad and the frog.
+
+**[docs/ONE_FROG.md](docs/ONE_FROG.md)** has the full account.
 
 ### Computational evidence beyond the formal results
 

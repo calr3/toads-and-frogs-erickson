@@ -31,7 +31,7 @@
 \newtheorem*{remark}{Remark}
 
 \title{New results on Toads and Frogs:\\
-Conjecture T2, the column $b=4$, and counterexamples to Conjecture T4}
+Conjectures T1 and T2, the column $b=4$, and counterexamples to Conjecture T4}
 \author{Notes accompanying the Lean development\\
 \url{https://github.com/calr3/toads-and-frogs-erickson}}
 \date{November 2026}
@@ -40,8 +40,11 @@ Conjecture T2, the column $b=4$, and counterexamples to Conjecture T4}
 \maketitle
 
 \begin{abstract}
-We report results on the starting positions $\Tt^a\E^b\Ff^a$ of Toads and Frogs, most of them
-machine-checked in the Lean~4 proof assistant. (1)~Thanatipanonda's Conjecture~T2 holds:
+We report results on Toads and Frogs, most of them machine-checked in the Lean~4 proof
+assistant. (0)~Thanatipanonda's Conjecture~T1 holds: we determine the value of every position
+$\E^l\Tt^a\E^b\Ff\E^r$ with one frog and $l\le r$, as a special case of a theorem on one-frog
+positions with the toads anywhere; Erickson had proved the cases $l=r=0$ and $b=0$. The other results concern the starting positions
+$\Tt^a\E^b\Ff^a$. (1)~Thanatipanonda's Conjecture~T2 holds:
 $\Tt\Tt\E^b\Ff\Ff=\ast$ if $2\le b\le 4$ or $b\equiv 1\pmod 6$, and $0$ otherwise, for every $b$.
 (2)~$\Tt^a\E^4\Ff^a$ is infinitesimal for every $a$, and equals $\ast$ for every $a\ge5$; this is
 the case $b=4$ of Conjecture~T3 and of Erickson's Conjecture~7.5. (3)~Conjecture~T4 is false:
@@ -64,6 +67,9 @@ numbered 7.1--7.6 as in~\cite{E96}.
 \toprule
 Result & Status \\
 \midrule
+Conjecture T1: values of the one-frog positions $\E^l\Tt^a\E^b\Ff\E^r$, $l\le r$
+  (Theorems~\ref{thm:onefrog}, \ref{thm:T1})
+  & Proved in Lean; kernel only. \\
 Conjecture T2: exact values of $\Tt\Tt\E^b\Ff\Ff$ for every $b$ (Theorem~\ref{thm:T2})
   & Proved in Lean; kernel only. \\
 $\Tt\Tt\E^b\Ff\Ff$ infinitesimal for every $b$ (Erickson 7.5, $a=2$)
@@ -94,13 +100,13 @@ A Lean proof is checked by Lean's small trusted kernel. Where a theorem needs a 
 computation, we evaluate it with \lean{native\_decide}, which compiles the computation to machine
 code and runs it; such a theorem trusts Lean's compiler as well as the kernel, and \lean{\#print
 axioms} lists one extra axiom per use. We say which results are of which kind. The main
-kernel-only statements (Theorem~\ref{thm:T2}, Erickson's exceptional case
+kernel-only statements (Theorems~\ref{thm:T1} and~\ref{thm:T2}, Erickson's exceptional case
 $\Tt\Tt\Tt\E\E\Ff\Ff\Ff=\pm\frac18$, and the reduction of Erickson's Conjecture~7.5 in
 Section~\ref{sec:erickson}) have also been checked with Comparator, a tool which confirms that a
 proof establishes exactly the statements written in a short, self-contained file
 (\texttt{Challenge.lean}) using only the standard axioms. To trust these results one needs to read
 only that file, which defines games, Conway's order, infinitesimals, $\ast$, the rules of the game
-and the starting positions from scratch.
+and the positions concerned from scratch.
 
 \section{Conventions}
 
@@ -116,10 +122,136 @@ consequences are used throughout:
   automatic). In the formalisation, ``Left stop $\le 0$'' is replaced by an equivalent recursion
   with no numbers in it: Right may answer a Left move by \emph{passing}, once, provided the
   position is then $\le 0$ in normal play.
-\item Every proof below is a strategy for Right showing that some position is $\le 0$ (or
+\item Every proof in Sections~\ref{sec:T2}--\ref{sec:T4} is a strategy for Right showing that some position is $\le 0$ (or
   $\le\ast$, or has Left stop $\le0$). The computer finds the strategy; Lean checks that it wins
   on every board size.
 \end{itemize}
+
+\section{Conjecture T1: positions with one frog}\label{sec:T1}
+
+Conjecture~T1 of~\cite{T11} gives the values of the positions $\E^l\Tt^a\E^b\Ff\E^r$ with
+$l\le r$. Two families of these were proved by Erickson~\cite{E96}: the starting positions
+$\Tt^a\E^b\Ff$ ($l=r=0$; his Theorem~5.2), and the blocks $\E^l\Tt^a\Ff\E^r$ ($b=0$, every $l$
+and $r$; his Lemmas~4.3 and~4.4). The conjecture joins the two: a gap $b\ge1$ together with empty
+squares at the ends. We prove it as a special case of a statement about every position with one
+frog, with the toads anywhere.
+
+\subsection{The general theorem}
+
+Consider a position with exactly one frog and at least one toad to its left; the toads to its
+right have been \emph{passed}. Number the squares $0,\dots,N-1$; let the toads be at
+$x_1<\dots<x_k$, the frog at $f$, and let $m$ toads lie left of the frog. Define
+\begin{itemize}
+\item $\varphi=\sum_{i=1}^{k}(N-k+i-1-x_i)-m-f$: the number of Left's moves minus the number of
+  Right's moves if every toad left of the frog jumps it and the frog walks to the left end;
+\item the \emph{room} $\rho$: the number of empty squares right of the frog minus the number of
+  empty squares left of the toad nearest the frog on its left;
+\item the \emph{gap} $d$: the number of empty squares between that toad and the frog.
+\end{itemize}
+
+\begin{theorem}[Lean: \lean{value\_room\_ge\_two}, \lean{value\_room\_one\_even},
+\lean{value\_room\_one\_odd}, \lean{value\_room\_zero\_even}, \lean{value\_room\_zero\_odd}]
+\label{thm:onefrog}
+The value $G$ of such a position is
+\[
+G=\begin{cases}
+\varphi & \text{if } \rho\ge2,\\
+\varphi & \text{if } \rho=1 \text{ and } d \text{ is even},\\
+\varphi+\tfrac12 & \text{if } \rho=1 \text{ and } d \text{ is odd},\\
+\varphi+1 & \text{if } \rho=0,\ d \text{ is even and } \varphi\ge-1,\\
+(\varphi+1)\ast=\{\varphi+1\mid\varphi+1\} & \text{if } \rho=0,\ d \text{ is odd and } \varphi\ge0.
+\end{cases}
+\]
+\end{theorem}
+
+For $\rho<0$ the values are not this regular (with $\rho=-1$ and $d$ odd they include
+$\varphi+\frac32$, $\varphi+\frac74$ and $\{\varphi+2\mid\varphi+2\}$); the proof needs only bounds
+there. For $\E^l\Tt^a\E^b\Ff\E^r$ we have $\rho=r-l$, $d=b$ and
+$\varphi=(a-1)(b-1+r)+(r-l-1)$, which gives:
+
+\begin{theorem}[Conjecture T1; Lean: \lean{conjectureT1}]\label{thm:T1}
+Let $a\ge1$, $l\le r$ and $n=(a-1)(b-1+r)$. Then
+\[
+\E^l\Tt^a\E^b\Ff\E^r=
+\begin{cases}
+(r-l-1)+n & \text{if } r-l\ge2,\\
+n & \text{if } r-l\le1 \text{ and } b \text{ is even},\\
+n+\tfrac12 & \text{if } r-l=1 \text{ and } b \text{ is odd},\\
+n\ast & \text{if } r=l \text{ and } b \text{ is odd},
+\end{cases}
+\]
+with two exceptions: $\Tt^a\E\Ff=\{\{a-2\mid1\}\mid0\}$ for $a\ge2$, and $\Tt^a\Ff=0$.
+\end{theorem}
+
+The first exception is part of the conjecture, and is in~\cite{E96} (from~\cite{WW}). The second
+is not: for $l=r=b=0$ and $a\ge2$ the
+formula $(a-1)(b-1+r)$ is negative, and the conjecture, stated in the preprint of~\cite{T11} for
+$b\ge0$, fails there as printed. (We read the statement in the preprint; we were not able to
+compare the wording of the journal version.) The proofs are checked by the kernel, with no
+\lean{native\_decide}, and Theorem~\ref{thm:T1} has been checked with Comparator.
+
+\subsection{Proof}
+
+Three facts make the problem tractable.
+\begin{itemize}
+\item \emph{The frog never has a choice.} It can slide if the square on its left is empty, or
+  jump if that square holds a toad and the next one is empty. Right only decides whether to move.
+\item \emph{Comparing with a number is a one-step recursion.} For an integer $n\ge1$, $G\le n$
+  if and only if every Left option $G^L$ satisfies $G^L\le n-1$ or has a Right option
+  $G^{LR}\le n$; and $G\le 0$ if and only if every $G^L$ has a Right option $G^{LR}\le0$. There
+  are similar rules for $G\ge n$ and for $n+\frac12$ and $n\ast$. No sums of games are needed.
+\item \emph{Every move changes $\varphi$ by a fixed amount.} A Left move lowers $\varphi$ by $1$,
+  a slide of the frog raises it by $1$, and a jump of the frog raises it by $3$: the frog has
+  spent one move on two squares, and the toad it jumped will not jump. Jumping is bad for the
+  player who jumps.
+\end{itemize}
+
+\paragraph{Lower bounds.} (i)~$G\ge\varphi$ for every one-frog position with $\varphi\ge0$. If
+Left has no move, the position is $\E^j\Tt^i\Ff\Tt^{i'}$, and $\varphi=-(i+j)\le0$. So Left has a
+move whenever $\varphi>0$, and any move keeps the bound. (ii)~For $k=1,2$: $G\ge\varphi+k$ on the
+set $P_k$ of positions with $\rho\le-k$, or $\rho=1-k$ and $d$ even. Left slides the nearest toad
+when $d\ge1$, which lowers $\rho$ by $1$; when $d=0$ he makes any other slide, or jumps when no
+toad can slide. After a slide of the frog he returns to $P_k$ in the same way; after a jump of
+the frog, $\varphi$ has risen by $3$ and (i) suffices. (iii)~The bounds $\varphi+\frac12$
+($\rho=1$, $d$ odd) and $(\varphi+1)\ast$ ($\rho=0$, $d$ odd) follow in one step: the frog's slide
+leads to a position covered by~(i), and Left's slide of the nearest toad to one in $P_1$ or~$P_2$.
+
+\paragraph{Upper bounds.} These are proved together, by induction on the position:
+\begin{center}
+\begin{tabular}{@{}ll@{}}
+\toprule
+Positions & Bound \\
+\midrule
+no toad left of the frog & $\max(\varphi,0)$ \\
+$\rho\ge2$, or $\rho=1$ and $d$ even & $\varphi$ \\
+$\rho=1$, $d$ odd & $\varphi+\frac12$ \\
+$\rho=0$, $d$ even & $\max(\varphi+1,0)$ \\
+$\rho=0$, $d$ odd, $\varphi\ge0$ & $(\varphi+1)\ast$ \\
+$\rho=-1$, $d=0$, $\varphi\ge-1$ & $\varphi+2$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+and two degenerate families with $\varphi<0$. Right answers a Left move with a slide of the frog,
+or not at all; he never jumps. A slide of the nearest toad lowers $\rho$ by $1$ and a slide of the
+frog raises it by $1$; a jump by the nearest toad followed by a slide of the frog raises $\rho$ by
+the distance to the next toad; any other Left move leaves $\rho$ and $d$ alone and simply costs
+Left a move. For example, if $\rho=1$ and $d$ is even, a slide of the nearest toad gives $\rho=0$
+with $d$ odd, and the frog's slide restores $\rho=1$ with $d$ even and the same~$\varphi$. The
+cases with $\varphi<0$ use the inequality $\varphi\ge\rho-1$, valid when there is an empty square
+right of the frog.
+
+\paragraph{The exception.} In $\Tt^a\E\Ff$ ($a\ge2$), Left's only move is to
+$\Tt^{a-1}\E\Tt\Ff=\{\Tt^{a-2}\E\Tt\Tt\Ff\mid\Tt^{a-1}\Ff\Tt\E\}=\{a-2\mid1\}$: in the first option
+the frog can never move, and the second is $1$ by Theorem~\ref{thm:onefrog}, as is Right's option
+$\Tt^a\Ff\E=0$.
+
+\paragraph{How it was found.} The two integer recursions above compute, for every one-frog
+position, the least integer above and the greatest integer below its value without canonical
+forms. Compared with $\varphi$ on all positions of at most 14 squares, the lower bound $\varphi$
+never fails and the upper bound depends only on $\rho$ once $\rho\ge2$. A program then checked
+every step of the induction, as the proof uses it, on all positions of at most 15 squares
+(1.09 million claims) before the formalisation; its first run failed only at positions with
+$\varphi=-1$, which is how the degenerate families were found.
 
 \section{Conjecture T2}\label{sec:T2}
 
@@ -420,7 +552,9 @@ Erickson 7.4 & False: $\Tt^7\E^7\Ff^6>2$~\cite{T11}. \\
 Erickson 7.5 & Open. New: $a=2$ and $b=4$ for every $a$ (Sections~\ref{sec:T2},
   \ref{sec:erickson}). \\
 Erickson 7.6 & True (Hull, 2000, as reported in~\cite{T11}). \\
-Thanatipanonda T1 & Open. \\
+Thanatipanonda T1 & \textbf{True} (Theorem~\ref{thm:T1}; the cases $l=r=0$ and $b=0$ are
+  in~\cite{E96}), with $\Tt^a\Ff=0$ in place of the
+  formula when $l=r=b=0$. \\
 Thanatipanonda T2 & \textbf{True} (Theorem~\ref{thm:T2}). \\
 Thanatipanonda T3 & Open. Known for $b=1$~\cite{WW} and $b=3$~\cite{Th08};
   \textbf{new: $b=4$} (Theorem~\ref{thm:b4}). All computed values agree. \\
@@ -443,7 +577,8 @@ values for Toads and Frogs} cited in~\cite{T11}, nor Siegel's \emph{Combinatoria
 build (\texttt{lake build}, Lean \texttt{v4.36.0-rc2}) contains the kernel-only results; the
 \lean{native\_decide} results are built by \texttt{lake build CgtNative} (about 15 minutes for
 $b=4$); the comparator check is \texttt{lake comparator}. The solvers and search programs are in
-\texttt{tools/} and \texttt{scripts/}, and fuller accounts are in \texttt{docs/ROW\_A2.md},
+\texttt{tools/} and \texttt{scripts/}, and fuller accounts are in \texttt{docs/ONE\_FROG.md},
+\texttt{docs/ROW\_A2.md},
 \texttt{docs/COLUMN\_B3.md} and \texttt{docs/RESEARCH\_NOTES.md}.
 
 \begin{thebibliography}{TZ07}

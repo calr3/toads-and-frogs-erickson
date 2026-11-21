@@ -51,8 +51,8 @@ After changing `Cgt/Statement.lean`, regenerate the challenge with
 
 ## Status
 
-`lake comparator --config comparator/config.json` accepted all three theorems on 2026-11-18, at
-commit `c019622`:
+`lake comparator --config comparator/config.json` accepted all four theorems on 2026-11-21, at
+commit `f717041`:
 
 ```
 Running Lean default kernel on solution
@@ -60,7 +60,8 @@ Lean default kernel accepts the solution
 Your solution is okay!
 ```
 
-The run took 38 minutes, including building and exporting `Challenge` and `Solution` inside the
-sandbox and the (single-threaded) kernel replay of `Solution`. It used Lean `v4.36.0-rc2` and
-`bwrap` 0.9.0, on a machine with 4 cores and 15 GB of memory. (An earlier run, on 2026-11-17 at
-commit `96026a5`, accepted the first two theorems in 31 minutes.)
+The run took 20 minutes, after a `lake build` of 8 minutes, including building and exporting
+`Challenge` and `Solution` inside the sandbox and the (single-threaded) kernel replay of
+`Solution`. It used Lean `v4.36.0-rc2` and `bwrap` 0.9.0, on a machine with 24 cores and 49 GB of
+memory. (Earlier runs: 2026-11-18 at commit `c019622`, the first three theorems, 38 minutes on 4
+cores; 2026-11-17 at commit `96026a5`, the first two, 31 minutes.)

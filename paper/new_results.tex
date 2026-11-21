@@ -1,0 +1,463 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=2.6cm]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{microtype}
+\usepackage{booktabs}
+\usepackage[table]{xcolor}
+\usepackage{enumitem}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage[colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!50!black]{hyperref}
+
+\setlist{itemsep=2pt,topsep=4pt}
+
+% Toads and Frogs notation
+\newcommand{\Tt}{\mathsf{T}}
+\newcommand{\Ff}{\mathsf{F}}
+\newcommand{\E}{\square}
+\newcommand{\pos}[1]{\ensuremath{#1}}
+\newcommand{\lean}[1]{\texttt{#1}}
+\newcommand{\new}{\cellcolor{orange!22}}
+\newcommand{\fuzzy}{\mathrel{\|}}
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\theoremstyle{remark}
+\newtheorem*{remark}{Remark}
+
+\title{New results on Toads and Frogs:\\
+Conjecture T2, the column $b=4$, and counterexamples to Conjecture T4}
+\author{Notes accompanying the Lean development\\
+\url{https://github.com/calr3/toads-and-frogs-erickson}}
+\date{November 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We report results on the starting positions $\Tt^a\E^b\Ff^a$ of Toads and Frogs, most of them
+machine-checked in the Lean~4 proof assistant. (1)~Thanatipanonda's Conjecture~T2 holds:
+$\Tt\Tt\E^b\Ff\Ff=\ast$ if $2\le b\le 4$ or $b\equiv 1\pmod 6$, and $0$ otherwise, for every $b$.
+(2)~$\Tt^a\E^4\Ff^a$ is infinitesimal for every $a$, and equals $\ast$ for every $a\ge5$; this is
+the case $b=4$ of Conjecture~T3 and of Erickson's Conjecture~7.5. (3)~Conjecture~T4 is false:
+$\Tt^6\E^{12}\Ff^6$ is neither $0$ nor $\ast$ (proved), and neither is $\Tt^7\E^{10}\Ff^7$
+(computed). Both are still infinitesimal, as Erickson's conjecture predicts. We also give an
+independent machine-checked proof that $\Tt^a\E^3\Ff^a=\ast$ for $a\ge4$ (the diagonal case of
+Theorem~5.6.1 of~\cite{Th08}), the values of 37 further starting positions beyond the published
+tables, and an account of why the method that settles $a=2$ does not reach $a=3$.
+\end{abstract}
+
+\section{Summary}
+
+We use the numbering of the journal version of~\cite{T11}: Conjectures T1--T5 there are
+Conjectures 1--5 in the arXiv preprint and in the thesis~\cite{Th08}. Erickson's conjectures are
+numbered 7.1--7.6 as in~\cite{E96}.
+
+\begin{center}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabularx}{\linewidth}{@{}>{\raggedright}p{5.9cm}X@{}}
+\toprule
+Result & Status \\
+\midrule
+Conjecture T2: exact values of $\Tt\Tt\E^b\Ff\Ff$ for every $b$ (Theorem~\ref{thm:T2})
+  & Proved in Lean; kernel only. \\
+$\Tt\Tt\E^b\Ff\Ff$ infinitesimal for every $b$ (Erickson 7.5, $a=2$)
+  & Proved in Lean; kernel only. Also a corollary of T2. \\
+$\Tt^a\E^3\Ff^a$ infinitesimal for every $a$; $=\ast$ for $a\ge 4$
+  & Known~\cite[Thm.~5.6.1]{Th08}; independent proof, kernel only. \\
+$\Tt^a\E^4\Ff^a$ infinitesimal for every $a$ (Erickson 7.5, $b=4$)
+  & Proved in Lean; the finite check uses \lean{native\_decide}. \\
+$\Tt^a\E^4\Ff^a=\ast$ for every $a\ge5$ (Conjecture T3, $b=4$)
+  & Proved in Lean; the finite check uses \lean{native\_decide}. \\
+$\Tt^6\E^{12}\Ff^6\notin\{0,\ast\}$, refuting Conjecture T4
+  & Proved in Lean; the finite check uses \lean{native\_decide}. \\
+$\Tt^7\E^{10}\Ff^7\notin\{0,\ast\}$
+  & Computed by exhaustive search. \\
+37 new values of $\Tt^a\E^b\Ff^a$ (Table~\ref{tab:values})
+  & Computed by exhaustive search. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\noindent
+Every computed value agrees with all 114 published values within reach of our solver, including
+those of~\cite{T11}. The four cells that Figure~2 of the preprint of~\cite{T11} lists only as
+``$\neq 0$'', namely $(a,b)=(5,11),(6,8),(7,6),(7,7)$, are all~$\ast$.
+
+\paragraph{On trust.}
+A Lean proof is checked by Lean's small trusted kernel. Where a theorem needs a very large finite
+computation, we evaluate it with \lean{native\_decide}, which compiles the computation to machine
+code and runs it; such a theorem trusts Lean's compiler as well as the kernel, and \lean{\#print
+axioms} lists one extra axiom per use. We say which results are of which kind. The main
+kernel-only statements (Theorem~\ref{thm:T2}, Erickson's exceptional case
+$\Tt\Tt\Tt\E\E\Ff\Ff\Ff=\pm\frac18$, and the reduction of Erickson's Conjecture~7.5 in
+Section~\ref{sec:erickson}) have also been checked with Comparator, a tool which confirms that a
+proof establishes exactly the statements written in a short, self-contained file
+(\texttt{Challenge.lean}) using only the standard axioms. To trust these results one needs to read
+only that file, which defines games, Conway's order, infinitesimals, $\ast$, the rules of the game
+and the starting positions from scratch.
+
+\section{Conventions}
+
+Left moves toads $\Tt$ rightwards and Right moves frogs $\Ff$ leftwards; a piece slides into an
+adjacent empty square or jumps one opposing piece into the empty square beyond. We write
+$G\fuzzy H$ for confused (incomparable) games.
+
+The start $G=\Tt^a\E^b\Ff^a$ is its own mirror image with colours swapped, so $G=-G$. Three easy
+consequences are used throughout:
+\begin{itemize}
+\item $G\le 0$ implies $G=0$, and $G\le\ast$ implies $G=\ast$ (since $-\ast=\ast$);
+\item $G$ is infinitesimal if and only if its Left stop is $\le 0$ (Right stop $\ge 0$ is then
+  automatic). In the formalisation, ``Left stop $\le 0$'' is replaced by an equivalent recursion
+  with no numbers in it: Right may answer a Left move by \emph{passing}, once, provided the
+  position is then $\le 0$ in normal play.
+\item Every proof below is a strategy for Right showing that some position is $\le 0$ (or
+  $\le\ast$, or has Left stop $\le0$). The computer finds the strategy; Lean checks that it wins
+  on every board size.
+\end{itemize}
+
+\section{Conjecture T2}\label{sec:T2}
+
+\begin{theorem}[Lean: \lean{exactValuesA2}]\label{thm:T2}
+For every $b\ge0$,
+\[
+\Tt\Tt\E^b\Ff\Ff =
+\begin{cases}
+\ast & \text{if } 2\le b\le 4 \text{ or } b\equiv 1 \pmod 6,\\
+0 & \text{otherwise.}
+\end{cases}
+\]
+In particular Conjecture~T2 of~\cite{T11} holds, and $\Tt\Tt\E^b\Ff\Ff$ is infinitesimal for
+every~$b$.
+\end{theorem}
+
+The proof is checked by the kernel, with no \lean{native\_decide}; its axioms are the standard
+\lean{propext}, \lean{Quot.sound} and \lean{Classical.choice}.
+
+\subsection{Reduction to four-piece claims}
+
+Let $G=\Tt\Tt\E^b\Ff\Ff$ with $b\ge 2$. Each player has a single move: Left to
+$\Tt\E\Tt\E^{b-1}\Ff\Ff$ and Right to $\Tt\Tt\E^{b-1}\Ff\E\Ff$. Hence
+\begin{itemize}
+\item $G=0$ if and only if Right's only reply to Left's move, $\Tt\E\Tt\E^{b-2}\Ff\E\Ff$, is
+  $\le0$;
+\item $G=\ast$ if $\Tt\Tt\E^{b-1}\Ff\E\Ff\le 0$: Left's option is $\le 0$ (shown below), so $G$
+  is not $\ge\ast$, and Right's option is $\le0$, so $G$ is not $\ge 0$; together with $G=-G$
+  this gives $G=\ast$.
+\end{itemize}
+(That Left's option $\Tt\E\Tt\E^{m}\Ff\Ff$ is $\le 0$ for every $m\ge1$ is proved by the shape
+method of Section~\ref{sec:shapes}, over 1,543 shapes; it also gives directly that $G$ is
+infinitesimal.) So both values come down to claims ``$X\le0$'' about positions with two toads and
+two frogs. Such a position is a piece order together with five gaps,
+\[
+\E^{g_0}\,c_1\,\E^{g_1}\,c_2\,\E^{g_2}\,c_3\,\E^{g_3}\,c_4\,\E^{g_4}.
+\]
+
+\subsection{Shapes and a margin lemma}\label{sec:shapes}
+
+Pair each gap with its mirror image ($g_0$ with $g_4$, $g_1$ with $g_3$). The \emph{shape} of a
+four-piece position records the piece order, the two mirrored differences $g_4-g_0$ and
+$g_3-g_1$ exactly, and $\min(g_0,g_4)$, $\min(g_1,g_3)$ and $g_2$ capped at $4$: below $4$ they
+are kept, above it only their parity.
+
+The key lemma is a \emph{margin} argument. Say that $p$ and $q$ have the same shape with margin
+$j$ if they agree in piece order and mirrored differences, and each capped quantity is either
+equal in both or at least $4+j$ in both with the same parity. A move changes each gap by at most
+one, and legality depends only on which gaps are zero; so if $p,q$ agree with margin $j+1$, every
+move of a given piece in $p$ is available in $q$, and the results agree with margin~$j$. Each
+shape has at most eight \emph{witnesses} (normal forms) with margin~$2$ to all its positions.
+Consequently:
+
+\begin{lemma}[Lean: \lean{le\_zero\_of\_good}]
+Let $S$ be a finite set of shapes such that, for every witness $w$ of every shape in $S$ and
+every Left move $w\to q$, some Right move $q\to r$ leads to a shape in $S$. Then every
+position whose shape lies in $S$ is $\le0$.
+\end{lemma}
+
+The hypothesis is a finite computation, which the Lean kernel performs itself; the program that
+proposes $S$ is not trusted.
+
+\paragraph{Even $b$.} For even $k\ge4$, Right wins $\Tt\E\Tt\E^k\Ff\E\Ff$ while keeping both
+mirrored differences within $4$; the positions reached fall into 1,038 shapes, found by a search
+on shapes with backtracking. This gives $\Tt\Tt\E^b\Ff\Ff=0$ for even $b\ge6$. The cases $b\le30$
+are checked one by one by the kernel.
+
+\paragraph{Odd $b$: why shapes fail.} For odd $b$ the smallest bound on the mirrored differences
+with which Right still wins grows with the board. For $\Tt\E\Tt\E^k\Ff\E\Ff$ with
+$k=3,7,9,13,15,19$ it is $4,6,8,10,12,14$; for $\Tt\Tt\E^k\Ff\E\Ff$ with $k=6,12,18,24,30$ it is
+$5,9,13,17,21$. So no finite set of shapes can work, and odd $b$ needed a different invariant.
+
+\subsection{Odd \texorpdfstring{$b$}{b}: a linear invariant}
+
+\paragraph{The approach phase, and where the period 6 comes from.} While the pieces are in the
+order $\Tt\Tt\Ff\Ff$, Right always moves his \emph{front} frog. Each Left move lowers the race
+count (empty squares in front of the toads minus those in front of the frogs) by one, and
+Right's reply restores it. The rear frog never moves, so the positions stay in the
+two-parameter family
+\[
+\E^{g_0}\,\Tt\,\E^{g_1}\,\Tt\,\E^{g_2}\,\Ff\,\E^{2g_0+g_1+c}\,\Ff,
+\qquad c\in\{0,1\},
+\]
+with $c=0$ starting from $\Tt\E\Tt\E^{k}\Ff\E\Ff$ (the claim for $G=0$) and $c=1$ from
+$\Tt\Tt\E^{k}\Ff\E\Ff$ (the claim for $G=\ast$). Exact play shows that every position of the family is a loss for
+Left moving first when the number $N$ of empty squares satisfies $N\equiv 3,5\pmod 6$ (for
+$c=0$) or $N\equiv1\pmod6$ (for $c=1$). Since $N=b$ in both cases, this is precisely the pattern
+of Conjecture~T2 for odd $b$. (In the proof this is not used directly; it is a consequence of the
+invariant below.)
+
+\paragraph{After the first contact.} The positions after the first jump are cold: almost all
+their canonical values are numbers or numbers plus~$\ast$. Accordingly, for each order of the
+pieces, the set of positions that Left (moving first) loses is described by a small decision
+tree over linear forms in the gaps, residues mod~$2$ and~$3$, and the race count. The trees,
+learned from exact play on all positions with up to 30--40 empty squares, have
+$2$ ($\Ff\Ff\Tt\Tt$), $6$ ($\Ff\Tt\Ff\Tt$), $16$ ($\Ff\Tt\Tt\Ff$), $32$ ($\Tt\Ff\Ff\Tt$) and $49$
+($\Tt\Ff\Tt\Ff$) leaves, and $19$ for the contact region of $\Tt\Tt\Ff\Ff$. Right always moves
+into these sets.
+
+\paragraph{The proof.} The union of these sets is an invariant \lean{inv2} consisting of 67 cases,
+each a conjunction of linear inequalities, equalities and congruences in the five gaps. The
+starting positions lie in it, and it is \emph{closed}: from every position in it, every Left move
+has a Right reply back into it, for every board size. Closure was first checked with the SMT
+solver Z3, with the gaps as unbounded integers; Z3 also split each (piece order, Left move, case)
+into regions with a single Right reply and a single target case, 379 regions in all. In Lean,
+each region is a lemma in Presburger arithmetic proved by the decision procedure \lean{omega}
+(a few needed a case split on a gap or its parity). Closure then gives $\le 0$ by induction on
+the number of moves remaining.
+
+\section{The columns \texorpdfstring{$b=3$}{b=3} and \texorpdfstring{$b=4$}{b=4}}
+
+\subsection{Runs instead of gaps}
+
+With few empty squares, the roles of pieces and gaps swap: a position is a few empty squares
+separated by long \emph{runs} of pieces, and the number of runs is not fixed. Positions are
+handled as run lists, and moves on run lists are proved equal to moves on cells. Erickson's dead
+pieces are essential: a run enclosed by a toad run of length $\ge2$ before it and a frog run of
+length $\ge2$ after it, with no empty square between, never moves again, so its length is
+dropped. The \emph{shape} of a position records each run's kind, the lengths of empty runs and of
+runs of length one, the sorted order of the remaining live runs of length $\ge2$ (together with an
+anchor of value $2$), and the gaps between consecutive sorted lengths, exactly up to a threshold
+and coarsely above it. A move changes each recorded difference by at most~$2$, which gives a margin
+lemma as in Section~\ref{sec:shapes}. The framework is proved once in Lean for any such gap rule.
+
+\subsection{\texorpdfstring{$b=3$}{b=3}}
+
+\begin{theorem}[Lean: \lean{infinitesimal\_start\_b\_three}, \lean{start\_three\_value}]
+$\Tt^a\E^3\Ff^a$ is infinitesimal for every $a$, and equals $\ast$ for every $a\ge4$ (and $0$ for
+$a=0,3$, $\ast$ for $a=1,2$).
+\end{theorem}
+
+This is known: it is the diagonal case of Theorem~5.6.1 of~\cite{Th08},
+$\Tt^a\E^3\Ff^b=\{a-b\mid a-b\}$ for $a,b\ge4$ (Theorem~D.3 of the preprint of~\cite{T11}). Our proof
+is independent and, as far as we know, the first machine-checked one. Right's strategy uses 3,031
+shapes for infinitesimality and 1,263 for the value; gaps are kept exactly up to~$2$ and by parity
+above. The finite checks are done by the kernel. We have not formalised the off-diagonal case
+$a\neq b$.
+
+\subsection{\texorpdfstring{$b=4$}{b=4}}
+
+\begin{theorem}[Lean: \lean{infinitesimal\_start\_b\_four}, \lean{start\_four\_value};
+\lean{native\_decide}]\label{thm:b4}
+$\Tt^a\E^4\Ff^a$ is infinitesimal for every $a$. Moreover $\Tt^a\E^4\Ff^a=\ast$ for every
+$a\ge5$, with $0$ for $a=0,1,4$ and $\ast$ for $a=2,3$.
+\end{theorem}
+
+This is the case $b=4$ of Conjecture~T3 and of Erickson's Conjecture~7.5. Values were known for
+$a\le10$~\cite{T11}, and~\cite[p.~89]{Th08} lists $\Tt^a\E^4\Ff^b$ as open.
+
+The settings that work for $b=3$ fail here: Right needs up to $13$ runs, and with parity kept the
+search for a closed set of shapes does not terminate, wandering through positions with four or
+five long runs that differ only in the order, spacing and parity of their lengths. The margin
+argument never uses parity, and dropping it closes the search. For infinitesimality, gaps between
+long runs are kept exactly up to~$1$ and otherwise only as ``far''; Right's strategy uses 233,087
+shapes and 2.8 million witnesses. For the value, gaps are kept exactly up to~$2$; Right's strategy
+uses 361,981 shapes and 3.5 million witnesses. These checks are about 270 times larger than those
+of $b=3$; the kernel would need an estimated 150 CPU hours, so they are evaluated with
+\lean{native\_decide}. As independent checks, two separate programs confirm that the shape sets
+are closed, and Right's strategy has been played on the actual game trees of $\Tt^a\E^4\Ff^a$ for
+every $a\le24$ (for the value, $5\le a\le22$); each of these is a complete proof for that~$a$,
+independent of the margin argument.
+
+\section{Counterexamples to Conjecture T4}\label{sec:T4}
+
+Conjecture~T4 of~\cite{T11} states that $\Tt^a\E^b\Ff^a$ is $0$ or $\ast$ whenever $b\ge a>0$.
+The table in~\cite{T11} stops at $b=8$ for $a=6$ and at $b=7$ for $a=7$.
+
+\begin{theorem}[Lean: \lean{not\_thanatipanonda\_conjecture4}; \lean{native\_decide}]
+$G=\Tt^6\E^{12}\Ff^6$ satisfies $G\fuzzy 0$ and $G\fuzzy\ast$. In particular $G$ is neither $0$
+nor~$\ast$, and Conjecture~T4 is false.
+\end{theorem}
+
+\begin{proof}[Outline]
+Right has a single move from $G$, the front frog's slide, to
+$R=\Tt^6\E^{11}\Ff\E\Ff^5$. We show $R\le0$ and $R\le\ast$ by a strategy table for Right of about
+21 million positions, extracted from an exact solver and checked in Lean (with
+\lean{native\_decide}). Since $G$ has a Right option $R\le 0$, $G\not\ge0$; since $G+\ast$ has the
+Right option $R+\ast\le0$, $G\not\ge\ast$. As $G=-G$, also $G\not\le0$ and $G\not\le\ast$.
+\end{proof}
+
+By exhaustive search (not formalised), $\Tt^7\E^{10}\Ff^7$ is likewise neither $0$ nor $\ast$.
+Both positions are nonetheless infinitesimal (their Left stops are $0$), in agreement with
+Erickson's Conjecture~7.5, and neither is $\ast2$ or $\ast3$. We have not determined their
+canonical forms. Outside the column $b=2$, they are the only cells of Table~\ref{tab:values} whose value is
+neither $0$ nor~$\ast$. Not to be confused with Erickson's
+Conjecture~7.4, which~\cite{T11} refutes.
+
+\section{Values of the starting positions}\label{sec:values}
+
+Table~\ref{tab:values} collects every known value of $\Tt^a\E^b\Ff^a$ for $a\le14$, $b\le30$.
+Our values come from an exhaustive solver (\texttt{tools/values.cpp}) on boards of up to 32
+cells. Like the program of~\cite{T11}, it decides comparisons rather than computing canonical
+forms: since $G=-G$, deciding $G\le0$ and $G+\ast\le0$ determines whether $G$ is $0$, $\ast$ or
+neither.
+
+\begin{table}[htbp]
+\centering
+\small
+\setlength{\tabcolsep}{4.2pt}
+\renewcommand{\arraystretch}{1.08}
+\begin{tabular}{@{}r|*{14}{c}@{}}
+\toprule
+$b\backslash a$ & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 \\
+\midrule
+\csname @@input\endcsname values_table.tex
+\bottomrule
+\end{tabular}
+\caption{Values of $\Tt^a\E^b\Ff^a$ (rows $b$, columns $a$; note the transposition relative to
+Figure~2 of~\cite{T11}). \colorbox{orange!22}{Shaded}: new, computed here (including the four
+``$\neq0$'' cells of~\cite{T11}; the rows $b\le3$ for $a\ge11$ are not counted, since they
+follow from~\cite{T11,Th08}). \textbf{Bold}: proved in Lean (the column $a=2$, the rows $b=3,4$;
+for $(6,12)$, that the value is neither $0$ nor $\ast$). $\mathrm{N}$: an infinitesimal with a long canonical form, as in~\cite{E96,T11}.
+$\dagger$: infinitesimal, but neither $0$, $\ast$, $\ast2$ nor $\ast3$. Blank: not computed.
+Beyond the table, $a=2$ continues with period~$6$ (Theorem~\ref{thm:T2}), and~\cite{T11} gives
+$a=3$, $31\le b\le 53$: all~$0$.}
+\label{tab:values}
+\end{table}
+
+Some observations on the new values:
+\begin{itemize}
+\item In the region $b\ge a$ of Conjecture~T4, every new value other than the two
+  counterexamples is $0$ or $\ast$. The value $\ast$ keeps recurring for $a=5$ ($b=17,21$) and
+  $a=6$ ($b=15$), so for $c=5,6$ the data are too short to suggest the threshold $b_0$ of
+  Conjecture~T5.
+\item For $a=4$ the values are $0$ for every $b$ from $10$ to $24$.
+\item In the region $a>b>0$, $b\ne2$, of Conjecture~T3, every computed value is $\ast$.
+\end{itemize}
+
+\section{Erickson's Conjecture 7.5}\label{sec:erickson}
+
+Erickson's Conjecture~7.5 remains open. Combining the families above with finitely many checked
+cases, we have in Lean:
+\begin{itemize}
+\item infinitesimality for $a\le2$ (every $b$), $b\le3$ (every $a$, with $b=2$ due
+  to~\cite{T11} and formalised here), and every case with $2a+b\le12$; Erickson's exception
+  $\Tt\Tt\Tt\E\E\Ff\Ff\Ff=\pm\frac18$ is also proved;
+\item hence the conjecture is equivalent to its restriction to $a\ge3$, $b\ge4$, $2a+b\ge13$
+  (\lean{conjecture5\_of\_openCases}, kernel only, checked with Comparator);
+\item in addition, $b=4$ for every $a$ (Theorem~\ref{thm:b4}, \lean{native\_decide}), and the cases
+  $(3,7)$ to $(3,12)$ and $(4,5)$ by strategy certificates.
+\end{itemize}
+By exhaustive search, the conjecture holds on every board of at most $25$ squares, i.e.\ for all
+$2a+b\le25$.
+
+\section{The row \texorpdfstring{$a=3$}{a=3}: a negative result}\label{sec:a3}
+
+The natural next step, and the route towards Conjecture~T5 for $c=3$, is the row $a=3$. As for
+$a=2$, it reduces to a claim about Left's unique first move: $\Tt\Tt\E\Tt\E^m\Ff\Ff\Ff\le0$ for
+$m\ge5$. We report what we found, since it may save effort.
+
+\begin{itemize}
+\item \emph{The approach phase works.} If Right always moves his front frog while the centre gap
+  is at least~$2$, the race count stays at $-1$ and the positions form the three-parameter family
+  $\E^{g_0}\Tt\E^{g_1}\Tt\E^{g_2}\Tt\E^{g_3}\Ff\E^{3g_0+2g_1+g_2-1}\Ff\Ff$. Every position of this
+  family is a loss for Left moving first for every number of empty squares from $6$ to $34$,
+  with no congruence condition (all are wins at $5$, matching the failure of the claim at $m=4$).
+\item \emph{After contact it does not.} All 19 later piece orders occur, and the exact loss sets
+  have no small description: decision trees learned on boards of up to 18 empty squares have
+  hundreds to over a thousand leaves and fail on larger boards. A search for a smaller closed
+  subset of the losses (growing the set whenever a Left move has no answer in it) always closes
+  on the data, but needs about $930$ linear cases for boards of at most $14$ empty squares,
+  $1{,}760$ for at most $18$, and $3{,}589$ for $22$ to $30$; it does not level off, and fails just
+  outside the sizes on which it was found. For $a=2$ the whole invariant had 67 cases.
+\item \emph{No spare tempo.} $\Tt\Tt\E\Tt\E^m\Ff\Ff\Ff$ is a number:
+  \[
+  \begin{array}{c|cccccccccccccc}
+  m & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & 16 & 17 & 18\\\hline
+  \text{value} & 0 & -\frac18 & -\frac18 & -\frac18 & -\frac14 & -\frac14 & -\frac14 & -\frac14
+    & 0 & -\frac14 & -\frac12 & -\frac14 & -\frac14 & -\frac12
+  \end{array}
+  \]
+  So Left's first move costs him only a fraction of a move, and not uniformly: at $m=13$, where
+  $\Tt^3\E^{14}\Ff^3=\ast$, the value is exactly~$0$.
+\item \emph{Structure.} Right must jump: restricted to at most four jumps of his own, he
+  loses for most $m\le22$. When Left refuses to jump, Right wins by blocking toads rather than
+  through the race count. On boards of 45--50 empty squares, two-dimensional
+  sections of the loss sets look regular: polygons with edges of slope $1$, $2$ and $\frac12$, and
+  thin stripes of period~$6$.
+\end{itemize}
+
+\noindent
+Our reading is that a proof of the row $a=3$ needs a strategy for Right chosen for its regularity
+after contact as well, or an invariant language in which the period-6 stripes and the blocking of
+toads are primitive. We would be glad to hear of any structural insight into this row.
+
+\section{Status of the conjectures}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabularx}{\linewidth}{@{}l>{\raggedright\arraybackslash}X@{}}
+\toprule
+Conjecture & Status \\
+\midrule
+Erickson 7.1, 7.3 & True: proved by Thanatipanonda (Theorems D.2, D.1 of the preprint
+  of~\cite{T11}; proofs in~\cite{Th08}). \\
+Erickson 7.2 & True: proved in~\cite{TZ07}. \\
+Erickson 7.4 & False: $\Tt^7\E^7\Ff^6>2$~\cite{T11}. \\
+Erickson 7.5 & Open. New: $a=2$ and $b=4$ for every $a$ (Sections~\ref{sec:T2},
+  \ref{sec:erickson}). \\
+Erickson 7.6 & True (Hull, 2000, as reported in~\cite{T11}). \\
+Thanatipanonda T1 & Open. \\
+Thanatipanonda T2 & \textbf{True} (Theorem~\ref{thm:T2}). \\
+Thanatipanonda T3 & Open. Known for $b=1$~\cite{WW} and $b=3$~\cite{Th08};
+  \textbf{new: $b=4$} (Theorem~\ref{thm:b4}). All computed values agree. \\
+Thanatipanonda T4 & \textbf{False}: $(6,12)$ (proved) and $(7,10)$ (computed). \\
+Thanatipanonda T5 & Open. For $c=3$ the last $\ast$ is at $b=29$~\cite{T11}; the row $a=3$
+  resists the methods above (Section~\ref{sec:a3}). \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\paragraph{Literature.} We call a result new when we could not find it in~\cite{E96,TZ07,T11,Th08},
+in the ``Unsolved problems in combinatorial games'' lists of the six \emph{Games of No Chance}
+volumes, in the works citing these (via OpenAlex, Crossref, Semantic Scholar and zbMATH Open), on
+arXiv, or in formal libraries (Mathlib and other Lean, Rocq and Isabelle code). We could not reach
+the preprints \emph{Three (More) Results of Combinatorial Game Toads and Frogs} and \emph{Library
+values for Toads and Frogs} cited in~\cite{T11}, nor Siegel's \emph{Combinatorial Game Theory} or
+\emph{Lessons in Play}; corrections are very welcome.
+
+\paragraph{Reproducing.} Everything is in the repository named on the title page. The default
+build (\texttt{lake build}, Lean \texttt{v4.36.0-rc2}) contains the kernel-only results; the
+\lean{native\_decide} results are built by \texttt{lake build CgtNative} (about 15 minutes for
+$b=4$); the comparator check is \texttt{lake comparator}. The solvers and search programs are in
+\texttt{tools/} and \texttt{scripts/}, and fuller accounts are in \texttt{docs/ROW\_A2.md},
+\texttt{docs/COLUMN\_B3.md} and \texttt{docs/RESEARCH\_NOTES.md}.
+
+\begin{thebibliography}{TZ07}
+\bibitem[E96]{E96} J.~Erickson, \emph{New Toads and Frogs results}. In R.~J.~Nowakowski (ed.),
+  \emph{Games of No Chance}, MSRI Publications~29, Cambridge University Press, 1996, 299--310.
+\bibitem[T11]{T11} T.~Thanatipanonda, \emph{Further hopping with Toads and Frogs}. Electron.\ J.\
+  Combin.\ 18(1) (2011), \#P67. Preprint arXiv:0804.0640 (2008).
+\bibitem[Th08]{Th08} T.~Thanatipanonda, \emph{Symbolic-computational methods in combinatorial game
+  theory and Ramsey theory}. PhD thesis, Rutgers University, 2008. doi:10.7282/T30G3K3F.
+\bibitem[TZ07]{TZ07} T.~Thanatipanonda and D.~Zeilberger, \emph{A symbolic finite-state approach
+  for automated proving of theorems in combinatorial game theory}. J.\ Difference Equ.\ Appl.\
+  15(2) (2009); arXiv:0710.4951.
+\bibitem[WW]{WW} E.~R.~Berlekamp, J.~H.~Conway and R.~K.~Guy, \emph{Winning Ways for your
+  Mathematical Plays}. Academic Press, 1982.
+\end{thebibliography}
+
+\end{document}

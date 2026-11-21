@@ -115,6 +115,26 @@ vector<bool> deadRuns(const vector<pair<char,int>> &rs) {
   }
   return d;
 }
+// WEIGHT=w: the shape also records, for every live long toad run x and live long frog run y (in
+// board order), the weighted difference x - 2y: exactly if it is within [-w, w], otherwise only its
+// sign. (A toad reservoir in front of an empty square races against a frog run that is worth two
+// moves per frog; see docs/RESEARCH_NOTES.md, section 20.) WBOTH=1 adds y - 2x as well. Witnesses
+// then let every far gap range over c, ..., c + WEXT and keep the positions with the same record.
+// Experimental: the margin argument for these shapes is not proved.
+int WGT = getenv("WEIGHT") ? atoi(getenv("WEIGHT")) : 0, WBOTH = getenv("WBOTH") != nullptr, WEXT = getenv("WEXT") ? atoi(getenv("WEXT")) : 6;
+static char wcode(int v) { return v < -WGT ? 'm' : v > WGT ? 'p' : char('A' + v + WGT); }
+string wsuffix(const vector<pair<char,int>> &rs, const vector<bool> &dd) {
+  string t; int m = rs.size();
+  if (getenv("WSUM")) {   // WSUM=1: one record instead, (sum of live long toad runs) - 2 (sum of live long frog runs)
+    int st = 0, sf = 0;
+    for (int i = 0; i < m; i++) if (rs[i].second >= K && !dd[i]) { if (rs[i].first == 'T') st += rs[i].second; else if (rs[i].first == 'F') sf += rs[i].second; }
+    t += wcode(st - 2 * sf); if (WBOTH) t += wcode(sf - 2 * st); return t; }
+  for (int i = 0; i < m; i++) if (rs[i].first == 'T' && rs[i].second >= K && !dd[i])
+    for (int j = 0; j < m; j++) if (rs[j].first == 'F' && rs[j].second >= K && !dd[j]) {
+      t += wcode(rs[i].second - 2 * rs[j].second); if (WBOTH) t += wcode(rs[j].second - 2 * rs[i].second); }
+  return t;
+}
+static size_t gapEnd(const Shape &s) { size_t sl = s.find('/'); return sl == string::npos ? s.size() : sl; }
 Shape shapeOf(const Pos &p) {
   auto rs = runs(p); int m = rs.size(); auto dd = deadRuns(rs);
   vector<pair<int,int>> lv;
@@ -130,14 +150,16 @@ Shape shapeOf(const Pos &p) {
   t += '|';
   int prev = K;
   for (auto [l, i] : lv) { int g = l - prev; prev = l; t += char('0' + (g <= M ? g : NOPARITY ? M + 1 : M + 1 + (g - M - 1) % 2)); }
+  if (WGT) { t += '/'; t += wsuffix(rs, dd); }
   return t;
 }
 vector<Pos> wit(const Shape &s) {
-  size_t bar = s.find('|'); string sk = s.substr(0, bar), gs = s.substr(bar + 1);
+  size_t bar = s.find('|'); string sk = s.substr(0, bar), gs = s.substr(bar + 1, gapEnd(s) - bar - 1);
+  string wsuf = WGT ? s.substr(gapEnd(s) + 1) : "";
   int L = gs.size(); vector<int> far; for (int k = 0; k < L; k++) if (gs[k] - '0' > M) far.push_back(k);
   vector<Pos> out;
   // far gap c: with parity, c, c + 2, ..., c + MARGIN; without (NOPARITY), c, c + 1, ..., c + MARGIN
-  int base = NOPARITY ? MARGIN + 1 : MARGIN / 2 + 1, step = NOPARITY ? 1 : 2, total = 1; for (size_t j = 0; j < far.size(); j++) total *= base;
+  int base = NOPARITY ? (WGT ? WEXT : MARGIN) + 1 : (WGT ? WEXT : MARGIN) / 2 + 1, step = NOPARITY ? 1 : 2, total = 1; for (size_t j = 0; j < far.size(); j++) total *= base;
   for (int mask = 0; mask < total; mask++) {
     vector<int> g(L); for (int k = 0; k < L; k++) g[k] = gs[k] - '0';
     for (size_t j = 0, mm = mask; j < far.size(); j++, mm /= base) g[far[j]] += step * (mm % base);
@@ -145,6 +167,7 @@ vector<Pos> wit(const Shape &s) {
     Pos p; for (size_t i = 0; i < sk.size(); i += 2) { char c = sk[i], v = sk[i + 1]; if (c == 'X') p += "TTFF"; else p += string(v == 'D' ? 2 : v >= 'a' ? len[v - 'a'] : v - '0', c); }
     // balance check (all game positions have as many toads as frogs)
     if (count(p.begin(), p.end(), 'T') != count(p.begin(), p.end(), 'F')) unbalanced++;   // kept: needed for soundness
+    if (WGT) { auto rs = runs(p); if (wsuffix(rs, deadRuns(rs)) != wsuf) continue; }
     out.push_back(p);
   }
   return out;
@@ -230,9 +253,9 @@ bool LSc(u64 s) {
 bool le0(const Pos &s) { return le0c(enc(s)); }
 bool Up(const Pos &s) { return Upc(enc(s)); }
 bool LeS(const Pos &s) { return LSc(enc(s)); }
-int farGaps(const Shape &s) { size_t bar = s.find('|'); int f = 0; for (size_t k = bar + 1; k < s.size(); k++) if (s[k] - '0' > M) f++; return f; }
+int farGaps(const Shape &s) { size_t bar = s.find('|'); int f = 0; for (size_t k = bar + 1; k < gapEnd(s); k++) if (s[k] - '0' > M) f++; return f; }
 int EB = getenv("EB") ? atoi(getenv("EB")) : 99;   // most long runs (entries) after Right's replies
-bool okShape(const Pos &r) { if (nruns(r) > RB) return false; Shape s = shapeOf(r); return farGaps(s) <= FB && (int)(s.size() - s.find('|') - 1) <= EB; }
+bool okShape(const Pos &r) { if (nruns(r) > RB) return false; Shape s = shapeOf(r); return farGaps(s) <= FB && (int)(gapEnd(s) - s.find('|') - 1) <= EB; }
 // abstract game. Node = mode ('U' or 'N') + shape, interned as an id.
 typedef string Node;
 unordered_map<Node, int> ids; vector<const Node *> nm;
@@ -253,9 +276,9 @@ int stOf(const Node &x) { auto it = ids.find(x); return it == ids.end() ? 0 : st
 long cplx(int id) {         // complexity of a shape: far gaps first, then witness size
   if (cplxv[id] >= 0) return cplxv[id];
   Shape s = nm[id]->substr(1); size_t bar = s.find('|'); long far = 0;
-  for (size_t k = bar + 1; k < s.size(); k++) if (s[k] - '0' > M) far++;
+  for (size_t k = bar + 1; k < gapEnd(s); k++) if (s[k] - '0' > M) far++;
   long len = 0; for (auto &w : wit(s)) len = max(len, (long)w.size());
-  long ent = s.size() - bar - 1;   // fast mode: fewest long runs first
+  long ent = gapEnd(s) - bar - 1;   // fast mode: fewest long runs first
   return cplxv[id] = (FAILFIRST ? ent * 1000000 : 0) + far * 10000 + len * 10 + (long)(bar / 2);
 }
 // A won shape makes every position of the shape good for Right (with at most RB runs), its
@@ -275,7 +298,7 @@ void report() {   // when giving up: the DFS stack and statistics of the explore
   for (size_t i = path.size() > 40 ? path.size() - 40 : 0; i < path.size(); i++) printf("  %3zu %s\n", i, nm[path[i]]->c_str());
   map<int, array<long, 4>> byRuns, byEnt, byFar;
   for (size_t x = 0; x < nm.size(); x++) if (chalDone[x] || status[x] == 3) {
-    const Node &n = *nm[x]; size_t bar = n.find('|'); int runs = (bar - 1) / 2, ent = n.size() - bar - 1, far = farGaps(n.substr(1));
+    const Node &n = *nm[x]; size_t bar = n.find('|'); int runs = (bar - 1) / 2, ent = gapEnd(n) - bar - 1, far = farGaps(n.substr(1));
     int st = status[x] == 3 ? 1 : status[x] == 2 ? 2 : 3;
     byRuns[runs][0]++; byRuns[runs][st]++; byEnt[ent][0]++; byEnt[ent][st]++; byFar[far][0]++; byFar[far][st]++; }
   auto show = [](const char *t, map<int, array<long, 4>> &m) { printf("%s (total / lost / won / open):", t); for (auto &[k, v] : m) printf("  %d: %ld/%ld/%ld/%ld", k, v[0], v[1], v[2], v[3]); printf("\n"); };
@@ -461,7 +484,7 @@ void realPlay(int a0, int a1) {
       for (auto &[k, v] : byEmpties) printf(" %d:%ld", k, v);
       printf("; components with an empty square per position:"); for (auto &[k, v] : byCount) printf(" %d:%ld", k, v); printf("\n");
     }
-    int ent = 0; for (int id : order) ent = max(ent, (int)(nm[id]->size() - nm[id]->find('|') - 1));
+    int ent = 0; for (int id : order) ent = max(ent, (int)(gapEnd(*nm[id]) - nm[id]->find('|') - 1));
     printf("a=%d: %zu positions, %zu shapes in total (%zu new), most long runs %d, concrete states %zu\n", a, seen.size(), used.size(), used.size() - before, ent, memo.cnt);
     fflush(stdout);
   }

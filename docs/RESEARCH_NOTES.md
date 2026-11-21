@@ -760,9 +760,36 @@ MARGIN=4 DEADRUNS=1`, short-run cap `K = 2` unless noted, and `col_shapes 5 RB K
   and `x − y` is unbounded along it. This is the race of §13 ("a toad reservoir in front of empty
   squares is worth twice its length"), which for `b = 3` and `b = 4` Right could keep out of the
   positions he needs.
-* **Reading.** For `b = 5` a shape must record some weighted differences `x − 2y` (clamped, as
-  the plain differences are), for the pairs of runs that race. The margin lemma would need the
-  same extension: one move changes `x − 2y` by at most 2. That is a change to the key and to
-  `Cgt/Col/`, not a matter of parameters.
-* **Not tried.** Shapes with weighted differences; choosing which pairs of runs get them.
+* **Weighted differences, tried (experimental options of `col_shapes`).** `WEIGHT=w` adds to the
+  shape, for every live long toad run `x` and frog run `y`, the difference `x − 2y`, exact within
+  `[−w, w]` and by sign outside; `WBOTH=1` adds `y − 2x`; `WSUM=1` records one sum instead,
+  `Σx − 2Σy`. Witnesses let each far gap range over `c, …, c + WEXT` and keep the positions with
+  the same record. The margin argument is not proved for these shapes, so a closed set would not
+  yet be a proof. With the options off, the `b = 3` search still reproduces `b3_shapes.txt`
+  exactly. All with 13 runs, `K = 2`, `M = 1`:
+
+  | Record | Far gaps | Outcome |
+  | --- | --- | --- |
+  | none | 3 | start lost after 311,368 shapes |
+  | `x − 2y`, `w = 2` | 3 | start lost after 887,885 |
+  | `x − 2y` and `y − 2x`, `w = 3` | 4 | no verdict: 3.1 million shapes in 40 minutes |
+  | `Σx − 2Σy`, `w = 3` | 3 | start lost after 360,885 |
+  | `Σx − 2Σy` and `Σy − 2Σx`, `w = 3` | 3 | start lost after 588,294 |
+  | `Σx − 2Σy`, `w = 5` | 4 | start lost after 574,106 |
+
+* **Why they fail.** The root causes move but stay of the same kind. With pairwise `x − 2y`: one
+  toad reservoir racing two frog runs, e.g. `T.T⁹.TTTFTFF..FFF.FF` against the same with `T¹¹`
+  (the boundary is near `x = 2(y₁ + y₂)`). With the sum: `T⁵.T⁴.TTTFTFF.FFF.F⁵.` against its
+  neighbours, where each frog run sits behind a single empty square and counts once, not twice.
+  So the weight of a run is not fixed: it depends on the empty squares and blocked pieces around
+  it, that is, on the value of the component the run lies in.
+* **Real boards cannot guide the choice.** For `a ≤ 9` only 12,552 of 6.8 million shapes hold
+  both a won and a lost real position, with two or three positions each (`DUMP` of
+  `col_conflict`), so any formula separates them. The conflicts that matter need `a > 10`.
+* **Reading.** A shape language for `b = 5` has to record the race between the *values* of the
+  components that dead blocks cut the board into (§14.2 counted 54,082 distinct component values
+  for `b = 4`; most are numbers). Differences of run lengths, weighted or not, are a proxy that
+  worked for `b = 3` and `b = 4` and stops working here. That would be a new framework, with a
+  theory of which components are numbers and how those numbers depend on the run lengths, not an
+  extension of `Cgt/Col/`.
 

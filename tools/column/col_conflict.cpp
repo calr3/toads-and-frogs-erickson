@@ -8,6 +8,8 @@
 //
 // Usage: col_conflict B RB K M FB AMIN AMAX   (environment as for col_shapes: NOPARITY, DEADRUNS, ...)
 //   SHOW=n prints n bad shapes of the first round with a won and a lost member each.
+//   DUMP=file writes every real position met in the first round (mode, shape id, true outcome,
+//   live long runs) and stops; used to look for the linear forms that separate wins from losses.
 #define main col_shapes_main
 #include "col_shapes.cpp"
 #undef main
@@ -22,6 +24,14 @@ static int shapeId(u64 s) {
   return shId[s] = id;
 }
 static vector<char> badN, badU; static long newBad;
+static FILE *dumpF = nullptr;   // DUMP=file: one line per real position, "mode shape-id truly-won runs", runs = live long runs as T5 F3 ...
+static void dumpPos(char mode, int id, bool won, u64 s) {
+  if (!dumpF || id < 0) return;
+  Pos p = dec(s); auto rs = runs(p); auto dd = deadRuns(rs);
+  fprintf(dumpF, "%c %d %d", mode, id, won ? 1 : 0);
+  for (size_t i = 0; i < rs.size(); i++) if (rs[i].first != '.' && rs[i].second >= K && !dd[i]) fprintf(dumpF, " %c%d", rs[i].first, rs[i].second);
+  fprintf(dumpF, "\n");
+}
 static unordered_map<int, u64> wonEx[2], lostEx[2];
 static unordered_map<u64, char> mN, mU;
 static void mark(vector<char> &bad, int id, int mode, u64 s) {
@@ -33,6 +43,7 @@ static bool isBad(const vector<char> &bad, int id) { return id < 0 || (id < (int
 static bool Nq(u64 s) {
   auto it = mN.find(s); if (it != mN.end()) return it->second;
   int id = shapeId(s); bool r;
+  dumpPos('N', id, le0c(s), s);
   if (!le0c(s)) r = false;
   else {
     r = true; u64 qs[64], ts[64]; int nq = lmc(s, qs);
@@ -57,6 +68,7 @@ static bool Lfq(u64 q) {
 static bool Uq(u64 s) {
   auto it = mU.find(s); if (it != mU.end()) return it->second;
   int id = shapeId(s); bool r;
+  dumpPos('U', id, Upc(s), s);
   if (!Upc(s)) r = false;
   else {
     mU[s] = true;   // positions only get smaller in the measure; no cycles, placeholder is never read
@@ -71,12 +83,14 @@ int main(int argc, char **argv) {
   if (argc < 8) { fprintf(stderr, "usage: col_conflict B RB K M FB AMIN AMAX\n"); return 1; }
   B = atoi(argv[1]); RB = atoi(argv[2]); K = atoi(argv[3]); M = atoi(argv[4]); FB = atoi(argv[5]);
   int a0 = atoi(argv[6]), a1 = atoi(argv[7]); int show = getenv("SHOW") ? atoi(getenv("SHOW")) : 0;
+  if (getenv("DUMP")) dumpF = fopen(getenv("DUMP"), "w");
   for (int round = 0;; round++) {
     mN.clear(); mU.clear(); newBad = 0; string res;
     for (int a = a0; a <= a1; a++) { Pos p = string(a, 'T') + string(B, '.') + string(a, 'F'); bool w = Uq(enc(p)) && !isBad(badU, shapeId(enc(p))); res += w ? 'W' : 'L'; }
     long nb = count(badN.begin(), badN.end(), 1) + count(badU.begin(), badU.end(), 1);
     printf("round %d: starts a=%d..%d %s, %zu N and %zu U positions, %zu shapes, %ld bad (%ld new)\n", round, a0, a1, res.c_str(), mN.size(), mU.size(), shName.size(), nb, newBad);
     fflush(stdout);
+    if (dumpF) { fclose(dumpF); dumpF = nullptr; printf("dump written\n"); return 0; }
     if (round == 0 && show) {
       int shown = 0;
       for (int mode = 0; mode < 2 && shown < show; mode++) for (auto &kv : lostEx[mode]) {

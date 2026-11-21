@@ -5,6 +5,7 @@
 \usepackage[margin=2.6cm]{geometry}
 \usepackage{amsmath,amssymb,amsthm,mathtools}
 \usepackage{microtype}
+\emergencystretch=2em
 \usepackage{booktabs}
 \usepackage[table]{xcolor}
 \usepackage{enumitem}
@@ -41,13 +42,13 @@ Conjectures T1 and T2, the column $b=4$, and counterexamples to Conjecture T4}
 
 \begin{abstract}
 We report results on Toads and Frogs, most of them machine-checked in the Lean~4 proof
-assistant. (0)~Thanatipanonda's Conjecture~T1 holds: we determine the value of every position
+assistant. (1)~Thanatipanonda's Conjecture~T1 holds: we determine the value of every position
 $\E^l\Tt^a\E^b\Ff\E^r$ with one frog and $l\le r$, as a special case of a theorem on one-frog
 positions with the toads anywhere; Erickson had proved the cases $l=r=0$ and $b=0$. The other results concern the starting positions
-$\Tt^a\E^b\Ff^a$. (1)~Thanatipanonda's Conjecture~T2 holds:
+$\Tt^a\E^b\Ff^a$. (2)~Thanatipanonda's Conjecture~T2 holds:
 $\Tt\Tt\E^b\Ff\Ff=\ast$ if $2\le b\le 4$ or $b\equiv 1\pmod 6$, and $0$ otherwise, for every $b$.
-(2)~$\Tt^a\E^4\Ff^a$ is infinitesimal for every $a$, and equals $\ast$ for every $a\ge5$; this is
-the case $b=4$ of Conjecture~T3 and of Erickson's Conjecture~7.5. (3)~Conjecture~T4 is false:
+(3)~$\Tt^a\E^4\Ff^a$ is infinitesimal for every $a$, and equals $\ast$ for every $a\ge5$; this is
+the case $b=4$ of Conjecture~T3 and of Erickson's Conjecture~7.5. (4)~Conjecture~T4 is false:
 $\Tt^6\E^{12}\Ff^6$ is neither $0$ nor $\ast$ (proved), and neither is $\Tt^7\E^{10}\Ff^7$
 (computed). Both are still infinitesimal, as Erickson's conjecture predicts. We also give an
 independent machine-checked proof that $\Tt^a\E^3\Ff^a=\ast$ for $a\ge4$ (the diagonal case of
@@ -149,8 +150,7 @@ $x_1<\dots<x_k$, the frog at $f$, and let $m$ toads lie left of the frog. Define
 \item the \emph{gap} $d$: the number of empty squares between that toad and the frog.
 \end{itemize}
 
-\begin{theorem}[Lean: \lean{value\_room\_ge\_two}, \lean{value\_room\_one\_even},
-\lean{value\_room\_one\_odd}, \lean{value\_room\_zero\_even}, \lean{value\_room\_zero\_odd}]
+\begin{theorem}[Lean: \lean{value\_room\_*}]
 \label{thm:onefrog}
 The value $G$ of such a position is
 \[
@@ -164,6 +164,10 @@ G=\begin{cases}
 \]
 \end{theorem}
 
+In Lean the five cases are
+\lean{value\_room\_ge\_two}, \lean{value\_room\_one\_even},
+\lean{value\_room\_one\_odd}, \lean{value\_room\_zero\_even} and
+\lean{value\_room\_zero\_odd}.
 For $\rho<0$ the values are not this regular (with $\rho=-1$ and $d$ odd they include
 $\varphi+\frac32$, $\varphi+\frac74$ and $\{\varphi+2\mid\varphi+2\}$); the proof needs only bounds
 there. For $\E^l\Tt^a\E^b\Ff\E^r$ we have $\rho=r-l$, $d=b$ and
@@ -242,8 +246,8 @@ right of the frog.
 
 \paragraph{The exception.} In $\Tt^a\E\Ff$ ($a\ge2$), Left's only move is to
 $\Tt^{a-1}\E\Tt\Ff=\{\Tt^{a-2}\E\Tt\Tt\Ff\mid\Tt^{a-1}\Ff\Tt\E\}=\{a-2\mid1\}$: in the first option
-the frog can never move, and the second is $1$ by Theorem~\ref{thm:onefrog}, as is Right's option
-$\Tt^a\Ff\E=0$.
+the frog can never move, and the second is $1$ by Theorem~\ref{thm:onefrog}. By the same theorem, Right's option
+$\Tt^a\Ff\E$ is $0$.
 
 \paragraph{How it was found.} The two integer recursions above compute, for every one-frog
 position, the least integer above and the greatest integer below its value without canonical

@@ -351,7 +351,8 @@ bool dfs(int x) {
 }
 // Explain why a node is lost: the first challenge with no surviving option, then follow one option.
 void why(const Node &x, int depth, set<Node> &seen) {
-  if (depth > 12 || !seen.insert(x).second) return;
+  static int maxDepth = getenv("WHYDEPTH") ? atoi(getenv("WHYDEPTH")) : 12;   // WHYDEPTH=n: follow the lost line n levels deep
+  if (depth > maxDepth || !seen.insert(x).second) return;
   char mode = x[0]; Shape s = x.substr(1);
   for (auto &w : wit(s)) {
     vector<Pos> qs = lm(w); if (mode == 'U') qs.push_back(w);
@@ -371,6 +372,46 @@ void why(const Node &x, int depth, set<Node> &seen) {
       return;
     }
   }
+}
+// WHYROOT=n: search the lost nodes below x for root causes, i.e. challenges none of whose replies
+// is even a candidate, and print up to n of them with the fate of every reply: "runs" (more than RB
+// runs), "far" (too many far gaps or long runs), "loses" (loses concretely), "conflict(w)" (it wins
+// but its shape has a small witness w that loses concretely), or its lost shape.
+void whyRoot(const Node &x0, int limit) {
+  set<Node> seen; deque<Node> todo; todo.push_back(x0); seen.insert(x0); int shown = 0; long lostNodes = 0, roots = 0;
+  map<string, long> kinds;
+  while (!todo.empty()) {
+    Node x = todo.front(); todo.pop_front(); lostNodes++;
+    char mode = x[0]; Shape s = x.substr(1);
+    for (auto &w : wit(s)) {
+      vector<Pos> qs = lm(w); if (mode == 'U') qs.push_back(w);
+      for (auto &q : qs) {
+        bool conc = (int)q.size() <= CONC; vector<Node> opts; string fate;
+        auto consider = [&](const Pos &r, char md) {
+          fate += "  " + string(1, md) + ":" + r + "=";
+          if (nruns(r) > RB) { fate += "runs"; return; }
+          if (!okShape(r)) { fate += "far"; return; }
+          if (conc && !(md == 'N' ? le0(r) : Up(r))) { fate += "loses"; return; }
+          { Shape sh = shapeOf(r); string bad;   // a small witness of the reply's shape that loses concretely
+            for (auto &v : wit(sh)) if ((int)v.size() <= CONC && !(md == 'N' ? le0(v) : Up(v))) { bad = v; break; }
+            if (!bad.empty()) { fate += "conflict(" + bad + ")"; return; } }
+          fate += "lost-shape"; opts.push_back(string(1, md) + shapeOf(r)); };
+        if (mode == 'U') { consider(q, 'N'); for (auto &r : rm(q)) consider(r, 'U'); }
+        else for (auto &r : rm(q)) consider(r, 'N');
+        bool alive = false; for (auto &o : opts) if (stOf(o) != 3) alive = true;
+        if (alive) continue;
+        if (opts.empty()) {
+          roots++;
+          string kind = fate.find("conflict") != string::npos ? "conflict" : fate.find("runs") != string::npos ? "runs" : fate.find("far") != string::npos ? "far" : "loses";
+          bool wl = conc && (int)w.size() <= CONC && !(mode == 'U' ? Up(w) : le0(w));
+          kinds[kind + (wl ? " (witness itself loses within the bounds)" : " (witness wins within the bounds)")]++;
+          if (shown < limit) { shown++; printf("ROOT %s  witness %s  %s %s%s\n", x.c_str(), w.c_str(), q == w ? "pass" : "move", q.c_str(), fate.c_str()); }
+        } else for (auto &o : opts) if (seen.insert(o).second) todo.push_back(o);
+      }
+    }
+  }
+  printf("lost nodes reached %ld, root challenges %ld\n", lostNodes, roots);
+  for (auto &kv : kinds) printf("  %ld  %s\n", kv.second, kv.first.c_str());
 }
 // REAL=amin-amax: play Right's concrete strategy (at most RB runs) from T^a .^B F^a for each a,
 // choosing replies whose shapes were used before when possible, and report the shapes visited.
@@ -441,7 +482,7 @@ int main(int argc, char **argv) {
     vector<int> lost;
     for (int s : starts) if (!dfs(s)) lost.push_back(s);
     if (!lost.empty()) { printf("iteration %d: start lost:", it); for (int s : lost) printf(" %s", nm[s]->c_str()); printf("  (%zu nodes explored)\n", nExplored);
-      set<Node> seen; why(*nm[lost[0]], 0, seen); return 1; }
+      set<Node> seen; why(*nm[lost[0]], 0, seen); if (getenv("WHYROOT")) whyRoot(*nm[lost[0]], atoi(getenv("WHYROOT"))); return 1; }
     set<int> W; deque<int> todo(starts.begin(), starts.end());
     while (!todo.empty()) { int x = todo.front(); todo.pop_front(); if (!W.insert(x).second) continue; for (int y : choicev[x]) todo.push_back(y); }
     int bad = 0; for (int x : W) for (int y : choicev[x]) if (status[y] == 3) { bad++; break; }

@@ -735,6 +735,34 @@ MARGIN=4 DEADRUNS=1`, short-run cap `K = 2` unless noted, and `col_shapes 5 RB K
   from the anchor from length 4 on, so small and large `a` share shapes. Threshold 2 at 14 runs
   neither closes nor loses within 29 million shapes, over 50 times the 557,015 explored for
   `b = 4`; a certificate of that size would be far beyond the `native_decide` check of §14.4.
-* **Not tried.** A finer rule designed from the losing lines; a larger margin or anchor so that
-  small `a` are separated from the far class and proved one by one.
+* **On real boards the same shapes survive.** `col_conflict` plays the abstraction on real
+  positions only: a shape is bad if one of its real positions is lost when Right may only reply
+  into shapes that are not bad, iterated to a fixpoint. For `b = 5` and `a = 4…8` every start
+  survives, with 13 runs (3.6 million positions, 2.6 million shapes, 1.04 million bad) and with 14
+  (10 million positions), for thresholds 1 and 2. (For `b = 4`, `a = 4…8`: 1.3 million positions,
+  0.94 million shapes, 0.41 million bad.) So the abstract loss comes from positions larger than
+  these boards.
+* **Root cause: a race with slope 2.** `WHYROOT` searches the lost shapes for challenges with no
+  candidate reply at all. For 13 runs and threshold 1 there are 8, all of one kind: the reply wins,
+  but its shape has a witness that loses. In each the difference between a toad reservoir and a
+  frog run is "far" in both positions, for example `.T⁵.TTFF..FT.FFF` (Right wins) against
+  `.T⁸.TTFF..FT.FFF` (Left wins); the `TTFF` block is dead, so its lengths are free and such
+  positions are balanced on real boards. Exact play on these families (Right wins moving second):
+
+  | Family | Right wins if and only if |
+  | --- | --- |
+  | `.Tˣ.TTFF..FT.Fʸ` | `x ≤ 2y + 1` |
+  | `.Tˣ.TTFF.FF.T.Fʸ` | `x ≤ 2y + 1` |
+  | `.Tˣ.TTFF.F.FFTFʸ.` | `x ≤ y + 4` |
+
+  (checked for `2 ≤ x ≤ 12`, `2 ≤ y ≤ 7`). The third needs differences exact up to about 5. The
+  first two cannot be recorded by any bounded set of differences: the threshold is in `x − 2y`,
+  and `x − y` is unbounded along it. This is the race of §13 ("a toad reservoir in front of empty
+  squares is worth twice its length"), which for `b = 3` and `b = 4` Right could keep out of the
+  positions he needs.
+* **Reading.** For `b = 5` a shape must record some weighted differences `x − 2y` (clamped, as
+  the plain differences are), for the pairs of runs that race. The margin lemma would need the
+  same extension: one move changes `x − 2y` by at most 2. That is a change to the key and to
+  `Cgt/Col/`, not a matter of parameters.
+* **Not tried.** Shapes with weighted differences; choosing which pairs of runs get them.
 

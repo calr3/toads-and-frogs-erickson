@@ -134,6 +134,51 @@ his 7.1 to 7.6 [[E96]](#references); [[T11]](#references) calls them Erickson's 
 | Thanatipanonda T4 (2008) | `Tᵃ□ᵇFᵃ = 0` or `∗` whenever `b ≥ a > 0` | **False** | New counterexamples: `(6, 12)` proved in Lean (`not_thanatipanonda_conjecture4` in `Cgt/Value612.lean`), and `(7, 10)` (computed). |
 | Thanatipanonda T5 (2008) | For each `c ≥ 3` there is `b₀` with `Tᶜ□ᵇFᶜ = 0` for all `b ≥ b₀` | **Open** | For `c = 3` the computed values are `0` for every `b` from 30 to 53; the last `∗` is `T³□²⁹F³` [[T11]](#references). See [Values of the starting positions](#values-of-the-starting-positions). Proving the row `a = 3` with the method of T2 failed: every description we could learn grows with the board (`docs/RESEARCH_NOTES.md` §16–18). |
 
+
+## Grid of proved cases
+
+Each cell is the case `Tᵃ □ᵇ Fᵃ`.
+
+| **b** \ **a** | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | ≥ 15 |
+|---:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+| **0** | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 |
+| **1** | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 |
+| **2** | 🟩 | 🟩 | 🟩 | 🟢 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 |
+| **3** | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 |
+| **4** | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟦 | 🟦 | 🟦 | 🟦 | 🟦 | 🟦 | 🟦 | 🟦 | 🟦 | 🟦 | 🟦 |
+| **5** | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | · | · | · | · | · | · |  |  |  |  |  |
+| **6** | 🟩 | 🟩 | 🟩 | 🟩 | · | · | · | · | · | · |  |  |  |  |  |  |
+| **7** | 🟩 | 🟩 | 🟩 | 🟩 | · | · | · | · | · | · |  |  |  |  |  |  |
+| **8** | 🟩 | 🟩 | 🟩 | 🟩 | · | · | · | · | · |  |  |  |  |  |  |  |
+| **9** | 🟩 | 🟩 | 🟩 | 🟩 | · | · | · | · | · |  |  |  |  |  |  |  |
+| **10** | 🟩 | 🟩 | 🟩 | 🟩 | · | · | · | · |  |  |  |  |  |  |  |  |
+| **11** | 🟩 | 🟩 | 🟩 | 🟩 | · | · | · | · |  |  |  |  |  |  |  |  |
+| **12** | 🟩 | 🟩 | 🟩 | 🟩 | · | · | · |  |  |  |  |  |  |  |  |  |
+| **13** | 🟩 | 🟩 | 🟩 | · | · | · | · |  |  |  |  |  |  |  |  |  |
+| **14** | 🟩 | 🟩 | 🟩 | · | · | · | · |  |  |  |  |  |  |  |  |  |
+| **15** | 🟩 | 🟩 | 🟩 | · | · | · | · |  |  |  |  |  |  |  |  |  |
+| **16** | 🟩 | 🟩 | 🟩 | · | · | · |  |  |  |  |  |  |  |  |  |  |
+| **17** | 🟩 | 🟩 | 🟩 | · | · | · |  |  |  |  |  |  |  |  |  |  |
+| **18** | 🟩 | 🟩 | 🟩 | · | · | · |  |  |  |  |  |  |  |  |  |  |
+| **19** | 🟩 | 🟩 | 🟩 | · | · | · |  |  |  |  |  |  |  |  |  |  |
+| **20** | 🟩 | 🟩 | 🟩 | · | · | · |  |  |  |  |  |  |  |  |  |  |
+| **21** | 🟩 | 🟩 | 🟩 | · | · | · |  |  |  |  |  |  |  |  |  |  |
+| **22** | 🟩 | 🟩 | 🟩 | · | · | · |  |  |  |  |  |  |  |  |  |  |
+| **23** | 🟩 | 🟩 | 🟩 | · | · |  |  |  |  |  |  |  |  |  |  |  |
+| **24** | 🟩 | 🟩 | 🟩 | · | · |  |  |  |  |  |  |  |  |  |  |  |
+| **25** | 🟩 | 🟩 | 🟩 | · |  |  |  |  |  |  |  |  |  |  |  |  |
+| **26** | 🟩 | 🟩 | 🟩 | · |  |  |  |  |  |  |  |  |  |  |  |  |
+| **≥ 27** | 🟩 | 🟩 | 🟩 |  |  |  |  |  |  |  |  |  |  |  |  |  |
+
+| Mark | Meaning |
+| :-: | --- |
+| 🟩 | Proved infinitesimal in Lean (kernel only). |
+| 🟦 | Proved infinitesimal in Lean (using `native_decide`, so requires trusting the Lean compiler). |
+| 🟢 | Proved **not** infinitesimal. |
+| · | Not proved in Lean; confirmed infinitesimal by an exact solver (see [below](#computational-evidence-beyond-the-formal-results)). |
+| *(blank)* | Not computed. |
+
+
 ## Status
 
 | What | Lean | Origin |
@@ -163,85 +208,6 @@ his 7.1 to 7.6 [[E96]](#references); [[T11]](#references) calls them Erickson's 
 The full conjecture is **not** proved here. It has been open since 1996 and is the only one of
 Erickson's conjectures still open. The main earlier partial results are Thanatipanonda's proofs
 of the columns `b = 2` [[T11]](#references) and `b = 3` [[Th08]](#references) for `a ≥ 4`.
-
-### Checking with Comparator
-
-The main theorem, `conjecture5_of_openCases : OpenCases → Conjecture5`, the exception
-`not_infinitesimal_3_2`, and Thanatipanonda's Conjectures T2, `exactValuesA2 : ExactValuesA2`, and
-T1, `conjectureT1 : ConjectureT1`, can be checked with Comparator (`lake comparator --config comparator/config.json`). `Challenge.lean` states them, with `sorry`, after
-a verbatim copy of `Cgt/Statement.lean`: the definitions of games, infinitesimals, `∗`, the rules,
-the starting positions, `Conjecture5`, `OpenCases`, `valueA2`, `ExactValuesA2`, the one-frog
-positions, `valueT1` and `ConjectureT1`, in Lean core only. Comparator checks that `Solution.lean` proves exactly these statements, with no axioms
-beyond `propext`, `Quot.sound` and `Classical.choice`, and that the kernel accepts it. To trust the
-result you need to read only `Challenge.lean`. The `native_decide` results are not covered. See
-[comparator/README.md](comparator/README.md).
-
-## Grid of proved cases
-
-Each cell is the case `Tᵃ □ᵇ Fᵃ`: `a` toads and frogs across the top, `b` empty squares down
-the side. (In CGT literature and repository file names such as `RowA2` and `Column3`, `a` is called the row and `b` the column.) Generated from the Lean sources by `scripts/gen_grid.py`.
-
-| **b** \ **a** | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | ≥ 15 |
-|---:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
-| **0** | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 |
-| **1** | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 |
-| **2** | 🟩 | 🟩 | 🟩 | 🔷 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 |
-| **3** | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 |
-| **4** | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | 🟦 | 🟦 | 🟦 | 🟦 | 🟦 | 🟦 | 🟦 | 🟦 | 🟦 | 🟦 | 🟦 |
-| **5** | 🟩 | 🟩 | 🟩 | 🟩 | 🟩 | · | · | · | · | · | · |  |  |  |  |  |
-| **6** | 🟩 | 🟩 | 🟩 | 🟩 | · | · | · | · | · | · |  |  |  |  |  |  |
-| **7** | 🟩 | 🟩 | 🟩 | 🟩 | · | · | · | · | · | · |  |  |  |  |  |  |
-| **8** | 🟩 | 🟩 | 🟩 | 🟩 | · | · | · | · | · |  |  |  |  |  |  |  |
-| **9** | 🟩 | 🟩 | 🟩 | 🟩 | · | · | · | · | · |  |  |  |  |  |  |  |
-| **10** | 🟩 | 🟩 | 🟩 | 🟩 | · | · | · | · |  |  |  |  |  |  |  |  |
-| **11** | 🟩 | 🟩 | 🟩 | 🟩 | · | · | · | · |  |  |  |  |  |  |  |  |
-| **12** | 🟩 | 🟩 | 🟩 | 🟩 | · | · | · |  |  |  |  |  |  |  |  |  |
-| **13** | 🟩 | 🟩 | 🟩 | · | · | · | · |  |  |  |  |  |  |  |  |  |
-| **14** | 🟩 | 🟩 | 🟩 | · | · | · | · |  |  |  |  |  |  |  |  |  |
-| **15** | 🟩 | 🟩 | 🟩 | · | · | · | · |  |  |  |  |  |  |  |  |  |
-| **16** | 🟩 | 🟩 | 🟩 | · | · | · |  |  |  |  |  |  |  |  |  |  |
-| **17** | 🟩 | 🟩 | 🟩 | · | · | · |  |  |  |  |  |  |  |  |  |  |
-| **18** | 🟩 | 🟩 | 🟩 | · | · | · |  |  |  |  |  |  |  |  |  |  |
-| **19** | 🟩 | 🟩 | 🟩 | · | · | · |  |  |  |  |  |  |  |  |  |  |
-| **20** | 🟩 | 🟩 | 🟩 | · | · | · |  |  |  |  |  |  |  |  |  |  |
-| **21** | 🟩 | 🟩 | 🟩 | · | · | · |  |  |  |  |  |  |  |  |  |  |
-| **22** | 🟩 | 🟩 | 🟩 | · | · | · |  |  |  |  |  |  |  |  |  |  |
-| **23** | 🟩 | 🟩 | 🟩 | · | · |  |  |  |  |  |  |  |  |  |  |  |
-| **24** | 🟩 | 🟩 | 🟩 | · | · |  |  |  |  |  |  |  |  |  |  |  |
-| **25** | 🟩 | 🟩 | 🟩 | · |  |  |  |  |  |  |  |  |  |  |  |  |
-| **26** | 🟩 | 🟩 | 🟩 | · |  |  |  |  |  |  |  |  |  |  |  |  |
-| **≥ 27** | 🟩 | 🟩 | 🟩 |  |  |  |  |  |  |  |  |  |  |  |  |  |
-
-| Mark | Meaning |
-| :-: | --- |
-| 🟩 | Proved infinitesimal in Lean, checked by the kernel. |
-| 🟦 | Proved infinitesimal in Lean, with a finite check evaluated by `native_decide`, which trusts Lean's compiler as well as the kernel (`lake build CgtNative`). |
-| 🔷 | Proved **not** infinitesimal in Lean, checked by the kernel. |
-| · | Not proved in Lean; confirmed infinitesimal by an exact solver (see [below](#computational-evidence-beyond-the-formal-results)). |
-| *(blank)* | Not computed. |
-
-How a cell is proved:
-
-* `a ≤ 2` (every `b`), `b ≤ 1` (every `a`), `b = 2` with `a ≥ 4`, and `b = 3` (every `a`): one
-  theorem per family.
-  These continue beyond the edges of the table.
-* `b = 4` (every `a`, 🟦 where not proved otherwise too): one theorem,
-  `infinitesimal_start_b_four`, whose finite check is evaluated by `native_decide`.
-* The other cells are single cases:
-  * most are checked by kernel `decide` (`Cgt/FiniteCases.lean`). With the infinite families above they
-    make up `ProvedRegion` (`Cgt/Conjecture5.lean`), covered by `conjecture5_provedRegion`;
-  * `(3, 7)` to `(3, 12)` and `(4, 5)` are proved by strategy certificates
-    (`Cgt.Cert_a_b.infinitesimal` in `Cgt/Cert/`, checked by `lake build CgtCerts`). These lie
-    outside `ProvedRegion` and provide additional individual kernel-checked cases. The certificates
-    for `(3, 4)`, `(5, 3)` and `(6, 3)` predate the general `2a + b ≤ 12` and `b = 3` theorems, which
-    now also cover them.
-
-In this grid of proved infinitesimal cases, `(6, 12)` is marked `·` because its infinitesimality
-is confirmed by the solver rather than proved in Lean; what is proved in Lean via `native_decide`
-(`Cgt/Value612.lean`) is that its value is neither `0` nor `∗` (`not_thanatipanonda_conjecture4`).
-
-`Cgt/Cert/` also contains a certificate for `(4, 6)`. Checking it ran out of memory, so it is
-not built with `CgtCerts` and is shown as · above.
 
 ## Values of the starting positions
 
@@ -317,7 +283,21 @@ are infinitesimal but neither `0` nor `∗` (below); and `∗2`, `∗3` below ar
   the four cells that [[T11]](#references) lists only as "≠ 0", `(5, 11)`, `(6, 8)`, `(7, 6)` and
   `(7, 7)`: all four are `∗`. See [docs/LITERATURE.md](docs/LITERATURE.md).
 
-## Contents
+## Repository status
+
+### Checking with Comparator
+
+The main theorem, `conjecture5_of_openCases : OpenCases → Conjecture5`, the exception
+`not_infinitesimal_3_2`, and Thanatipanonda's Conjectures T2, `exactValuesA2 : ExactValuesA2`, and
+T1, `conjectureT1 : ConjectureT1`, can be checked with Comparator (`lake comparator --config comparator/config.json`). `Challenge.lean` states them, with `sorry`, after
+a verbatim copy of `Cgt/Statement.lean`: the definitions of games, infinitesimals, `∗`, the rules,
+the starting positions, `Conjecture5`, `OpenCases`, `valueA2`, `ExactValuesA2`, the one-frog
+positions, `valueT1` and `ConjectureT1`, in Lean core only. Comparator checks that `Solution.lean` proves exactly these statements, with no axioms
+beyond `propext`, `Quot.sound` and `Classical.choice`, and that the kernel accepts it. To trust the
+result you need to read only `Challenge.lean`. The `native_decide` results are not covered. See
+[comparator/README.md](comparator/README.md).
+
+### Contents
 
 * `paper/new_results.tex` and `paper/new_results.pdf`: a write-up of the new results for
   readers of [[T11]](#references) (table generated by `scripts/gen_values_tex.py`).

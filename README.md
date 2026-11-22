@@ -4,8 +4,8 @@
 `Tᵃ □ᵇ Fᵃ` (`a` toads, `b` empty squares, `a` frogs) is [infinitesimal](https://senseis.xmp.net/?Infinitesimals) for every
 `(a, b)` except `(a, b) = (3, 2)`. (Conjecture 7.5 in [[E96]](#references).)
 
-This repository is a self-contained Lean 4 development aimed at making progress on this conjecture, and generally formalizing
-theorems in Toads and Frogs. We generally aim to use the kernel only, while allowing compiler dependencies only for larger calculations.
+This repository is a self-contained Lean 4 development aimed at making progress on this conjecture, and formalizing
+theorems in Toads and Frogs. We aim to use the kernel only, while allowing compiler dependencies only for larger calculations.
 
 **On this page**
 
@@ -43,7 +43,7 @@ source says, and the few we could not reach, are in [docs/LITERATURE.md](docs/LI
 * **New: counterexamples to Thanatipanonda's Conjecture T4.**
   [[T11]](#references) conjectures that `Tᵃ□ᵇFᵃ` is `0` or `∗` whenever `b ≥ a > 0` (Conjecture T4;
   Conjecture 4 in the preprint and in [[Th08]](#references)). `T⁶□¹²F⁶` is neither: proved in
-  Lean (`not_thanatipanonda_conjecture4`, 🟦), from a strategy table for Right of 21 million
+  Lean (`not_thanatipanonda_conjecture4` in `Cgt/Value612.lean`, 🟦), from a strategy table for Right of 21 million
   positions checked by `native_decide`. `T⁷□¹⁰F⁷` is neither too (computed, not formalised). Both
   are still infinitesimal, as Erickson's conjecture predicts, and neither is `∗2` or `∗3`. (This is
   not Erickson's Conjecture 4, which [[T11]](#references) refutes.) See
@@ -51,8 +51,8 @@ source says, and the few we could not reach, are in [docs/LITERATURE.md](docs/LI
 * **New: the column `b = 4`, proved with `native_decide`.** `Tᵃ□⁴Fᵃ` is
   infinitesimal for every `a` (`infinitesimal_start_b_four`), the case `b = 4` of Erickson's
   conjecture. Values were known for `a ≤ 10` [[T11]](#references), and [[Th08]](#references)
-  (p. 89) lists this family as open. The method is that of `b = 3` below, with far gaps between
-  long runs recorded without their parity; Right's strategy uses 233,087 run shapes. Its finite
+  (p. 89) lists this family as open. The method is that of `b = 3` below, with far differences between
+  sorted lengths of long runs recorded without their parity; Right's strategy uses 233,087 run shapes (keys). Its finite
   check (2.8 million witnesses, about 270 times the `b = 3` one) is evaluated by `native_decide`,
   so this theorem trusts Lean's compiler as well as the kernel: `#print axioms` lists, besides the
   usual three, one axiom per `native_decide` use, asserting the result of that compiled
@@ -60,20 +60,20 @@ source says, and the few we could not reach, are in [docs/LITERATURE.md](docs/LI
   is also checked by two independent programs, and on the real game trees for every `a ≤ 24`. See
   [docs/RESEARCH_NOTES.md §14](docs/RESEARCH_NOTES.md).
 * **New: the exact values of the column `b = 4`, proved with `native_decide`.**
-  `Tᵃ□⁴Fᵃ = ∗` for every `a ≥ 5`; with the small cases, `0` for `a = 0, 1, 4` and `∗` otherwise
+  `Tᵃ□⁴Fᵃ = ∗` for every `a ≥ 5` (`start_four_equiv_star`); with the small cases, `0` for `a = 0, 1, 4` and `∗` otherwise
   (`start_four_value`). This is the case `b = 4` of Thanatipanonda's Conjecture T3
   [[T11]](#references): `Tᵃ□ᵇFᵃ = ∗` whenever `a > b > 0`, `b ≠ 2`. The method is the `≤ ∗` one of
-  `b = 3`, with gaps exact up to 2 and no parity; Right's strategy uses 361,981 run shapes, and the
+  `b = 3`, with differences between sorted lengths exact up to 2 and no parity; Right's strategy uses 361,981 run shapes (keys), and the
   finite check (3.5 million witnesses) is evaluated by `native_decide`.
 * **New: Thanatipanonda's Conjecture T1, the positions with one frog.** For a one-frog position
   with the toads anywhere, let `phi` be Left's moves minus Right's if every toad left of the frog
-  jumps it, `room` the empty squares right of the frog minus those left of the nearest toad, and
-  `gap` the empty squares between that toad and the frog. The value is `phi` if `room ≥ 2`; `phi`
+  jumps it, `room` the empty squares right of the frog minus those left of the nearest toad on the
+  frog's left, and `gap` the empty squares between that toad and the frog. The value is `phi` if `room ≥ 2`; `phi`
   or `phi + ½` if `room = 1` (even or odd gap); `phi + 1` or `(phi + 1)∗` if `room = 0`
-  (`value_room_*`, `Cgt/OneFrog/T1.lean`). For `□ᴸ Tᵃ □ᵇ F □ᴿ` this is Conjecture T1 of
-  [[T11]](#references) (`t1_*`), including its exception `Tᵃ□F = {{a−2|1}|0}`
-  (`t1_exception`), all in one statement `conjectureT1`. Erickson [[E96]](#references) proved the
-  cases `L = R = 0` (his Theorem 5.2, with the exception) and `b = 0` (his Lemmas 4.3 and 4.4);
+  (provided `phi + 1 ≥ 0`; `value_room_*`, `Cgt/OneFrog/T1.lean`). For `□ˡ Tᵃ □ᵇ F □ʳ` (`l ≤ r`) this is Conjecture T1 of
+  [[T11]](#references) (`t1_*`, `Cgt/OneFrog/T1.lean`), including its exception `Tᵃ□F = {{a−2|1}|0}`
+  (`t1_exception`, `Cgt/OneFrog/Exception.lean`), all in one statement `conjectureT1` (`Cgt/OneFrog/Main.lean`). Erickson [[E96]](#references) proved the
+  cases `l = r = 0` (his Theorem 5.2, with the exception) and `b = 0` (his Lemmas 4.3 and 4.4);
   a gap together with empty squares at the ends is new. Checked by the kernel, with no
   `native_decide`, and with Comparator. The frog never has a choice of move, so every bound is an
   induction on the position; `tools/onefrog/check_rules.py` checks each step of that induction on
@@ -86,8 +86,8 @@ source says, and the few we could not reach, are in [docs/LITERATURE.md](docs/LI
   [docs/ROW_A2.md §10](docs/ROW_A2.md#10-related-work).
 * **New: the exact values for every `b` with `a=2`** (`exactValuesA2`, `Cgt/RowA2Odd.lean`):
   `TT□ᵇFF = ∗` when `2 ≤ b ≤ 4` or `b ≡ 1 (mod 6)`, and `0` otherwise. This is Thanatipanonda's
-  Conjecture T2 [[T11]](#references), which had been computed for `b ≤ 103`. Even `b` use the
-  shape method with 1,038 shapes (`start_two_equiv_zero`), `b ≤ 30` are kernel checks, and odd
+  Conjecture T2 [[T11]](#references), which had been computed for `b ≤ 103`. Even `b ≥ 6` use the
+  shape method with 1,038 shapes (`start_two_equiv_zero`, `Cgt/RowA2Zero.lean`), `b ≤ 30` are kernel checks (`start_two_value`, `Cgt/RowA2Values.lean`), and odd
   `b ≥ 31` use an invariant of 67 linear cases (inequalities and congruences in the gaps). The
   closure of that invariant under play is proved case by case by `omega`, with no
   `native_decide`. See [docs/ROW_A2.md §8](docs/ROW_A2.md#8-exact-values).
@@ -123,15 +123,15 @@ his 7.1 to 7.6 [[E96]](#references); [[T11]](#references) calls them Erickson's 
 | Conjecture | Statement | Status | Notes |
 | --- | --- | --- | --- |
 | Erickson 7.1 (1996) | `Tᵃ□□Fᵇ = {{a−3 \| a−b} \| {∗ \| 3−b}}` for `a > b ≥ 2` | **True** | Proved by Thanatipanonda: Theorem D.2 of the preprint of [[T11]](#references), proof in a supplement contained in [[Th08]](#references) |
-| Erickson 7.2 (1996) | `Tᵃ□³FF = (a−2)∗` for `a ≥ 2` | **True** | Proved by Thanatipanonda and Zeilberger [[TZ07]](#references) | — |
-| Erickson 7.3 (1996) | `Tᵃ□³F³ = a − 7/2` for `a ≥ 5` | **True** | Proved by Thanatipanonda: Theorem D.1 of the preprint of [[T11]](#references), proof as for 7.1 | — |
+| Erickson 7.2 (1996) | `Tᵃ□³FF = (a−2)∗` for `a ≥ 2` | **True** | Proved by Thanatipanonda and Zeilberger [[TZ07]](#references) |
+| Erickson 7.3 (1996) | `Tᵃ□³F³ = a − 7/2` for `a ≥ 5` | **True** | Proved by Thanatipanonda: Theorem D.1 of the preprint of [[T11]](#references), proof as for 7.1 |
 | Erickson 7.4 (1996) | `Tᵃ□ᵃFᵃ⁻¹ = 1` or `1∗` for `a ≥ 1` | **False** | Known counterexample: `T⁷□⁷F⁶ > 2` from [[T11]](#references). |
 | **Erickson 7.5 (1996)**, "Conjecture 5" | `Tᵃ□ᵇFᵃ` is infinitesimal for every `(a, b) ≠ (3, 2)` | **Open** | The subject of this repository. Proved in Lean for `a ≤ 2` (every `b`), `b ≤ 3` (every `a`) and every case with `2a + b ≤ 12`, so `conjecture5_of_openCases` reduces the conjecture to `a ≥ 3`, `b ≥ 4`, `2a + b ≥ 13` (checked with Comparator). Also proved: `b = 4` for every `a` (with `native_decide`), and `(3, 7)` to `(3, 12)` and `(4, 5)` by certificates. `(3, 2)` really is the exception (`TTT□□FFF = ±1/8`). Confirmed by exact search on every board of at most 25 squares. See [Status](#status) and [Grid of proved cases](#grid-of-proved-cases). |
-| Erickson 7.6 (1996) | Toads and Frogs is NP-hard | **True** | Proved by Jesse Hull (2000), as reported in [[T11]](#references) | — |
-| **Thanatipanonda T1 (2008)** | Values of every position with one frog, `□ᴸ Tᵃ □ᵇ F □ᴿ` (`L ≤ R`): three formulas, for `L = R`, `L = R − 1` and `R − L ≥ 2` | **True** | Proven here in `conjectureT1` (`Cgt/OneFrog/Main.lean`; kernel only, checked with Comparator), as a case of a theorem on one-frog positions with the toads anywhere (`value_room_*`). The cases `L = R = 0` and `b = 0` were proved by Erickson [[E96]](#references). As printed in the preprint the conjecture also covers `Tᵃ F` (`L = R = b = 0`, `a ≥ 2`), where its formula is negative and the value is `0`. See [docs/ONE_FROG.md](docs/ONE_FROG.md). |
-| **Thanatipanonda T2 (2008)** | `TT□ᵇFF = ∗` when `b ≡ 1 (mod 6)` and `0` otherwise, for `b ≥ 7` | **True** | Proven here in `exactValuesA2`, with the values for `b ≤ 6` too: `∗` for `2 ≤ b ≤ 4`, else `0` (`Cgt/RowA2Odd.lean`; checked with Comparator). Even `b` by shapes, odd `b` by a linear invariant closed under play and proved by `omega`. |
-| Thanatipanonda T3 (2008) | `Tᵃ□ᵇFᵃ = ∗` whenever `a > b > 0`, `b ≠ 2` | **Open** | `b = 1` is in [[WW]](#references); `b = 3` is Theorem 5.6.1 of [[Th08]](#references) | `b = 3`: `start_three_equiv_star`, an independent proof. **New:** `b = 4`, `start_four_equiv_star` (with `native_decide`). All computed values with `b ≥ 5` agree. The column `b = 5` does not yield to the shapes of `b = 4`, with or without weighted differences: Right's race there depends on the values of the components between dead blocks, which differences of run lengths do not record (`docs/RESEARCH_NOTES.md` §20). |
-| Thanatipanonda T4 (2008) | `Tᵃ□ᵇFᵃ = 0` or `∗` whenever `b ≥ a > 0` | **False** | New counterexamples such as `a=6, b=12` and `a=7, b=10`. |
+| Erickson 7.6 (1996) | Toads and Frogs is NP-hard | **True** | Proved by Jesse Hull (2000), as reported in [[T11]](#references) |
+| **Thanatipanonda T1 (2008)** | Values of every position with one frog, `□ˡ Tᵃ □ᵇ F □ʳ` (`l ≤ r`): three formulas, for `l = r`, `l = r − 1` and `r − l ≥ 2` | **True** | Proven here in `conjectureT1` (`Cgt/OneFrog/Main.lean`; kernel only, checked with Comparator), as a case of a theorem on one-frog positions with the toads anywhere (`value_room_*`). The cases `l = r = 0` and `b = 0` were proved by Erickson [[E96]](#references). As printed in the preprint the conjecture also covers `Tᵃ F` (`l = r = b = 0`, `a ≥ 2`), where its formula is negative and the value is `0`. See [docs/ONE_FROG.md](docs/ONE_FROG.md). |
+| **Thanatipanonda T2 (2008)** | `TT□ᵇFF = ∗` when `b ≡ 1 (mod 6)` and `0` otherwise, for `b ≥ 7` | **True** | Proven here in `exactValuesA2`, with the values for `b ≤ 6` too: `∗` for `2 ≤ b ≤ 4` and `b = 1`, else `0` (`Cgt/RowA2Odd.lean`; checked with Comparator). Even `b` by shapes, odd `b` by a linear invariant closed under play and proved by `omega`. |
+| Thanatipanonda T3 (2008) | `Tᵃ□ᵇFᵃ = ∗` whenever `a > b > 0`, `b ≠ 2` | **Open** | `b = 1` is in [[WW]](#references); `b = 3` is Theorem 5.6.1 of [[Th08]](#references) (`start_three_equiv_star`, an independent proof). **New:** `b = 4`, `start_four_equiv_star` (with `native_decide`). All computed values with `b ≥ 5` agree. The column `b = 5` does not yield to the shapes of `b = 4`, with or without weighted differences: Right's race there depends on the values of the components between dead blocks, which differences of run lengths do not record (`docs/RESEARCH_NOTES.md` §20). |
+| Thanatipanonda T4 (2008) | `Tᵃ□ᵇFᵃ = 0` or `∗` whenever `b ≥ a > 0` | **False** | New counterexamples: `(6, 12)` proved in Lean (`not_thanatipanonda_conjecture4` in `Cgt/Value612.lean`), and `(7, 10)` (computed). |
 | Thanatipanonda T5 (2008) | For each `c ≥ 3` there is `b₀` with `Tᶜ□ᵇFᶜ = 0` for all `b ≥ b₀` | **Open** | For `c = 3` the computed values are `0` for every `b` from 30 to 53; the last `∗` is `T³□²⁹F³` [[T11]](#references). See [Values of the starting positions](#values-of-the-starting-positions). Proving the row `a = 3` with the method of T2 failed: every description we could learn grows with the board (`docs/RESEARCH_NOTES.md` §16–18). |
 
 ## Status
@@ -143,7 +143,7 @@ his 7.1 to 7.6 [[E96]](#references); [[T11]](#references) calls them Erickson's 
 | `a = 0`, all `b` | `infinitesimal_start_a_zero` | Trivial (no pieces) |
 | `a = 1`, all `b` (`T □ᵇ F`) | `infinitesimal_start_one` | Known: `T□ᵇF = b·∗` ([[WW]](#references); [[E96]](#references) Lemma 5.1) |
 | **`a = 2`, all `b` (`TT □ᵇ FF`)**: machine-checked strategy over 1,543 shapes | `infinitesimal_start_two` (`Cgt/RowA2.lean`) | **New**; predicted by Conjecture T2 of [[T11]](#references), values computed for `b ≤ 103` |
-| **Exact values of `TT □ᵇ FF` for every `b`**: `∗` if `2 ≤ b ≤ 4` or `b ≡ 1 (mod 6)`, else `0` (shapes for even `b`, kernel checks for `b ≤ 30`, a 67-case linear invariant closed by `omega` for odd `b`) | `exactValuesA2` (`Cgt/RowA2Odd.lean`); `start_two_equiv_zero`, `start_two_value` (`Cgt/RowA2Values.lean`) | **New**: Conjecture T2 of [[T11]](#references); computed for `b ≤ 103` [[T11]](#references), `b ≤ 6` in [[E96]](#references) |
+| **Exact values of `TT □ᵇ FF` for every `b`**: `∗` if `2 ≤ b ≤ 4` or `b ≡ 1 (mod 6)`, else `0` (shapes for even `b`, kernel checks for `b ≤ 30`, a 67-case linear invariant closed by `omega` for odd `b`) | `exactValuesA2` (`Cgt/RowA2Odd.lean`); `start_two_equiv_zero` (`Cgt/RowA2Zero.lean`), `start_two_value` (`Cgt/RowA2Values.lean`) | **New**: Conjecture T2 of [[T11]](#references); computed for `b ≤ 103` [[T11]](#references), `b ≤ 6` in [[E96]](#references) |
 | `b = 0`, all `a` | `infinitesimal_start_b_zero` | Trivial (no moves) |
 | `b = 1`, all `a` (`Tᵃ □ Fᵃ`) | `infinitesimal_start_b_one` | Known ([[WW]](#references), as cited in [[E96]](#references) §7) |
 | `b = 2`, all `a ≥ 4` (incl. Lemma C.1) | `infinitesimal_start_b_two`, `upperZero_c1` | Known: Thanatipanonda's theorem [[T11]](#references) |
@@ -151,10 +151,10 @@ his 7.1 to 7.6 [[E96]](#references); [[T11]](#references) calls them Erickson's 
 | **Exact values of `Tᵃ □³ Fᵃ`**: `∗` for every `a ≥ 4` (and `0` for `a = 0, 3`, `∗` for `a = 1, 2`); machine-checked strategy over 1,263 run shapes | `start_three_value`, `start_three_equiv_star` (`Cgt/Col/Value3.lean`) | Known: the case `a = b` of Theorem 5.6.1 of [[Th08]](#references), `Tᵃ□³Fᵇ = {a − b \| a − b}` (`a, b ≥ 4`); our proof is independent |
 | **Exact values of `Tᵃ □⁴ Fᵃ`**: `∗` for every `a ≥ 5` (and `0` for `a = 0, 1, 4`, `∗` for `a = 2, 3`); strategy over 361,981 run shapes; 🟦 finite check by `native_decide` | `start_four_value`, `start_four_equiv_star` (`Cgt/Col/Value4.lean`; `lake build CgtNative`) | **New**: Conjecture T3 of [[T11]](#references) for `b = 4`; values known for `a ≤ 10` |
 | **`b = 4`, all `a` (`Tᵃ □⁴ Fᵃ`)**: strategy over 233,087 run shapes; 🟦 finite check by `native_decide` (trusts the compiler) | `infinitesimal_start_b_four` (`Cgt/Col/Column4.lean`; `lake build CgtNative`) | **New**; listed as open in [[Th08]](#references) (p. 89), values known for `a ≤ 10` |
-| **Conjecture T1: the value of `□ˡ Tᵃ □ᵇ F □ʳ`** for every `a ≥ 1`, `l ≤ r`; from a general theorem on one-frog positions (value `phi`, `phi + ½`, `phi + 1` or `(phi + 1)∗` according to `room` and the parity of the gap); checked with Comparator | `conjectureT1` (`Cgt/OneFrog/Main.lean`); `value_room_*`, `t1_*` (`Cgt/OneFrog/T1.lean`) | **New**: Conjecture T1 of [[T11]](#references). Known before: `l = r = 0` ([[E96]](#references), Theorem 5.2) and `b = 0` ([[E96]](#references), Lemmas 4.3, 4.4) |
+| **Conjecture T1: the value of `□ˡ Tᵃ □ᵇ F □ʳ`** for every `a ≥ 1`, `l ≤ r`; from a general theorem on one-frog positions (value `phi`, `phi + ½`, `phi + 1` or `(phi + 1)∗` according to `room` and the parity of the gap); checked with Comparator | `conjectureT1` (`Cgt/OneFrog/Main.lean`); `value_room_*`, `t1_*` (`Cgt/OneFrog/T1.lean`), `t1_exception` (`Cgt/OneFrog/Exception.lean`) | **New**: Conjecture T1 of [[T11]](#references). Known before: `l = r = 0` ([[E96]](#references), Theorem 5.2) and `b = 0` ([[E96]](#references), Lemmas 4.3, 4.4) |
 | One-sided Death Leap Principle, general | `le_zero_of_dlp` | Known: [[T11]](#references); the two-sided version is in [[E96]](#references) |
 | Every case with `2a + b ≤ 12`, kernel-checked | `Cgt/FiniteCases.lean` | Known numerically ([[E96]](#references), [[T11]](#references) tables) |
-| `(3,7)` to `(3,12)`, `(4,5)`, `(5,3)`, `(6,3)`: strategy certificates | `Cgt/Cert/` (`lake build CgtCerts`) | Known numerically ([[T11]](#references) table) |
+| `(3, 4)`, `(3, 7)` to `(3, 12)`, `(4, 5)`, `(5, 3)`, `(6, 3)`: strategy certificates | `Cgt/Cert/` (`lake build CgtCerts`) | Known numerically ([[T11]](#references) table); `(3, 4)` is also kernel-checked in `Cgt/FiniteCases.lean` and `(5, 3)`, `(6, 3)` are covered by `b = 3` |
 | **Main theorem**: Conjecture 5 holds if it holds for `a ≥ 3`, `b ≥ 4`, `2a + b ≥ 13` (`OpenCases`); checked with Comparator | `conjecture5_of_openCases` (`Cgt/Conjecture5.lean`; statement in `Cgt/Statement.lean`) | Combines the kernel-checked rows above |
 | **`T⁶□¹²F⁶` is neither `0` nor `∗`**, so Conjecture T4 of [[T11]](#references) is false; strategy table of 21 million positions; 🟦 finite check by `native_decide` | `not_thanatipanonda_conjecture4`, `start_6_12_not_zero`, `start_6_12_not_star` (`Cgt/Value612.lean`; `lake build CgtNative`) | **New** |
 | `T⁷□¹⁰F⁷` is neither `0` nor `∗` (infinitesimal) | — (computed by `tools/values.cpp`, not formalised) | **New** |
@@ -168,7 +168,7 @@ of the columns `b = 2` [[T11]](#references) and `b = 3` [[Th08]](#references) fo
 
 The main theorem, `conjecture5_of_openCases : OpenCases → Conjecture5`, the exception
 `not_infinitesimal_3_2`, and Thanatipanonda's Conjectures T2, `exactValuesA2 : ExactValuesA2`, and
-T1, `conjectureT1 : ConjectureT1`, can be checked with Comparator (`lake comparator`). `Challenge.lean` states them, with `sorry`, after
+T1, `conjectureT1 : ConjectureT1`, can be checked with Comparator (`lake comparator --config comparator/config.json`). `Challenge.lean` states them, with `sorry`, after
 a verbatim copy of `Cgt/Statement.lean`: the definitions of games, infinitesimals, `∗`, the rules,
 the starting positions, `Conjecture5`, `OpenCases`, `valueA2`, `ExactValuesA2`, the one-frog
 positions, `valueT1` and `ConjectureT1`, in Lean core only. Comparator checks that `Solution.lean` proves exactly these statements, with no axioms
@@ -179,7 +179,7 @@ result you need to read only `Challenge.lean`. The `native_decide` results are n
 ## Grid of proved cases
 
 Each cell is the case `Tᵃ □ᵇ Fᵃ`: `a` toads and frogs across the top, `b` empty squares down
-the side. Generated from the Lean sources by `scripts/gen_grid.py`.
+the side. (In CGT literature and repository file names such as `RowA2` and `Column3`, `a` is called the row and `b` the column.) Generated from the Lean sources by `scripts/gen_grid.py`.
 
 | **b** \ **a** | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | ≥ 15 |
 |---:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
@@ -228,11 +228,17 @@ How a cell is proved:
 * `b = 4` (every `a`, 🟦 where not proved otherwise too): one theorem,
   `infinitesimal_start_b_four`, whose finite check is evaluated by `native_decide`.
 * The other cells are single cases:
-  * most are checked by kernel `decide` (`Cgt/FiniteCases.lean`). With the families above they
-    make up `ProvedRegion`, covered by `conjecture5_provedRegion`;
+  * most are checked by kernel `decide` (`Cgt/FiniteCases.lean`). With the infinite families above they
+    make up `ProvedRegion` (`Cgt/Conjecture5.lean`), covered by `conjecture5_provedRegion`;
   * `(3, 7)` to `(3, 12)` and `(4, 5)` are proved by strategy certificates
-    (`Cgt.Cert_a_b.infinitesimal` in `Cgt/Cert/`, checked by `lake build CgtCerts`). The
-    certificates for `(5, 3)` and `(6, 3)` predate the `b = 3` theorem, which now covers them.
+    (`Cgt.Cert_a_b.infinitesimal` in `Cgt/Cert/`, checked by `lake build CgtCerts`). These lie
+    outside `ProvedRegion` and provide additional individual kernel-checked cases. The certificates
+    for `(3, 4)`, `(5, 3)` and `(6, 3)` predate the general `2a + b ≤ 12` and `b = 3` theorems, which
+    now also cover them.
+
+In this grid of proved infinitesimal cases, `(6, 12)` is marked `·` because its infinitesimality
+is confirmed by the solver rather than proved in Lean; what is proved in Lean via `native_decide`
+(`Cgt/Value612.lean`) is that its value is neither `0` nor `∗` (`not_thanatipanonda_conjecture4`).
 
 `Cgt/Cert/` also contains a certificate for `(4, 6)`. Checking it ran out of memory, so it is
 not built with `CgtCerts` and is shown as · above.
@@ -282,15 +288,14 @@ are infinitesimal but neither `0` nor `∗` (below); and `∗2`, `∗3` below ar
 | **30** | 0 | 0 | 0 |  |  |  |  |  |  |  |  |  |  |  |  |
 <!-- values table: end -->
 
-* **Beyond the table.** `a = 1` gives `∗` for odd `b` and `0` for even `b`, and `b = 1` gives `∗`,
-  for every `a` and `b` [[WW]](#references). For `a = 2` and `31 ≤ b ≤ 103` the value is `0`,
+* **Beyond the table.** `a = 1` gives `∗` for odd `b` and `0` for even `b` (for every `b`), and `b = 1` gives `∗` for every `a ≥ 1` [[WW]](#references). For `a = 2` and `31 ≤ b ≤ 103` the value is `0`,
   except `∗` when `b ≡ 1 (mod 6)`; for `a = 3` and `31 ≤ b ≤ 53` it is `0` [[T11]](#references).
-* **What is proved in Lean.** The row `a = 2`: every `b` (`exactValuesA2`). The row `b = 3`: every
-  `a` (`start_three_value`). The row `b = 4`: every `a` (`start_four_value`, with `native_decide`). The other values are not
+* **What is proved in Lean.** The row `a = 2`: every `b` (`exactValuesA2`). The column `b = 3`: every
+  `a` (`start_three_value`). The column `b = 4`: every `a` (`start_four_value`, with `native_decide`). The other values are not
   formalised; the grid above shows which cells are proved infinitesimal.
 * **How the values are computed.** `Tᵃ □ᵇ Fᵃ` is its own mirror image (reverse the board, swap
   toads and frogs), so its value `G` satisfies `G = −G`. Hence `G ≤ 0` already means `G = 0`, and
-  `G + ∗ ≤ 0` means `G = ∗`. `tools/values.cpp` decides both by exhaustive search on boards of up
+  `G ≤ ∗` means `G = ∗` (`equiv_star_of_mirror`; Lean checks `G ≤ ∗` directly without requiring game addition). `tools/values.cpp` decides both by exhaustive search on boards of up
   to 32 cells; [[T11]](#references)'s program likewise decides comparisons, not values. Every
   computed value is `0` or `∗`, except `(3, 2)`, the column `b = 2`, `(6, 12)` and `(7, 10)`. The
   solver reproduces all 114 published values in reach.
@@ -317,23 +322,26 @@ are infinitesimal but neither `0` nor `∗` (below); and `∗2`, `∗3` below ar
 * `paper/new_results.tex` and `paper/new_results.pdf`: a write-up of the new results for
   readers of [[T11]](#references) (table generated by `scripts/gen_values_tex.py`).
 * `Cgt/Statement.lean`: the definitions needed to state the main theorems (games, Conway's order,
-  infinitesimals, the rules, `tf`, `start`, `Conjecture5`, `OpenCases`), copied into
-  `Challenge.lean` for Comparator (`scripts/gen_challenge.py`; `Solution.lean`, `comparator/`).
+  infinitesimals, the rules, `tf`, `start`, `Conjecture5`, `OpenCases`, `valueA2`, `ExactValuesA2`,
+  `oneFrog`, `valueT1`, `ConjectureT1`), copied into `Challenge.lean` for Comparator
+  (`scripts/gen_challenge.py`; `Solution.lean`, `comparator/`).
 * `Cgt/Game.lean`: short partizan games as finite option lists, Conway's order
   (reflexive, transitive), negation, equivalence.
-* `Cgt/Infinitesimal.lean`: the numbers `2⁻ⁿ`, and `Infinitesimal G := ∀ n, -2⁻ⁿ < G < 2⁻ⁿ`.
-  It proves that `G ≤ 2⁻ⁿ` for all `n` (Left stop `≤ 0`) is equivalent to a purely
-  combinatorial recursion (`upperZero_iff`, `lfZero_iff`).
+* `Cgt/Infinitesimal.lean`: the theory of infinitesimals, Left and Right stops (`UpperZero`, `LfZero`),
+  proving that Left stop `≤ 0` is equivalent to a purely combinatorial recursion (`upperZero_iff`, `lfZero_iff`),
+  and that mirror-symmetric games with Left stop `≤ 0` are infinitesimal.
 * `Cgt/ToadsFrogs.lean`: the rules, the game tree `tf`, `start a b = Tᵃ □ᵇ Fᵃ`, and mirror
   symmetry `tf (mirror p) = -tf p`. Since `start a b` is mirror-symmetric, being
   infinitesimal reduces to having Left stop `≤ 0` (`infinitesimal_start_iff`).
 * `Cgt/Decide.lean`: kernel-reducible evaluators for `≤ 0`, Left stop `≤ 0` and Right stop
   `≤ 0`, with soundness proofs.
-* `Cgt/Moves.lean`, `Cgt/FamilyA1.lean`, `Cgt/FamilyB1.lean`, `Cgt/Basic.lean`: symbolic proofs
-  for whole families.
+* `Cgt/Basic.lean`, `Cgt/FamilyA1.lean` (row `a = 1`), `Cgt/FamilyB1.lean` (column `b = 1`), `Cgt/Moves.lean`:
+  symbolic proofs for base families and movement lemmas.
 * `Cgt/FamilyB2.lean`: Thanatipanonda's proof for `b = 2` (Lemma C.1 plus a short case tree).
 * `Cgt/DLP.lean`: the one-sided Death Leap Principle (Left can only jump and there are no
   two adjacent empty squares, so the position is `≤ 0`).
+* `Cgt/SmallCases.lean`, `Cgt/FiniteCases.lean`: kernel-checked proofs for all small starting positions
+  with `2a + b ≤ 12` and base cases (including the non-infinitesimal exception `(3, 2)`).
 * `Cgt/Four.lean`, `Cgt/Shape4.lean`, `Cgt/RowA2.lean`: the row `a = 2`. See
   [The row a = 2](#the-row-a--2) below.
 * `Cgt/Col/`: the columns `b = 3` and `b = 4`. Positions as run lists, dead runs, keys, the
@@ -341,12 +349,18 @@ are infinitesimal but neither `0` nor `∗` (below); and `∗2`, `∗3` below ar
   and the `native_decide`-checked data of `b = 4` (`Cgt/Col/B4*.lean`, `Column4.lean`, generated by
   `scripts/gen_b4.py`). See [docs/COLUMN_B3.md](docs/COLUMN_B3.md).
 * `Cgt/RowA2Zero.lean`, `Cgt/RowA2Values.lean`, `Cgt/RowA2Odd.lean`, `Cgt/RowA2Odd/`: exact values
-  in the row `a = 2` (even `b` by shapes, `b ≤ 30` by the kernel, odd `b` by the linear invariant
+  in the row `a = 2` (even `b ≥ 6` by shapes, `b ≤ 30` by the kernel, odd `b` by the linear invariant
   `inv2` and the generated `omega` lemmas `Cgt/RowA2Odd/Close*.lean`).
 * `Cgt/OneFrog/`: the positions with one frog and Conjecture T1 (`Num.lean`: comparing with `n`,
   `n + ½`, `n∗`; `Pos.lean`, `Rules.lean`: positions and moves; `Lower.lean`, `Upper.lean`: the
   bounds; `T1.lean`, `Exception.lean`, `Main.lean`: the theorems). `tools/onefrog/` has the
   programs that found and checked the argument. See [docs/ONE_FROG.md](docs/ONE_FROG.md).
+* `Cgt/Value612.lean`, `Cgt/Table.lean`, `Cgt/Tab/`: the counterexample `T⁶□¹²F⁶` refuting Thanatipanonda's
+  Conjecture T4 (`not_thanatipanonda_conjecture4`), checked via a Right strategy table of 21 million positions
+  evaluated by `native_decide` (`lake build CgtNative`).
+* `Cgt/Conjecture5.lean`: combines all kernel-checked results into `conjecture5_provedRegion`
+  for `ProvedRegion` (`a ≤ 2 ∨ b ≤ 3 ∨ 2a + b ≤ 12`) and the main conditional theorem
+  `conjecture5_of_openCases : OpenCases → Conjecture5`.
 * `tools/presburger/`: how `inv2` was found and checked (exact solver, decision-tree learner, Z3
   closure check, canonical-value calculator, Lean generator). `tools/linear/` is the first,
   superseded attempt (shapes with clamped linear forms).
@@ -378,7 +392,7 @@ Build with `lake build` (Lean `v4.36.0-rc2`). `lake build CgtNative` builds the 
    (`le_zero_of_good`). The kernel checks all 1,543 shapes in about 30 seconds.
 
 **Exact values.** `TT□ᵇFF` is symmetric, and each player has one move. So `TT□ᵇFF = 0` follows
-from `T□T□ᵇ⁻²F□F ≤ 0`, and `TT□ᵇFF = ∗` from `TT□ᵇ⁻¹F□F ≤ 0`. For even `b`, the first claim
+from `T□T□ᵇ⁻²F□F ≤ 0`, and `TT□ᵇFF = ∗` from `TT□ᵇ⁻¹F□F ≤ 0`. For even `b ≥ 6`, the first claim
 yields to the same method: Right keeps the mirrored differences within 4, over 1,038 shapes
 (`scripts/search_row2.py`). The cases `b ≤ 30` are checked one by one by the kernel. For odd `b`,
 Right needs differences that grow with `b`, so shapes cannot work. Instead, Right always moves the
@@ -400,10 +414,11 @@ short:
 1. **Runs.** With only three empty squares, a position is a few empty squares between long runs
    of pieces. Positions are handled as run lists, and moves on run lists are proved equal to moves
    on cells.
-2. **Shapes.** Right's strategy, found by computer, uses 3,031 shapes. A shape records each run's
-   cell and short lengths. It also records the exact differences between long live runs whose
-   lengths are close, and only parity across large gaps. Runs in dead blocks (Erickson's dead
-   pieces) are recorded without their lengths.
+2. **Shapes.** Right's strategy, found by computer, uses 3,031 shapes (formalized as keys in
+   `Cgt/Col/Key.lean`). A shape records each run's cell and short lengths. It also records the
+   exact differences between sorted lengths of live long runs whose lengths are close, and only
+   parity across large differences. Runs in dead blocks (Erickson's dead pieces) are recorded
+   without their lengths.
 3. **Margin.** A move changes every recorded difference by at most 2, so checking each shape
    through finitely many witnesses covers every position of that shape (`margin_left`,
    `margin_right`, `wit_complete`). The kernel checks the witnesses in 16 chunks of about two
@@ -419,8 +434,8 @@ checked by the kernel in 6 files of up to about three minutes. Since `Tᵃ□³F
 image, `≤ ∗` means `= ∗`.
 
 **The column `b = 4`** (`infinitesimal_start_b_four`, `Cgt/Col/Column4.lean`) uses the same
-framework with another gap rule: far gaps between long runs keep only their sign, not their parity
-(`ruleF`; `b = 3` uses `ruleP`). Right needs 13 runs and 233,087 shapes
+framework with another gap rule: far differences between sorted lengths of long runs keep only
+their sign, not their parity (`ruleF`; `b = 3` uses `ruleP`). Right needs 13 runs and 233,087 shapes
 (`tools/column/b4_shapes.txt.gz`). The finite check is about 270 times the size of the `b = 3`
 one. It is evaluated by `native_decide` in 8 files, so this theorem trusts Lean's compiler as well
 as the kernel (`docs/RESEARCH_NOTES.md` §14). The exact values of `b = 4` (`start_four_value`,
@@ -438,9 +453,9 @@ parity), 361,981 shapes (`tools/column/b4_star_shapes.txt.gz`) and 9 `native_dec
    Left move lowers it by 1, a slide of the frog raises it by 1, and a jump of the frog raises it
    by 3. Left is never stuck while `phi > 0`, so the value is at least `phi`.
 3. **Room.** `room` is the number of empty squares right of the frog minus those left of the
-   nearest toad. With `room ≥ 2` Right keeps the value at `phi` by answering with slides. With
-   `room = 1` or `0` the value is `phi`, `phi + ½`, `phi + 1` or `(phi + 1)∗`, by the parity of the
-   gap between the nearest toad and the frog.
+   nearest toad on the frog's left. With `room ≥ 2` Right keeps the value at `phi` by answering with slides. With
+   `room = 1` or `0` the value is `phi`, `phi + ½`, `phi + 1` or `(phi + 1)∗` (provided `phi + 1 ≥ 0`,
+   with known exceptions such as `Tᵃ□F`), by the parity of the gap between that toad and the frog.
 
 **[docs/ONE_FROG.md](docs/ONE_FROG.md)** has the full account.
 
@@ -477,7 +492,6 @@ that proof, `tools/column/col_realcheck.cpp` checks Right's strategy on the real
 
 See `docs/RESEARCH_NOTES.md` for the full record (strategies tried, data, obstructions). The
 exact solvers are in `tools/` (`stops.cpp` decides "Left stop `≤ 0`" for `Tᵃ□ᵇFᵃ`).
-
 
 * The naive mirror strategy (Right copies Left's move reflected through the centre) does
   **not** prove the conjecture. Left can steer into symmetric positions that are hot, for

@@ -26,29 +26,12 @@ theorems in Toads and Frogs. We aim to use the kernel only, while allowing compi
 
 ## What is new
 
-**Erickson's Conjecture 5 is not proved here, and remains a conjecture.** What follows is partial
-progress: it is proved for some infinite families of starting positions (the row `a = 2` and the
-columns `b ≤ 4`) and for finitely many other cases; every other case is open. Two of
-Thanatipanonda's conjectures are proved (T1 and T2) and one is refuted (T4).
+**Erickson's Conjecture 5 remains a conjecture.** What follows is partial progress: it is proved for some infinite families of starting positions, and some other particular cases.
+Some other noted conjectures for this game are also addressed.
 
-**New** below means that the result is in none of the following sources, all checked in November
-2026: Erickson's paper [[E96]](#references) and his page for it; Thanatipanonda and Zeilberger
-[[TZ07]](#references); Thanatipanonda [[T11]](#references), both the journal version and the arXiv
-preprint; Thanatipanonda's PhD thesis [[Th08]](#references); the "Unsolved problems in
-combinatorial games" lists in all six *Games of No Chance* volumes (1996–2025); the works citing
-these in OpenAlex, Crossref, Semantic Scholar and zbMATH Open; arXiv and Wikipedia; GitHub,
-including Rocq and Isabelle code; and Mathlib and the Lean `combinatorial-games` library. What each
-source says, and the few we could not reach, are in [docs/LITERATURE.md](docs/LITERATURE.md).
+This repository contains some results believed to be new (with reference to known work: [[E96]](#references) [[TZ07]](#references) [[T11]](#references) [[Th08]](#references)) or newly formalized.
 
-* **New: counterexamples to Thanatipanonda's Conjecture T4.**
-  [[T11]](#references) conjectures that `Tᵃ□ᵇFᵃ` is `0` or `∗` whenever `b ≥ a > 0` (Conjecture T4;
-  Conjecture 4 in the preprint and in [[Th08]](#references)). `T⁶□¹²F⁶` is neither: proved in
-  Lean (`not_thanatipanonda_conjecture4` in `Cgt/Value612.lean`, 🟦), from a strategy table for Right of 21 million
-  positions checked by `native_decide`. `T⁷□¹⁰F⁷` is neither too (computed, not formalised). Both
-  are still infinitesimal, as Erickson's conjecture predicts, and neither is `∗2` or `∗3`. (This is
-  not Erickson's Conjecture 4, which [[T11]](#references) refutes.) See
-  [Values of the starting positions](#values-of-the-starting-positions).
-* **New: the column `b = 4`, proved with `native_decide`.** `Tᵃ□⁴Fᵃ` is
+* **New: Conjecture 5 holds for the column `b = 4`.** `Tᵃ□⁴Fᵃ` is
   infinitesimal for every `a` (`infinitesimal_start_b_four`), the case `b = 4` of Erickson's
   conjecture. Values were known for `a ≤ 10` [[T11]](#references), and [[Th08]](#references)
   (p. 89) lists this family as open. The method is that of `b = 3` below, with far differences between
@@ -59,7 +42,13 @@ source says, and the few we could not reach, are in [docs/LITERATURE.md](docs/LI
   evaluation. It is kept out of the default build and of `conjecture5_provedRegion`. The shape set
   is also checked by two independent programs, and on the real game trees for every `a ≤ 24`. See
   [docs/RESEARCH_NOTES.md §14](docs/RESEARCH_NOTES.md).
-* **New: the exact values of the column `b = 4`, proved with `native_decide`.**
+* **New: Conjecture 5 holds for the row `a = 2`.** `TT□ᵇFF` is infinitesimal for every `b`
+  (`infinitesimal_start_two`), the case `a = 2` of Erickson's conjecture, also predicted by
+  Thanatipanonda's Conjecture T2. It had been computed for `b ≤ 6` [[E96]](#references) and
+  `b ≤ 103` [[T11]](#references). The method is in the spirit of Thanatipanonda and Zeilberger's
+  symbolic finite-state approach [[TZ07]](#references). See
+  [docs/ROW_A2.md §10](docs/ROW_A2.md#10-related-work).
+* **New: the exact values of the column `b = 4`.**
   `Tᵃ□⁴Fᵃ = ∗` for every `a ≥ 5` (`start_four_equiv_star`); with the small cases, `0` for `a = 0, 1, 4` and `∗` otherwise
   (`start_four_value`). This is the case `b = 4` of Thanatipanonda's Conjecture T3
   [[T11]](#references): `Tᵃ□ᵇFᵃ = ∗` whenever `a > b > 0`, `b ≠ 2`. The method is the `≤ ∗` one of
@@ -78,19 +67,21 @@ source says, and the few we could not reach, are in [docs/LITERATURE.md](docs/LI
   `native_decide`, and with Comparator. The frog never has a choice of move, so every bound is an
   induction on the position; `tools/onefrog/check_rules.py` checks each step of that induction on
   all boards of up to 15 squares. See [docs/ONE_FROG.md](docs/ONE_FROG.md).
-* **New: the row `a = 2`.** `TT□ᵇFF` is infinitesimal for every `b`
-  (`infinitesimal_start_two`), the case `a = 2` of Erickson's conjecture, also predicted by
-  Thanatipanonda's Conjecture T2. It had been computed for `b ≤ 6` [[E96]](#references) and
-  `b ≤ 103` [[T11]](#references). The method is in the spirit of Thanatipanonda and Zeilberger's
-  symbolic finite-state approach [[TZ07]](#references). See
-  [docs/ROW_A2.md §10](docs/ROW_A2.md#10-related-work).
-* **New: the exact values for every `b` with `a=2`** (`exactValuesA2`, `Cgt/RowA2Odd.lean`):
+* **New: Thanatipanonda's Conjecture T2, the exact values for every `b` with `a=2`** (`exactValuesA2`, `Cgt/RowA2Odd.lean`):
   `TT□ᵇFF = ∗` when `2 ≤ b ≤ 4` or `b ≡ 1 (mod 6)`, and `0` otherwise. This is Thanatipanonda's
   Conjecture T2 [[T11]](#references), which had been computed for `b ≤ 103`. Even `b ≥ 6` use the
   shape method with 1,038 shapes (`start_two_equiv_zero`, `Cgt/RowA2Zero.lean`), `b ≤ 30` are kernel checks (`start_two_value`, `Cgt/RowA2Values.lean`), and odd
   `b ≥ 31` use an invariant of 67 linear cases (inequalities and congruences in the gaps). The
   closure of that invariant under play is proved case by case by `omega`, with no
   `native_decide`. See [docs/ROW_A2.md §8](docs/ROW_A2.md#8-exact-values).
+* **New: counterexamples to Thanatipanonda's Conjecture T4.**
+  [[T11]](#references) conjectures that `Tᵃ□ᵇFᵃ` is `0` or `∗` whenever `b ≥ a > 0` (Conjecture T4;
+  Conjecture 4 in the preprint and in [[Th08]](#references)). `T⁶□¹²F⁶` is neither: proved in
+  Lean (`not_thanatipanonda_conjecture4` in `Cgt/Value612.lean`, 🟦), from a strategy table for Right of 21 million
+  positions checked by `native_decide`. `T⁷□¹⁰F⁷` is neither too (computed, not formalised). Both
+  are still infinitesimal, as Erickson's conjecture predicts, and neither is `∗2` or `∗3`. (This is
+  not Erickson's Conjecture 4, which [[T11]](#references) refutes.) See
+  [Values of the starting positions](#values-of-the-starting-positions).
 * **Known, now formalized: the column `b = 3` and its exact values.** `Tᵃ□³Fᵃ` is
   infinitesimal for every `a` (`infinitesimal_start_b_three`), and `Tᵃ□³Fᵃ = ∗` for every `a ≥ 4`
   (`start_three_equiv_star`; `0` for `a = 0, 3` and `∗` otherwise, `start_three_value`).
@@ -100,25 +91,12 @@ source says, and the few we could not reach, are in [docs/LITERATURE.md](docs/LI
   is independent and the first machine-checked one: a computer-found strategy
   over 3,031 "run shapes" (1,263 for the values), kernel-checked, with a general margin argument
   for positions with any number of runs. See [docs/COLUMN_B3.md](docs/COLUMN_B3.md).
-* **New: the exact values beyond the published tables**, computed here, not proved (see
+* **New: several exact values beyond the published tables**, computed here, not proved (see
   [Values of the starting positions](#values-of-the-starting-positions)).
-* **New: a Lean formalisation of Toads and Frogs.** The only other
-  formalisation we found is an unmerged Rocq development for boards of at most four squares.
-* **Everything else is a formal proof of a known (or trivial) result.** The *Origin* column below
-  gives the source of each.
-* **Observations, not theorems.** `docs/RESEARCH_NOTES.md` and `tools/` record computational
-  experiments and negative findings, for example why the `a = 2` method does not extend to
-  `a = 3`.
-* **Still open:**
-  * the full conjecture;
-  * the exact values of other rows and columns (Conjectures T3 and T5).
 
 ## Conjectures about Toads and Frogs
 
-Every conjecture about the game that we found in the literature, oldest first. Erickson numbers
-his 7.1 to 7.6 [[E96]](#references); [[T11]](#references) calls them Erickson's conjectures 1 to
-6. Thanatipanonda's own conjectures are numbered 1 to 5 in the arXiv preprint of [[T11]](#references) (2008) and in
-[[Th08]](#references), and T1 to T5 in the journal version (2011).
+The current status of known conjectures:
 
 | Conjecture | Statement | Status | Notes |
 | --- | --- | --- | --- |

@@ -411,26 +411,29 @@ void whyRoot(const Node &x0, int limit) {
     Node x = todo.front(); todo.pop_front(); lostNodes++;
     char mode = x[0]; Shape s = x.substr(1);
     for (auto &w : wit(s)) {
-      vector<Pos> qs = lm(w); if (mode == 'U') qs.push_back(w);
+      vector<Pos> qs = lm(w); if (mode == 'U' || mode == 'S') qs.push_back(w);   // w itself: Left's pass (U) or his move in the * (S)
       for (auto &q : qs) {
         bool conc = (int)q.size() <= CONC; vector<Node> opts; string fate;
+        auto wins = [&](const Pos &r, char md) { return md == 'N' ? le0(r) : md == 'S' ? LeS(r) : Up(r); };
         auto consider = [&](const Pos &r, char md) {
           fate += "  " + string(1, md) + ":" + r + "=";
           if (nruns(r) > RB) { fate += "runs"; return; }
           if (!okShape(r)) { fate += "far"; return; }
-          if (conc && !(md == 'N' ? le0(r) : Up(r))) { fate += "loses"; return; }
+          if (conc && !wins(r, md)) { fate += "loses"; return; }
           { Shape sh = shapeOf(r); string bad;   // a small witness of the reply's shape that loses concretely
-            for (auto &v : wit(sh)) if ((int)v.size() <= CONC && !(md == 'N' ? le0(v) : Up(v))) { bad = v; break; }
+            for (auto &v : wit(sh)) if ((int)v.size() <= CONC && !wins(v, md)) { bad = v; break; }
             if (!bad.empty()) { fate += "conflict(" + bad + ")"; return; } }
           fate += "lost-shape"; opts.push_back(string(1, md) + shapeOf(r)); };
         if (mode == 'U') { consider(q, 'N'); for (auto &r : rm(q)) consider(r, 'U'); }
+        else if (mode == 'S' && q == w) { for (auto &r : rm(q)) consider(r, 'N'); }
+        else if (mode == 'S') { consider(q, 'N'); for (auto &r : rm(q)) consider(r, 'S'); }
         else for (auto &r : rm(q)) consider(r, 'N');
         bool alive = false; for (auto &o : opts) if (stOf(o) != 3) alive = true;
         if (alive) continue;
         if (opts.empty()) {
           roots++;
           string kind = fate.find("conflict") != string::npos ? "conflict" : fate.find("runs") != string::npos ? "runs" : fate.find("far") != string::npos ? "far" : "loses";
-          bool wl = conc && (int)w.size() <= CONC && !(mode == 'U' ? Up(w) : le0(w));
+          bool wl = conc && (int)w.size() <= CONC && !wins(w, mode);
           kinds[kind + (wl ? " (witness itself loses within the bounds)" : " (witness wins within the bounds)")]++;
           if (shown < limit) { shown++; printf("ROOT %s  witness %s  %s %s%s\n", x.c_str(), w.c_str(), q == w ? "pass" : "move", q.c_str(), fate.c_str()); }
         } else for (auto &o : opts) if (seen.insert(o).second) todo.push_back(o);

@@ -793,3 +793,42 @@ MARGIN=4 DEADRUNS=1`, short-run cap `K = 2` unless noted, and `col_shapes 5 RB K
   theory of which components are numbers and how those numbers depend on the run lengths, not an
   extension of `Cgt/Col/`.
 
+## 21. Unequal sides: `Tᵃ□ᵏFᵇ = {a − b | a − b}` (`tools/column/`, `START=G`)
+
+An attempt to reach Thanatipanonda's theorem for three empty squares (`a, b ≥ 4`; [T11b]) and his
+conjecture for four (`a, b ≥ 6`) with the column search. No certificate was found.
+
+* **Padding turns the claim into `≤ ∗`.** For `a ≥ b`, `.Fᵃ⁻ᵇTTFF Tᵃ□ᵏFᵇ` has the value of
+  `Tᵃ□ᵏFᵇ` minus `a − b`: the frogs in front of the dead `TTFF` wall give Right exactly `a − b`
+  free moves, and the wall acts as the edge of the board. For `a < b`, `Tᵃ□ᵏFᵇ TTFF Tᵇ⁻ᵃ.` gives
+  Left `b − a` free moves. So `Tᵃ□ᵏFᵇ = {a − b | a − b}` for all `a, b` in a range if and only if
+  all these padded positions are `≤ ∗`. `START=G` uses them as starts; `STARTONLY=1` only checks
+  them concretely (boards of at most 28 squares).
+* **Concrete results.** Three empty squares: every `a, b` from 4 to 9 holds. Four: every `a, b`
+  from 6 to 9 holds; `(5, 6)`, `(6, 5)`, `(5, 7)`, `(7, 5)` hold; `(5, 8)` fails, so
+  `T⁸□⁴F⁵ ≠ {3 | 3}` (its canonical form is a hot game `≤ {3 | 3}`), and the bound 6 of the
+  conjecture is needed.
+* **The search does not close, even for three empty squares.** The padded starts need 15 runs
+  (the 10 of §13 and the 5 of the padding). With the settings of the `b = 3` values (`K = M = 2`,
+  parity):
+
+  | Record | Outcome |
+  | --- | --- |
+  | plain shapes | starts lost after 2.9 million shapes |
+  | + balance `ΣT − ΣF` of the live long runs (`WBAL=1`, window 3) | no verdict: 5.5 million shapes in 30 minutes |
+  | the same without parity (window 4) | no verdict: 2.8 million shapes in 30 minutes |
+
+  The plain shapes fail at once for the expected reason: the three long runs `Fᵃ⁻ᵇ`, `Tᵃ`, `Fᵇ`
+  are far apart, so a shape forgets the relation between them (`WHYROOT`: the start of `(6, 4)`
+  shares a reply's shape with a position with eight toads). The balance record keeps the
+  relation, but the search is then thousands of times larger than the 1,263 shapes of the
+  diagonal `a = b`.
+* **Reading.** The hand proof of [T11b] for three empty squares is four short lemmas because it
+  splits positions into sums of parts with known integer values (the Blocking Rule
+  `X FF Y ≤ X + Y`, the one-sided Death Leap Principle, and values of one-frog positions). The
+  shape search has no such splitting, so the surplus `a − b` travels through every shape. A
+  machine proof of the unequal case should follow the hand proof: comparison with integers of
+  either sign, the Blocking Rule, and case trees whose leaves are split positions.
+* **Tool fix.** `WHYROOT` now reads `S` shapes (`≤ ∗`) correctly; before, it judged their replies
+  as normal-play claims.
+

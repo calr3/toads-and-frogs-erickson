@@ -47,9 +47,11 @@ for `a > b > 0`, `b ≠ 2` (T3); `Tᵃ□ᵇFᵃ ∈ {0, ∗}` for `b ≥ a > 0`
   help: case trees that compare positions with sums of known values, using the one-sided Death
   Leap Principle and a *Blocking Rule*, `X FF Y ≤ X + Y`.
 * **A new conjecture: `Tᵃ□⁴Fᵇ = {a − b | a − b}` for `a, b ≥ 6`.** Its diagonal is our
-  `start_four_value` (`∗` for `a ≥ 5`). By exact computation (`tools/cgt_values.py`) it also holds
-  at `(5, 6)`, `(6, 5)`, `(6, 7)` and `(7, 6)`, so it may hold from `a, b ≥ 5`; it fails when `a`
-  or `b` is 4.
+  `start_four_value` (`∗` for `a ≥ 5`). By exact computation it holds for every `a, b` from 6
+  to 9 (`START=G STARTONLY=1` of `tools/column/col_shapes.cpp`, which checks that the start padded
+  with `|a − b|` free moves is `≤ ∗`, in both directions). The bound 6 is needed: with a 5 it
+  holds at `(5, 6)`, `(6, 5)`, `(5, 7)`, `(7, 5)` but fails at `(8, 5)` and `(5, 8)`
+  (`T⁸□⁴F⁵ ≤ {3 | 3}`, not equal; `tools/cgt_values.py`), and it fails when `a` or `b` is 4.
 * **An open problem:** the values of `Tᵃ□ⁱFᵇ` for fixed `i ≥ 5`.
 * **One-frog "library values"** quoted from *Library values for Toads and Frogs* (which we still
   have not seen): `Tᵃ□TᵇF□ = a`, `Tᵃ□□F = a − 1` and `Tᵃ□□TF = a`. The manuscript says the

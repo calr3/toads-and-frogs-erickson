@@ -125,6 +125,10 @@ int WGT = getenv("WEIGHT") ? atoi(getenv("WEIGHT")) : 0, WBOTH = getenv("WBOTH")
 static char wcode(int v) { return v < -WGT ? 'm' : v > WGT ? 'p' : char('A' + v + WGT); }
 string wsuffix(const vector<pair<char,int>> &rs, const vector<bool> &dd) {
   string t; int m = rs.size();
+  if (getenv("WBAL")) {   // WBAL=1: one record instead, (live long toads) - (live long frogs)
+    int st = 0, sf = 0;
+    for (int i = 0; i < m; i++) if (rs[i].second >= K && !dd[i]) { if (rs[i].first == 'T') st += rs[i].second; else if (rs[i].first == 'F') sf += rs[i].second; }
+    t += wcode(st - sf); return t; }
   if (getenv("WSUM")) {   // WSUM=1: one record instead, (sum of live long toad runs) - 2 (sum of live long frog runs)
     int st = 0, sf = 0;
     for (int i = 0; i < m; i++) if (rs[i].second >= K && !dd[i]) { if (rs[i].first == 'T') st += rs[i].second; else if (rs[i].first == 'F') sf += rs[i].second; }
@@ -497,8 +501,22 @@ int main(int argc, char **argv) {
   if (getenv("PREF")) { ifstream f(getenv("PREF")); string l; while (getline(f, l)) if (!l.empty()) pref.insert(l); printf("%zu preferred shapes\n", pref.size()); }
   vector<int> starts;
   { set<Node> st; const char *sm = getenv("START"); int a0 = getenv("AMIN") ? atoi(getenv("AMIN")) : K;
+    if (sm && sm[0] == 'G') {
+      // START=G: the unequal starts T^a .^B F^b = {a - b | a - b}, AMIN <= a, b <= AMAX, as "<= *" claims
+      // about padded positions. For a >= b: ".F^(a-b)TTFF" in front (a - b free moves for Right behind
+      // a dead wall); for a < b: "TTFFT^(b-a)." behind (b - a free moves for Left). The value of the
+      // padded position is that of T^a .^B F^b minus (a - b).
+      int a1 = getenv("AMAX") ? atoi(getenv("AMAX")) : a0 + 6; int badc = 0;
+      for (int a = a0; a <= a1; a++) for (int b = a0; b <= a1; b++) {
+        Pos core = string(a, 'T') + string(B, '.') + string(b, 'F');
+        Pos p = a > b ? "." + string(a - b, 'F') + "TTFF" + core : a < b ? core + "TTFF" + string(b - a, 'T') + "." : core;
+        if ((int)p.size() <= CONC && !LeS(p)) { badc++; printf("start %s is not <= *\n", p.c_str()); }
+        st.insert("S" + shapeOf(p)); }
+      printf("%zu start shapes, %d concrete failures\n", st.size(), badc);
+      if (getenv("STARTONLY")) return badc ? 1 : 0;
+    } else
     for (int a = max(K, a0); a < K + M + 8; a++) st.insert((sm && sm[0] == 'S' ? "S" : "U") + shapeOf(string(a, 'T') + string(B, '.') + string(a, 'F')));
-    for (auto &x : st) printf("start %s\n", x.c_str());
+    if (st.size() <= 12) for (auto &x : st) printf("start %s\n", x.c_str());
     for (auto &x : st) starts.push_back(idOf(x)); }
   for (int it = 0; it < 500; it++) {
     for (auto &v : status) if (v != 3) v = 0;

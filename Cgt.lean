@@ -42,3 +42,8 @@ import Cgt.OneFrog.Upper
 import Cgt.OneFrog.T1
 import Cgt.OneFrog.Exception
 import Cgt.OneFrog.Main
+import Cgt.Sum.ZNum
+import Cgt.Sum.Block
+import Cgt.Sum.Pure
+import Cgt.Sum.Rules
+import Cgt.Sum.Three

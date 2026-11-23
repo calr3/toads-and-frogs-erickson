@@ -94,6 +94,11 @@ This repository contains some results believed to be new (with reference to know
   is independent and the first machine-checked one: a computer-found strategy
   over 3,031 "run shapes" (1,263 for the values), kernel-checked, with a general margin argument
   for positions with any number of runs. See [docs/COLUMN_B3.md](docs/COLUMN_B3.md).
+* **Known, now formalized: three empty squares with unequal sides.** `Tᵃ□³Fᵇ = {a − b | a − b}`
+  for all `a, b ≥ 4` (`three_empty_value`, `Cgt/Sum/Three.lean`; kernel only), Thanatipanonda's
+  theorem itself. The proof is a generated plan: one-step comparison rules and the Blocking Rule
+  `X FF Y ≤ X + Y`, with leaves that are single-colour positions or cases of the one-frog theorem
+  above. See [docs/RESEARCH_NOTES.md §22](docs/RESEARCH_NOTES.md) and `tools/sum/`.
 * **New: several exact values beyond the published tables**, computed here, not proved (see
   [Values of the starting positions](#values-of-the-starting-positions)).
 
@@ -176,6 +181,7 @@ Each cell is the case `Tᵃ □ᵇ Fᵃ`.
 | `b = 2`, all `a ≥ 4` (incl. Lemma C.1) | `infinitesimal_start_b_two`, `upperZero_c1` | Known: Thanatipanonda's theorem [[T11]](#references) |
 | **`b = 3`, all `a` (`Tᵃ □³ Fᵃ`)**: machine-checked strategy over 3,031 run shapes | `infinitesimal_start_b_three` (`Cgt/Col/Column3.lean`) | Known: follows from Theorem 5.6.1 of [[Th08]](#references) (`a ≥ 4`, by hand) and [[E96]](#references) (`a ≤ 3`); our proof is independent |
 | **Exact values of `Tᵃ □³ Fᵃ`**: `∗` for every `a ≥ 4` (and `0` for `a = 0, 3`, `∗` for `a = 1, 2`); machine-checked strategy over 1,263 run shapes | `start_three_value`, `start_three_equiv_star` (`Cgt/Col/Value3.lean`) | Known: the case `a = b` of Theorem 5.6.1 of [[Th08]](#references), `Tᵃ□³Fᵇ = {a − b \| a − b}` (`a, b ≥ 4`); our proof is independent |
+| **`Tᵃ □³ Fᵇ = {a − b \| a − b}`** for all `a, b ≥ 4`: generated proof plan (261 lemmas) over the one-frog theorem and the Blocking Rule | `three_empty_value` (`Cgt/Sum/Three.lean`) | Known: Theorem 5.6.1 of [[Th08]](#references), proof also in [[T11b]](#references); first machine-checked proof |
 | **Exact values of `Tᵃ □⁴ Fᵃ`**: `∗` for every `a ≥ 5` (and `0` for `a = 0, 1, 4`, `∗` for `a = 2, 3`); strategy over 361,981 run shapes; 🟦 finite check by `native_decide` | `start_four_value`, `start_four_equiv_star` (`Cgt/Col/Value4.lean`; `lake build CgtNative`) | **New**: Conjecture T3 of [[T11]](#references) for `b = 4`; values known for `a ≤ 10` |
 | **`b = 4`, all `a` (`Tᵃ □⁴ Fᵃ`)**: strategy over 233,087 run shapes; 🟦 finite check by `native_decide` (trusts the compiler) | `infinitesimal_start_b_four` (`Cgt/Col/Column4.lean`; `lake build CgtNative`) | **New**; listed as open in [[Th08]](#references) (p. 89), values known for `a ≤ 10` |
 | **Conjecture T1: the value of `□ˡ Tᵃ □ᵇ F □ʳ`** for every `a ≥ 1`, `l ≤ r`; from a general theorem on one-frog positions (value `phi`, `phi + ½`, `phi + 1` or `(phi + 1)∗` according to `room` and the parity of the gap); checked with Comparator | `conjectureT1` (`Cgt/OneFrog/Main.lean`); `value_room_*`, `t1_*` (`Cgt/OneFrog/T1.lean`), `t1_exception` (`Cgt/OneFrog/Exception.lean`) | **New**: Conjecture T1 of [[T11]](#references). Known before: `l = r = 0` ([[E96]](#references), Theorem 5.2) and `b = 0` ([[E96]](#references), Lemmas 4.3, 4.4) |
@@ -323,6 +329,10 @@ result you need to read only `Challenge.lean`. The `native_decide` results are n
 * `Cgt/Conjecture5.lean`: combines all kernel-checked results into `conjecture5_provedRegion`
   for `ProvedRegion` (`a ≤ 2 ∨ b ≤ 3 ∨ 2a + b ≤ 12`) and the main conditional theorem
   `conjecture5_of_openCases : OpenCases → Conjecture5`.
+* `Cgt/Sum/`: positions compared with integers of either sign and with `{n | n}` by one-step
+  rules (`ZNum.lean`, `Rules.lean`), the Blocking Rule (`Block.lean`), single-colour positions
+  (`Pure.lean`), and `Three.lean` with the generated `Gen/T3*.lean`: `Tᵃ□³Fᵇ = {a − b | a − b}`.
+  `tools/sum/` has the planner and the generator.
 * `tools/presburger/`: how `inv2` was found and checked (exact solver, decision-tree learner, Z3
   closure check, canonical-value calculator, Lean generator). `tools/linear/` is the first,
   superseded attempt (shapes with clamped linear forms).

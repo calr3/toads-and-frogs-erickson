@@ -396,8 +396,10 @@ $\Tt^a\E^3\Ff^b=\{a-b\mid a-b\}$ for $a,b\ge4$ (Theorem~D.3 of the preprint of~\
 by hand is also in~\cite{T11b}. Our proof
 is independent and, as far as we know, the first machine-checked one. Right's strategy uses 3,031
 shapes for infinitesimality and 1,263 for the value; gaps are kept exactly up to~$2$ and by parity
-above. The finite checks are done by the kernel. We have not formalised the off-diagonal case
-$a\neq b$.
+above. The finite checks are done by the kernel. The off-diagonal case is formalised separately
+(\lean{three\_empty\_value}, kernel only), by a different route that follows~\cite{T11b}: a
+proof plan found by computer, uniform in $a$ and $b$, which uses the Blocking Rule
+$X\,\Ff\Ff\,Y\le X+Y$ and ends in one-frog positions settled by Theorem~\ref{thm:onefrog}.
 
 \subsection{\texorpdfstring{$b=4$}{b=4}}
 

@@ -832,3 +832,40 @@ conjecture for four (`a, b ≥ 6`) with the column search. No certificate was fo
 * **Tool fix.** `WHYROOT` now reads `S` shapes (`≤ ∗`) correctly; before, it judged their replies
   as normal-play claims.
 
+## 22. Unequal sides, second attempt: generated proof plans (`Cgt/Sum/`, `tools/sum/`)
+
+**Result (proved in Lean, kernel only).** `three_empty_value`: `Tᵃ□³Fᵇ = {a − b | a − b}` for all
+`a, b ≥ 4`. Known (Theorem 5.6.1 of [Th08]; [T11b]); this is its first machine-checked proof, and
+the method is new here.
+
+* **The idea.** §21 concluded that a machine proof should follow the hand proof: split positions
+  into parts with known integer values. `tools/sum/tplan.py` searches for such a proof on
+  *templates* `Tˣ⁺ᶜ M Fʸ⁺ᵈ`, uniformly in `x, y ≥ 0`. A claim is "template `≤ x − y + k`" or
+  "`≤ {x − y + k | x − y + k}`". Inner nodes use the one-step rules (`G ≤ n` if every Left option
+  is `≤ n − 1` or has a Right option `≤ n`, and for `n < 0` some Right option is `≤ n + 1`;
+  similarly for `{n | n}`); moves are made on the template, so the tree is the same for every
+  `x, y`. Leaves are: a Blocking Rule split `X FF Y` with both parts bounded; a single-colour
+  position; a frog that can never move; or a one-frog (or, mirrored, one-toad) position whose
+  bound is a case of the one-frog theorem of §19.
+* **The one-frog theorem is what makes the leaves finite.** A part with one frog and a reservoir
+  of toads has no finite case tree. With leaves restricted to what `Cgt/OneFrog` proves, the
+  generic family needs only two more facts, proved by a short induction each:
+  `Tᵐ.Tᵏ.F ≤ m + 1` and `TF..Fᵏ ≤ −k` (the mirror of `Tᵐ..TF = m`, a "library value" of [T11b]).
+* **Size.** Four families (`a, b ≥ 5`; `a = 4`; `b = 4`; `a = b = 4`): 261 generated lemmas (inner
+  nodes and Blocking Rule leaves) and 68 library leaves (18 single-colour, 4 dead frogs, 34 upper
+  and 10 lower bounds of the one-frog theorem, 2 by hand). The whole of `Cgt/Sum` builds in
+  seconds. `≥` follows from `≤` by mirror symmetry.
+* **What Lean checks.** The planner tests a claim only for `x, y ≤ 3` (more when a side condition
+  needs it). The generated lemmas are stated for all `x, y`, and `simp` computes the moves of a
+  run list with symbolic lengths (`lmovesR`, `rmovesR` of `Cgt/Col/Runs.lean`), so every claim is
+  proved in general. One planner bug showed up this way: a side condition `x − y < −3` has no
+  instance on the grid, and the claim was wrongly treated as vacuous.
+* **Limits found so far.**
+  * *Erickson 7.3* (`Tᵃ□³FFF = a − 7/2`): the generalised planner (`tplan2.py`, any nested target
+    `{A | B}`) finds a plan for the lower bound (the mirror family `TTT□³Fʸ⁺⁵`, 87 claims, no hand
+    lemma) but none for the upper bound. There the toads keep passing three frogs, the reservoir
+    is used without limit, and the stuck claims are positions such as `Tˣ⁺¹..F.FTTTTTF`. A proof
+    needs induction on `x` with dead pieces removed (the symbolic finite-state method of [TZ07]),
+    which the planner does not do. [T11b] takes these leaves from the finite-state library.
+  * *Four empty squares*: the Python engine is too slow for the grid of `Tˣ⁺⁶□⁴Fʸ⁺⁶`; not decided.
+

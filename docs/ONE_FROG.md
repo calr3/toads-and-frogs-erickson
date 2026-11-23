@@ -35,10 +35,17 @@ Two remarks on the statement.
   (`□ˡTᵃF□ʳ = (a − 2)(r − 1) + □ˡTTF□ʳ`, with four cases for `□ˡTTF□ʳ`), and Lemma 4.1 for one
   toad.
 
-Conjecture T1 joins the two: a gap `b ≥ 1` together with empty squares at the ends. That is what
-is new here, with the general theorem of §2; the known cases are covered by the same proof. The
-preprint of [T11] proves nothing about positions with one frog and lists the class as future
-work.
+A third family is known from Thanatipanonda's library of results found by the symbolic
+finite-state method of [TZ07]: one frog with at most five empty squares on the board, any number
+of toads, in any order. We have not seen the library, only three values quoted from it in a
+manuscript, *Three Results of Combinatorial Game Toads and Frogs* (2011, private communication):
+`Tᵃ□TᵇF□ = a` and `Tᵃ□□F = a − 1`, which are cases of §2 with `room = 0`, and `Tᵃ□□TF = a`, which
+has `room = −2`.
+
+Conjecture T1 joins Erickson's two families: a gap `b ≥ 1` together with empty squares at the
+ends, for any number of empty squares. That is what is new here, with the general theorem of §2;
+the known cases are covered by the same proof. The preprint of [T11] proves nothing about
+positions with one frog and lists the class as future work.
 
 ## 2. The general theorem
 

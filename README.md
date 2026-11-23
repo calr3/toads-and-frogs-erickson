@@ -64,7 +64,9 @@ This repository contains some results believed to be new (with reference to know
   [[T11]](#references) (`t1_*`, `Cgt/OneFrog/T1.lean`), including its exception `Tᵃ□F = {{a−2|1}|0}`
   (`t1_exception`, `Cgt/OneFrog/Exception.lean`), all in one statement `conjectureT1` (`Cgt/OneFrog/Main.lean`). Erickson [[E96]](#references) proved the
   cases `l = r = 0` (his Theorem 5.2, with the exception) and `b = 0` (his Lemmas 4.3 and 4.4);
-  a gap together with empty squares at the ends is new. Checked by the kernel, with no
+  a gap together with empty squares at the ends is new. (For at most five empty squares in all,
+  one-frog values were also known from Thanatipanonda's library of finite-state results; see
+  [docs/LITERATURE.md](docs/LITERATURE.md).) Checked by the kernel, with no
   `native_decide`, and with Comparator. The frog never has a choice of move, so every bound is an
   induction on the position; `tools/onefrog/check_rules.py` checks each step of that induction on
   all boards of up to 15 squares. See [docs/ONE_FROG.md](docs/ONE_FROG.md).
@@ -101,9 +103,9 @@ The current status of known conjectures:
 
 | Conjecture | Statement | Status | Notes |
 | --- | --- | --- | --- |
-| Erickson 7.1 (1996) | `Tᵃ□□Fᵇ = {{a−3 \| a−b} \| {∗ \| 3−b}}` for `a > b ≥ 2` | **True** | Proved by Thanatipanonda: Theorem D.2 of the preprint of [[T11]](#references), proof in a supplement contained in [[Th08]](#references) |
+| Erickson 7.1 (1996) | `Tᵃ□□Fᵇ = {{a−3 \| a−b} \| {∗ \| 3−b}}` for `a > b ≥ 2` | **True** | Proved by Thanatipanonda: Theorem D.2 of the preprint of [[T11]](#references), proof in [[Th08]](#references) and in [[T11b]](#references), Appendix A |
 | Erickson 7.2 (1996) | `Tᵃ□³FF = (a−2)∗` for `a ≥ 2` | **True** | Proved by Thanatipanonda and Zeilberger [[TZ07]](#references) |
-| Erickson 7.3 (1996) | `Tᵃ□³F³ = a − 7/2` for `a ≥ 5` | **True** | Proved by Thanatipanonda: Theorem D.1 of the preprint of [[T11]](#references), proof as for 7.1 |
+| Erickson 7.3 (1996) | `Tᵃ□³F³ = a − 7/2` for `a ≥ 5` | **True** | Proved by Thanatipanonda: Theorem D.1 of the preprint of [[T11]](#references), proof in [[Th08]](#references) and in [[T11b]](#references), Appendix B |
 | Erickson 7.4 (1996) | `Tᵃ□ᵃFᵃ⁻¹ = 1` or `1∗` for `a ≥ 1` | **False** | Known counterexample: `T⁷□⁷F⁶ > 2` from [[T11]](#references). |
 | **Erickson 7.5 (1996)**, "Conjecture 5" | `Tᵃ□ᵇFᵃ` is infinitesimal for every `(a, b) ≠ (3, 2)` | **Open** | The subject of this repository. Proved in Lean for `a ≤ 2` (every `b`), `b ≤ 3` (every `a`) and every case with `2a + b ≤ 12`, so `conjecture5_of_openCases` reduces the conjecture to `a ≥ 3`, `b ≥ 4`, `2a + b ≥ 13` (checked with Comparator). Also proved: `b = 4` for every `a` (with `native_decide`), and `(3, 7)` to `(3, 12)` and `(4, 5)` by certificates. `(3, 2)` really is the exception (`TTT□□FFF = ±1/8`). Confirmed by exact search on every board of at most 25 squares. See [Status](#status) and [Grid of proved cases](#grid-of-proved-cases). |
 | Erickson 7.6 (1996) | Toads and Frogs is NP-hard | **True** | Proved by Jesse Hull (2000), as reported in [[T11]](#references) |
@@ -112,6 +114,7 @@ The current status of known conjectures:
 | Thanatipanonda T3 (2008) | `Tᵃ□ᵇFᵃ = ∗` whenever `a > b > 0`, `b ≠ 2` | **Open** | `b = 1` is in [[WW]](#references); `b = 3` is Theorem 5.6.1 of [[Th08]](#references) (`start_three_equiv_star`, an independent proof). **New:** `b = 4`, `start_four_equiv_star` (with `native_decide`). All computed values with `b ≥ 5` agree. The column `b = 5` does not yield to the shapes of `b = 4`, with or without weighted differences: Right's race there depends on the values of the components between dead blocks, which differences of run lengths do not record (`docs/RESEARCH_NOTES.md` §20). |
 | Thanatipanonda T4 (2008) | `Tᵃ□ᵇFᵃ = 0` or `∗` whenever `b ≥ a > 0` | **False** | New counterexamples: `(6, 12)` proved in Lean (`not_thanatipanonda_conjecture4` in `Cgt/Value612.lean`), and `(7, 10)` (computed). |
 | Thanatipanonda T5 (2008) | For each `c ≥ 3` there is `b₀` with `Tᶜ□ᵇFᶜ = 0` for all `b ≥ b₀` | **Open** | For `c = 3` the computed values are `0` for every `b` from 30 to 53; the last `∗` is `T³□²⁹F³` [[T11]](#references). See [Values of the starting positions](#values-of-the-starting-positions). Proving the row `a = 3` with the method of T2 failed: every description we could learn grows with the board (`docs/RESEARCH_NOTES.md` §16–18). |
+| Thanatipanonda (2011, [[T11b]](#references)) | `Tᵃ□⁴Fᵇ = {a−b \| a−b}` for `a, b ≥ 6` | **Open** | The diagonal `a = b` is proved here (`start_four_value`, from `a ≥ 5`). Computed here: it also holds at `(5, 6)`, `(6, 5)`, `(6, 7)`, `(7, 6)`, and fails when `a` or `b` is 4. The case of three empty squares, `Tᵃ□³Fᵇ = {a−b \| a−b}` for `a, b ≥ 4`, is proved in [[T11b]](#references) and [[Th08]](#references). |
 
 
 ## Grid of proved cases
@@ -521,6 +524,8 @@ exact solvers are in `tools/` (`stops.cpp` decides "Left stop `≤ 0`" for `Tᵃ
   of Combinatorics 18(1), 2011, #P67. Preprint arXiv:0804.0640 (2008), which numbers the
   conjectures 1–5 (T1–T5 in the journal version) and has an Appendix D of results stated without
   proof.
+* **[T11b]** Thotsaporn "Aek" Thanatipanonda, *Three Results of Combinatorial Game Toads and
+  Frogs*. Manuscript dated 18 March 2011; private communication.
 * **[Th08]** Thotsaporn Thanatipanonda, *Symbolic-computational methods in combinatorial game
   theory and Ramsey theory*. PhD thesis, Rutgers University, 2008. doi:10.7282/T30G3K3F.
 * **[WW]** Elwyn Berlekamp, John Conway and Richard Guy, *Winning Ways for your Mathematical

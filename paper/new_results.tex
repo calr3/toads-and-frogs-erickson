@@ -136,7 +136,9 @@ Conjecture~T1 of~\cite{T11} gives the values of the positions $\E^l\Tt^a\E^b\Ff\
 $l\le r$. Two families of these were proved by Erickson~\cite{E96}: the starting positions
 $\Tt^a\E^b\Ff$ ($l=r=0$; his Theorem~5.2), and the blocks $\E^l\Tt^a\Ff\E^r$ ($b=0$, every $l$
 and $r$; his Lemmas~4.3 and~4.4). The conjecture joins the two: a gap $b\ge1$ together with empty
-squares at the ends. We prove it as a special case of a statement about every position with one
+squares at the ends. (For at most five empty squares in all, one-frog values were also known from
+Thanatipanonda's library of results obtained by the finite-state method of~\cite{TZ07}, as
+reported in~\cite{T11b}.) We prove it as a special case of a statement about every position with one
 frog, with the toads anywhere.
 
 \subsection{The general theorem}
@@ -390,7 +392,8 @@ $a=0,3$, $\ast$ for $a=1,2$).
 \end{theorem}
 
 This is known: it is the diagonal case of Theorem~5.6.1 of~\cite{Th08},
-$\Tt^a\E^3\Ff^b=\{a-b\mid a-b\}$ for $a,b\ge4$ (Theorem~D.3 of the preprint of~\cite{T11}). Our proof
+$\Tt^a\E^3\Ff^b=\{a-b\mid a-b\}$ for $a,b\ge4$ (Theorem~D.3 of the preprint of~\cite{T11}). A proof
+by hand is also in~\cite{T11b}. Our proof
 is independent and, as far as we know, the first machine-checked one. Right's strategy uses 3,031
 shapes for infinitesimality and 1,263 for the value; gaps are kept exactly up to~$2$ and by parity
 above. The finite checks are done by the kernel. We have not formalised the off-diagonal case
@@ -406,6 +409,9 @@ $a\ge5$, with $0$ for $a=0,1,4$ and $\ast$ for $a=2,3$.
 
 This is the case $b=4$ of Conjecture~T3 and of Erickson's Conjecture~7.5. Values were known for
 $a\le10$~\cite{T11}, and~\cite[p.~89]{Th08} lists $\Tt^a\E^4\Ff^b$ as open.
+The manuscript~\cite{T11b} conjectures more: $\Tt^a\E^4\Ff^b=\{a-b\mid a-b\}$ for $a,b\ge6$.
+Theorem~\ref{thm:b4} is its diagonal, from $a\ge5$; by exact computation the conjectured value
+also holds at $(a,b)=(5,6),(6,5),(6,7),(7,6)$, and fails when $a$ or $b$ is~$4$.
 
 The settings that work for $b=3$ fail here: Right needs up to $13$ runs, and with parity kept the
 search for a closed set of shapes does not terminate, wandering through positions with four or
@@ -552,7 +558,7 @@ toads are primitive. We would be glad to hear of any structural insight into thi
 Conjecture & Status \\
 \midrule
 Erickson 7.1, 7.3 & True: proved by Thanatipanonda (Theorems D.2, D.1 of the preprint
-  of~\cite{T11}; proofs in~\cite{Th08}). \\
+  of~\cite{T11}; proofs in~\cite{Th08,T11b}). \\
 Erickson 7.2 & True: proved in~\cite{TZ07}. \\
 Erickson 7.4 & False: $\Tt^7\E^7\Ff^6>2$~\cite{T11}. \\
 Erickson 7.5 & Open. New: $a=2$ and $b=4$ for every $a$ (Sections~\ref{sec:T2},
@@ -574,9 +580,9 @@ Thanatipanonda T5 & Open. For $c=3$ the last $\ast$ is at $b=29$~\cite{T11}; the
 \paragraph{Literature.} We call a result new when we could not find it in~\cite{E96,TZ07,T11,Th08},
 in the ``Unsolved problems in combinatorial games'' lists of the six \emph{Games of No Chance}
 volumes, in the works citing these (via OpenAlex, Crossref, Semantic Scholar and zbMATH Open), on
-arXiv, or in formal libraries (Mathlib and other Lean, Rocq and Isabelle code). We could not reach
-the preprints \emph{Three (More) Results of Combinatorial Game Toads and Frogs} and \emph{Library
-values for Toads and Frogs} cited in~\cite{T11}, nor Siegel's \emph{Combinatorial Game Theory} or
+arXiv, or in formal libraries (Mathlib and other Lean, Rocq and Isabelle code). We are grateful to
+T.~Thanatipanonda for the manuscript~\cite{T11b}. We could not reach \emph{Library
+values for Toads and Frogs}, cited in~\cite{T11,T11b}, nor Siegel's \emph{Combinatorial Game Theory} or
 \emph{Lessons in Play}; corrections are very welcome.
 
 \paragraph{Reproducing.} Everything is in the repository named on the title page. The default
@@ -592,6 +598,8 @@ $b=4$); the comparator check is \texttt{lake comparator}. The solvers and search
   \emph{Games of No Chance}, MSRI Publications~29, Cambridge University Press, 1996, 299--310.
 \bibitem[T11]{T11} T.~Thanatipanonda, \emph{Further hopping with Toads and Frogs}. Electron.\ J.\
   Combin.\ 18(1) (2011), \#P67. Preprint arXiv:0804.0640 (2008).
+\bibitem[T11b]{T11b} T.~Thanatipanonda, \emph{Three results of combinatorial game Toads and
+  Frogs}. Manuscript, 18 March 2011; private communication.
 \bibitem[Th08]{Th08} T.~Thanatipanonda, \emph{Symbolic-computational methods in combinatorial game
   theory and Ramsey theory}. PhD thesis, Rutgers University, 2008. doi:10.7282/T30G3K3F.
 \bibitem[TZ07]{TZ07} T.~Thanatipanonda and D.~Zeilberger, \emph{A symbolic finite-state approach

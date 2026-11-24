@@ -181,7 +181,7 @@ Each cell is the case `Tᵃ □ᵇ Fᵃ`.
 | `b = 2`, all `a ≥ 4` (incl. Lemma C.1) | `infinitesimal_start_b_two`, `upperZero_c1` | Known: Thanatipanonda's theorem [[T11]](#references) |
 | **`b = 3`, all `a` (`Tᵃ □³ Fᵃ`)**: machine-checked strategy over 3,031 run shapes | `infinitesimal_start_b_three` (`Cgt/Col/Column3.lean`) | Known: follows from Theorem 5.6.1 of [[Th08]](#references) (`a ≥ 4`, by hand) and [[E96]](#references) (`a ≤ 3`); our proof is independent |
 | **Exact values of `Tᵃ □³ Fᵃ`**: `∗` for every `a ≥ 4` (and `0` for `a = 0, 3`, `∗` for `a = 1, 2`); machine-checked strategy over 1,263 run shapes | `start_three_value`, `start_three_equiv_star` (`Cgt/Col/Value3.lean`) | Known: the case `a = b` of Theorem 5.6.1 of [[Th08]](#references), `Tᵃ□³Fᵇ = {a − b \| a − b}` (`a, b ≥ 4`); our proof is independent |
-| **`Tᵃ □³ Fᵇ = {a − b \| a − b}`** for all `a, b ≥ 4`: generated proof plan (261 lemmas) over the one-frog theorem and the Blocking Rule | `three_empty_value` (`Cgt/Sum/Three.lean`) | Known: Theorem 5.6.1 of [[Th08]](#references), proof also in [[T11b]](#references); first machine-checked proof |
+| **`Tᵃ □³ Fᵇ = {a − b \| a − b}`** for all `a, b ≥ 4`: generated proof plan (261 lemmas) over the one-frog theorem and the Blocking Rule | `threeEmptyValues`, `three_empty_value` (`Cgt/Sum/Three.lean`); checked with Comparator | Known: Theorem 5.6.1 of [[Th08]](#references), proof also in [[T11b]](#references); first machine-checked proof |
 | **Exact values of `Tᵃ □⁴ Fᵃ`**: `∗` for every `a ≥ 5` (and `0` for `a = 0, 1, 4`, `∗` for `a = 2, 3`); strategy over 361,981 run shapes; 🟦 finite check by `native_decide` | `start_four_value`, `start_four_equiv_star` (`Cgt/Col/Value4.lean`; `lake build CgtNative`) | **New**: Conjecture T3 of [[T11]](#references) for `b = 4`; values known for `a ≤ 10` |
 | **`b = 4`, all `a` (`Tᵃ □⁴ Fᵃ`)**: strategy over 233,087 run shapes; 🟦 finite check by `native_decide` (trusts the compiler) | `infinitesimal_start_b_four` (`Cgt/Col/Column4.lean`; `lake build CgtNative`) | **New**; listed as open in [[Th08]](#references) (p. 89), values known for `a ≤ 10` |
 | **Conjecture T1: the value of `□ˡ Tᵃ □ᵇ F □ʳ`** for every `a ≥ 1`, `l ≤ r`; from a general theorem on one-frog positions (value `phi`, `phi + ½`, `phi + 1` or `(phi + 1)∗` according to `room` and the parity of the gap); checked with Comparator | `conjectureT1` (`Cgt/OneFrog/Main.lean`); `value_room_*`, `t1_*` (`Cgt/OneFrog/T1.lean`), `t1_exception` (`Cgt/OneFrog/Exception.lean`) | **New**: Conjecture T1 of [[T11]](#references). Known before: `l = r = 0` ([[E96]](#references), Theorem 5.2) and `b = 0` ([[E96]](#references), Lemmas 4.3, 4.4) |
@@ -276,8 +276,9 @@ are infinitesimal but neither `0` nor `∗` (below); and `∗2`, `∗3` below ar
 ### Checking with Comparator
 
 The main theorem, `conjecture5_of_openCases : OpenCases → Conjecture5`, the exception
-`not_infinitesimal_3_2`, and Thanatipanonda's Conjectures T2, `exactValuesA2 : ExactValuesA2`, and
-T1, `conjectureT1 : ConjectureT1`, can be checked with Comparator (`lake comparator --config comparator/config.json`). `Challenge.lean` states them, with `sorry`, after
+`not_infinitesimal_3_2`, Thanatipanonda's Conjectures T2, `exactValuesA2 : ExactValuesA2`, and
+T1, `conjectureT1 : ConjectureT1`, and his theorem for three empty squares,
+`threeEmptyValues : ThreeEmptyValues`, can be checked with Comparator (`lake comparator --config comparator/config.json`). `Challenge.lean` states them, with `sorry`, after
 a verbatim copy of `Cgt/Statement.lean`: the definitions of games, infinitesimals, `∗`, the rules,
 the starting positions, `Conjecture5`, `OpenCases`, `valueA2`, `ExactValuesA2`, the one-frog
 positions, `valueT1` and `ConjectureT1`, in Lean core only. Comparator checks that `Solution.lean` proves exactly these statements, with no axioms

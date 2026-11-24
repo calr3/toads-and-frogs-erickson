@@ -11,11 +11,6 @@ namespace Cgt
 
 namespace Game
 
-/-- The integer `n` as a game, for either sign: `int n` for `n ≥ 0`, `-(int (-n))` for `n < 0`. -/
-def zint : Int → Game
-  | Int.ofNat n => int n
-  | Int.negSucc n => neg (int (n + 1))
-
 theorem zint_natCast (n : Nat) : zint (n : Int) = int n := rfl
 
 /-- Negation without `attach`. -/
@@ -234,8 +229,6 @@ theorem star_le_of {g c : Game}
     · exact hle.2 c (List.mem_singleton.2 rfl) h'
     · exact hle.1 x hx hx'
 
-/-- `{n | n}` for an integer `n` of either sign. -/
-def starZ (n : Int) : Game := mk [zint n] [zint n]
 
 theorem neg_starZ (n : Int) : neg (starZ n) = starZ (-n) := by
   rw [starZ, neg_mk_map, starZ, ← neg_zint]; rfl

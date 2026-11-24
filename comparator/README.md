@@ -11,17 +11,20 @@ trusted statement:
   (`Conjecture5`), the cases left open here (`OpenCases`: `a ≥ 3`, `b ≥ 4`, `2a + b ≥ 13`),
   Thanatipanonda's Conjecture T2 (`valueA2`, `ExactValuesA2`), and his Conjecture T1: the numbers
   `n`, `n + ½` and `n∗` as games (`Game.int`, `half`, `starN`), the positions `□ˡTᵃ□ᵇF□ʳ`
-  (`oneFrog`), and `valueT1`, `ConjectureT1`.
-* `Solution.lean` imports `Cgt.Conjecture5`, `Cgt.RowA2Odd` and `Cgt.OneFrog.Main`, which prove
-  them.
-* `config.json` lists the four theorems and permits only `propext`, `Quot.sound` and
+  (`oneFrog`), and `valueT1`, `ConjectureT1`; and, for three empty squares with unequal sides,
+  integers of either sign and `{n | n}` (`Game.zint`, `starZ`), the positions `Tᵃ□ᵏFᵇ`
+  (`unequal`), and `ThreeEmptyValues`.
+* `Solution.lean` imports `Cgt.Conjecture5`, `Cgt.RowA2Odd`, `Cgt.OneFrog.Main` and
+  `Cgt.Sum.Three`, which prove them.
+* `config.json` lists the five theorems and permits only `propext`, `Quot.sound` and
   `Classical.choice`:
   * `Cgt.conjecture5_of_openCases : OpenCases → Conjecture5`: every case outside `OpenCases` is
     proved;
   * `Cgt.not_infinitesimal_3_2`: the exception `(3, 2)` is genuine;
   * `Cgt.exactValuesA2 : ExactValuesA2`: `TT□ᵇFF = ∗` if `2 ≤ b ≤ 4` or `b ≡ 1 (mod 6)`, and `0`
     otherwise;
-  * `Cgt.conjectureT1 : ConjectureT1`: `□ˡTᵃ□ᵇF□ʳ = valueT1 l a b r` for every `a ≥ 1`, `l ≤ r`.
+  * `Cgt.conjectureT1 : ConjectureT1`: `□ˡTᵃ□ᵇF□ʳ = valueT1 l a b r` for every `a ≥ 1`, `l ≤ r`;
+  * `Cgt.threeEmptyValues : ThreeEmptyValues`: `Tᵃ□³Fᵇ = {a − b | a − b}` for all `a, b ≥ 4`.
 
 Comparator checks three things. The declarations in the theorem statements, and everything they
 use, must be the same in both environments. The proofs must use only the permitted axioms. The
@@ -51,8 +54,8 @@ After changing `Cgt/Statement.lean`, regenerate the challenge with
 
 ## Status
 
-`lake comparator --config comparator/config.json` accepted all four theorems on 2026-11-21, at
-commit `f717041`:
+`lake comparator --config comparator/config.json` accepted all five theorems on 2026-11-24, on the
+tree of the commit that added `threeEmptyValues` to the challenge:
 
 ```
 Running Lean default kernel on solution
@@ -60,8 +63,8 @@ Lean default kernel accepts the solution
 Your solution is okay!
 ```
 
-The run took 20 minutes, after a `lake build` of 8 minutes, including building and exporting
+The run took 20 minutes, after a `lake build` of 9 minutes, including building and exporting
 `Challenge` and `Solution` inside the sandbox and the (single-threaded) kernel replay of
 `Solution`. It used Lean `v4.36.0-rc2` and `bwrap` 0.9.0, on a machine with 24 cores and 49 GB of
-memory. (Earlier runs: 2026-11-18 at commit `c019622`, the first three theorems, 38 minutes on 4
-cores; 2026-11-17 at commit `96026a5`, the first two, 31 minutes.)
+memory. (Earlier runs: 2026-11-21 at commit `f717041`, the first four theorems; 2026-11-18 at
+commit `c019622`, the first three; 2026-11-17 at commit `96026a5`, the first two.)

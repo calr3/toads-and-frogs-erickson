@@ -37,6 +37,7 @@ from explore import le_int, ge_int, lm, rm, ub, lb
 from bounds import phi
 sys.setrecursionlimit(1000000)
 GRID = 3
+FAST = False  # FAST=1 in the environment: take the first option that works, not the cheapest
 NEED = False  # NEED=1 in the environment: accept uncovered one-frog / one-toad claims with a reservoir, at a high cost, and list them
 HAND = set()      # (template, (sx, sy, k)) accepted without a plan
 
@@ -199,6 +200,7 @@ def cost(t, H, conds):
         c1 = cost(q, A, conds)
         if c1[0] < bst[0]: bst = (c1[0], ('direct', name, q))
         for rn, r in rmoves(q):
+            if FAST and bst[0] < BIG: break
             cc = cost(r, H, conds)
             if cc[0] < bst[0]: bst = (cc[0], ('reply', name, q, rn, r))
         if bst[0] >= BIG: total = BIG; break
@@ -208,9 +210,10 @@ def cost(t, H, conds):
         if not isint(H):
             B = H[2]; bb = (BIG, None)
             for rn, r in rmoves(t):
+                if FAST and bb[0] < BIG: break
                 cc = cost(r, B, conds)
                 if cc[0] < bb[0]: bb = (cc[0], ('ropt', r, B, conds))
-            if not isint(B):
+            if not isint(B) and not (FAST and bb[0] < BIG):
                 cc = cost(t, B[1], conds)
                 if cc[0] < bb[0]: bb = (cc[0], ('below', t, B[1], conds))
             if bb[0] >= BIG: total = BIG
@@ -222,6 +225,7 @@ def cost(t, H, conds):
                 if params(t, c2) or (b[1] > 0 and d is not None):
                     bb = (BIG, None)
                     for rn, r in rmoves(t):
+                        if FAST and bb[0] < BIG: break
                         cc = cost(r, hshift(H, 1), c2)
                         if cc[0] < bb[0]: bb = (cc[0], ('ropt', r, hshift(H, 1), c2))
                     if bb[0] >= BIG: total = BIG
@@ -275,7 +279,7 @@ def parse_target(s):
 
 if __name__ == '__main__':
     import os
-    NEED = bool(os.environ.get('NEED'))
+    NEED = bool(os.environ.get('NEED')); FAST = bool(os.environ.get('FAST'))
     a = sys.argv[1:]
     c = None if a[0] == '-' else int(a[0]); M = a[1]; d = None if a[2] == '-' else int(a[2])
     H = parse_target(a[3])

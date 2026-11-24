@@ -5,7 +5,8 @@
     "Cgt.not_infinitesimal_3_2",
     "Cgt.conjecture5_of_openCases",
     "Cgt.exactValuesA2",
-    "Cgt.conjectureT1"
+    "Cgt.conjectureT1",
+    "Cgt.threeEmptyValues"
   ],
   "permitted_axioms": [
     "propext",

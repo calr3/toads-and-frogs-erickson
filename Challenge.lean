@@ -1,8 +1,8 @@
 /-!
 # Challenge for Comparator
 
-The statements of the main theorems, proved in `Cgt/Conjecture5.lean`, `Cgt/RowA2Odd.lean` and
-`Cgt/OneFrog/Main.lean` (imported by `Solution.lean`). Everything before the theorems is a verbatim copy of `Cgt/Statement.lean`, made
+The statements of the main theorems, proved in `Cgt/Conjecture5.lean`, `Cgt/RowA2Odd.lean`,
+`Cgt/OneFrog/Main.lean` and `Cgt/Sum/Three.lean` (imported by `Solution.lean`). Everything before the theorems is a verbatim copy of `Cgt/Statement.lean`, made
 by `scripts/gen_challenge.py`; it uses Lean core only. See `comparator/README.md`.
 -/
 
@@ -73,6 +73,14 @@ def half (n : Nat) : Game := mk [int n] [int (n + 1)]
 
 /-- `n∗ = {n | n}`. -/
 def starN (n : Nat) : Game := mk [int n] [int n]
+
+/-- The integer `n` as a game, for either sign: `int n` for `n ≥ 0`, `-(int (-n))` for `n < 0`. -/
+def zint : Int → Game
+  | Int.ofNat n => int n
+  | Int.negSucc n => neg (int (n + 1))
+
+/-- `{n | n}` for an integer `n` of either sign. -/
+def starZ (n : Int) : Game := mk [zint n] [zint n]
 
 /-- A game is *infinitesimal* if it lies strictly between `-2⁻ⁿ` and `2⁻ⁿ` for every `n`,
 equivalently strictly between `-x` and `x` for every positive (short) number `x`. -/
@@ -292,6 +300,15 @@ def valueT1 (l a b r : Nat) : Game :=
   else if r = 0 ∧ b = 1 ∧ 2 ≤ a then mk [mk [int (a - 2)] [int 1]] [int 0]
   else starN ((a - 1) * (b + r - 1))
 
+/-- The position `Tᵃ □ᵏ Fᵇ`. -/
+def unequal (a k b : Nat) : List Cell :=
+  List.replicate a T ++ List.replicate k E ++ List.replicate b F
+
+/-- Thanatipanonda's theorem for three empty squares: `Tᵃ □³ Fᵇ = {a - b | a - b}` for all
+`a, b ≥ 4`. -/
+def ThreeEmptyValues : Prop :=
+  ∀ a b : Nat, 4 ≤ a → 4 ≤ b → Equiv (tf (unequal a 3 b)) (starZ ((a : Int) - b))
+
 /-- Thanatipanonda's Conjecture T1: `□ˡ Tᵃ □ᵇ F □ʳ` equals `valueT1 l a b r` whenever `a ≥ 1` and
 `l ≤ r`. -/
 def ConjectureT1 : Prop :=
@@ -321,6 +338,10 @@ theorem exactValuesA2 : ExactValuesA2 := by
 /-- **Thanatipanonda's Conjecture T1.** The value of `□ˡ Tᵃ □ᵇ F □ʳ` for every `a ≥ 1` and
 `l ≤ r` is `valueT1 l a b r`. -/
 theorem conjectureT1 : ConjectureT1 := by
+  sorry
+
+/-- **Three empty squares.** `Tᵃ □³ Fᵇ = {a - b | a - b}` for all `a, b ≥ 4` (Thanatipanonda). -/
+theorem threeEmptyValues : ThreeEmptyValues := by
   sorry
 
 end Cgt

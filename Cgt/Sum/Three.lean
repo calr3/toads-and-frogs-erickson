@@ -12,10 +12,6 @@ namespace Cgt
 
 open Cell TF Game Col
 
-/-- The position `Tᵃ □ᵏ Fᵇ`. -/
-def unequal (a k b : Nat) : List Cell :=
-  List.replicate a T ++ List.replicate k E ++ List.replicate b F
-
 theorem mirror_unequal (a k b : Nat) : mirror (unequal a k b) = unequal b k a := by
   simp [unequal, mirror_append, mirror_replicate, List.append_assoc]
 
@@ -55,5 +51,9 @@ theorem three_empty_value (a b : Nat) (ha : 4 ≤ a) (hb : 4 ≤ b) :
   have h3 : -((b : Int) - a) = (a : Int) - b := by omega
   rw [h3] at h2
   exact le_trans _ _ _ h2 hm.2
+
+/-- **Thanatipanonda's theorem for three empty squares**, in the form stated in
+`Cgt/Statement.lean`. -/
+theorem threeEmptyValues : ThreeEmptyValues := three_empty_value
 
 end Cgt

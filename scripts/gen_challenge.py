@@ -13,8 +13,8 @@ import re
 HEADER = '''/-!
 # Challenge for Comparator
 
-The statements of the main theorems, proved in `Cgt/Conjecture5.lean`, `Cgt/RowA2Odd.lean` and
-`Cgt/OneFrog/Main.lean` (imported by `Solution.lean`). Everything before the theorems is a verbatim copy of `Cgt/Statement.lean`, made
+The statements of the main theorems, proved in `Cgt/Conjecture5.lean`, `Cgt/RowA2Odd.lean`,
+`Cgt/OneFrog/Main.lean` and `Cgt/Sum/Three.lean` (imported by `Solution.lean`). Everything before the theorems is a verbatim copy of `Cgt/Statement.lean`, made
 by `scripts/gen_challenge.py`; it uses Lean core only. See `comparator/README.md`.
 -/
 
@@ -44,6 +44,10 @@ theorem exactValuesA2 : ExactValuesA2 := by
 /-- **Thanatipanonda's Conjecture T1.** The value of `□ˡ Tᵃ □ᵇ F □ʳ` for every `a ≥ 1` and
 `l ≤ r` is `valueT1 l a b r`. -/
 theorem conjectureT1 : ConjectureT1 := by
+  sorry
+
+/-- **Three empty squares.** `Tᵃ □³ Fᵇ = {a - b | a - b}` for all `a, b ≥ 4` (Thanatipanonda). -/
+theorem threeEmptyValues : ThreeEmptyValues := by
   sorry
 
 end Cgt
